@@ -59,5 +59,15 @@ export default {
   width: 70%;
   background-color: white;
   padding: 10px 10px;
+  
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  -ms-word-break: break-all;
+  word-break: break-all;
+  word-break: break-word;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
 }
 </style>
