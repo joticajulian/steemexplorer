@@ -48,7 +48,7 @@ export default {
     fetchData() {
       var name = this.$route.params.id;
       console.log('Fetching data for '+name);
-      self = this;
+      var self = this;
       self.account.json_metadata = 'llamando steem api123';
       steem.api.getAccounts([name], function (err, result) {      
         if (err || !result || result.length == 0) {
@@ -64,8 +64,8 @@ export default {
           console.log(err, result);
           //Update UI
           return;
-        }
-        self.transactions = result;        
+        }        
+        self.transactions = result;
       });
     }
   }
