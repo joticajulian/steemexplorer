@@ -1,13 +1,19 @@
 <template>
   <div class="account">
-    <div class="title">{{title}}</div>
+    <div class="title" v-if="title!=''">{{title}}</div>
+    <div class="row line"></div>
     <div class="data" v-for="(item,key,index) in data">
       <div class="row">
         <div class="key">
           {{key}}
         </div
         ><div class="value">
-          {{item}}
+          <div v-if="typeof item === 'object'">
+            <card-data :data="item"></card-data>
+          </div>
+          <div v-else>
+            {{item}}
+          </div>
         </div>        
       </div>
     </div>
@@ -19,12 +25,13 @@ export default {
   name: 'card-data',
   props: {
     data:{
-      type: Object,
+      type: [Object,Array],
       required: true
     },
     title:{
       type: String,
-      required: true
+      required: false,
+      default: ''
     }
   }
 }
@@ -37,8 +44,16 @@ export default {
   background-color: #256ca5;
   font-weight: bold;
   color: white;
+  border: solid 1px #8a8a8a;
   padding: 13px 10px;
 }
+
+.line{
+  height: 1px;
+  line-height: 1px;
+  overflow: hidden;
+}
+
 .row{
   display: block;
   width: 100%;

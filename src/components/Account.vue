@@ -46,10 +46,9 @@ export default {
 
   methods: {
     fetchData() {
-      var name = this.$route.params.id;
+      var name = this.$route.params.account;
       console.log('Fetching data for '+name);
       var self = this;
-      self.account.json_metadata = 'llamando steem api123';
       steem.api.getAccounts([name], function (err, result) {      
         if (err || !result || result.length == 0) {
           console.log(err, result);

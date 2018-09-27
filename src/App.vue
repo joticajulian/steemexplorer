@@ -2,19 +2,32 @@
   <div id="app">
     <img src="./assets/logo.png">
     <router-link :to="{ name: 'HelloWorld' }">Home</router-link>
+    <div class="global">
+      
+    </div>
     <router-view></router-view>
   </div>
 </template>
 
 <script>
+import CardData from '@/components/CardData'
+
 export default {
-  name: 'App'
+  name: 'App',
+  
+  components: {
+    CardData
+  }
 }
 </script>
 
 <style>
 *{
   box-sizing: border-box;
+}
+
+body{
+  background-color: #f3f3f3;;
 }
 
 #app {
