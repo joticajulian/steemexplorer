@@ -10,5 +10,5 @@ export default {
   STEEM: STEEM,
   SP: SP,
   VESTS: VESTS,
-  HASH: HASH,
+  HASH: HASH,  
 }

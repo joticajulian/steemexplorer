@@ -1,3 +1,4 @@
+import Config from '@/config.js'
 
 export default {
   
@@ -21,10 +22,12 @@ export default {
   methods: {
     changeFeedPrice(price){      
     },
+    
     updateRS() {
       this.chain.steem_per_rshare = this.chain.reward_balance / this.chain.recent_claims;
       this.chain.sbd_per_rshare = this.chain.steem_per_rshare * this.chain.feed_price;
     },
+    
     getChainProperties() {
       var self = this;
       steem.api.getRewardFund('post', function (err, result) {      
@@ -54,6 +57,10 @@ export default {
         self.updateRS();
         self.changeFeedPrice(self.chain.feed_price)
       });
+    },
+    
+    vests2sp(vests){
+      return (this.chain.steem_per_mvests * parseFloat(vests) / 1000000).toFixed(3) + ' ' + Config.SP;
     }
   }
 }

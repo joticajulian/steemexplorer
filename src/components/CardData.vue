@@ -4,10 +4,16 @@
     <div class="row line"></div>
     <div class="data" v-for="(item,key,index) in data">
       <div class="row">
-        <div class="key">
+        <div :class="{
+          key: true,
+          keyO: (typeof data === 'object'),
+          keyA: Array.isArray(data)}">
           {{key}}
         </div
-        ><div class="value">
+        ><div :class="{
+          value: true,
+          valueO: (typeof data === 'object'),
+          valueA: Array.isArray(data)}">        
           <div v-if="typeof item === 'object'">
             <card-data :data="item"></card-data>
           </div>
@@ -38,6 +44,10 @@ export default {
 </script>
 
 <style scoped>
+.account{
+  margin: 10px auto;
+}
+
 .title{
   display: block;
   width: 100%;
@@ -57,21 +67,30 @@ export default {
 .row{
   display: block;
   width: 100%;
-  border: solid 1px #8a8a8a;
+  border: solid 1px #dcdcdc;
   border-top-width: 0px;
-  background-color: #e8e8e8;
+  background-color: white;
   font-family: monospace;  
 }
 .key{
   display: inline-block;
-  width: 30%;
-  color: #777777;
+  color: #a0a0a0;
   vertical-align: top;
   padding: 10px 10px;
+  
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  -ms-word-break: break-all;
+  word-break: break-all;
+  word-break: break-word;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
 }
+
 .value{
   display: inline-block;
-  width: 70%;
   background-color: white;
   padding: 10px 10px;
   
@@ -84,5 +103,24 @@ export default {
   -moz-hyphens: auto;
   -webkit-hyphens: auto;
   hyphens: auto;
+}
+
+.keyO{
+  width: 8rem;  
+}
+
+.keyA{
+  width: 2rem; 
+}
+
+.valueO{
+  width: calc(100% - 8rem);
+}
+
+.valueA{
+  width: calc(100% - 2rem);
+}
+
+@media only screen and (min-width: 768px) {
 }
 </style>

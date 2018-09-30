@@ -38,9 +38,8 @@ export default{
   },
   
   extractUrlProfileImage: function(metadata){
-    var json_metadata = JSON.parse(account.json_metadata);
     if(typeof metadata.profile !== 'undefined' && typeof metadata.profile.profile_image !== 'undefined' ){
-      url = metadata.profile.profile_image;
+      var url = metadata.profile.profile_image;
       if(url.substring(0,8) == "![image]"){
         return url.substring(9, url.length - 1);
       }

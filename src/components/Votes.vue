@@ -150,4 +150,3 @@ export default {
   text-align: right;
 }
 </style>
-z   dfqghwsdmf,gh,
