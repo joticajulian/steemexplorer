@@ -19,8 +19,11 @@
       <div v-else-if="typeOp == 'account_create_with_delegation'">
         <a :href="'#/@'+op.creator">{{op.creator}}</a> create account {{op.new_account_name}}. Fee: {{op.fee}}. Delegation: {{op.delegation}}
       </div>
-      <div v-else-if="typeOp == 'comment'">
+      <div v-else-if="typeOp == 'comment' && op.parent_author != ''">
         <a :href="'#/@'+op.author">{{op.author}}</a> replied to <a :href="link(op.parent_author,op.parent_permlink)">{{linkCut(op.parent_author,op.parent_permlink)}}</a>
+      </div>
+      <div v-else-if="typeOp == 'comment' && op.parent_author == ''">
+        <a :href="'#/@'+op.author">{{op.author}}</a> authored a post: <a :href="link(op.author,op.permlink)">{{linkCut(op.author,op.permlink)}}</a>
       </div>
       <div v-else-if="typeOp == 'transfer_to_vesting'">
         <a :href="'#/@'+op.from">{{op.from}}</a> power up {{op.amount}} to {{op.to}}

@@ -3,8 +3,11 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import ChainProperties from './mixins/ChainProperties'
 
 Vue.config.productionTip = false
+
+Vue.mixin(ChainProperties);
 
 /* eslint-disable no-new */
 new Vue({
