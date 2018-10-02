@@ -93,7 +93,7 @@ export default {
   name: 'transaction',
   props: {
     tx:{
-      type: Array,
+      type: [Array,Object],
       required: true
     },    
   },
@@ -131,16 +131,22 @@ export default {
       return l.substring(0,30) + dots;
     },
     processTx: function(newTx){
-      this.typeOp = newTx[1].op[0];
-      this.trx_id = newTx[1].trx_id;
+      var ope;
+      if(Array.isArray(newTx)){ //account history
+        this.typeOp = newTx[1].op[0];
+        this.trx_id = newTx[1].trx_id;      
+        ope = newTx[1].op[1];        
+      }else{ //block
+        this.typeOp = newTx.operations[0][0];
+        this.trx_id = newTx.transaction_id;        
+        ope = newTx.operations[0][1];        
+      }
       
-      var ope = newTx[1].op[1];          
       if(this.typeOp == 'custom_json'){ 
         ope.json = JSON.parse(ope.json)
       }
       this.op = ope;
     },
-    getReputation: Utils.getReputation,
   },
   components: {
     CardData,

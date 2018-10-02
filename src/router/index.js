@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
 import Account from '@/components/Account'
 import Post from '@/components/Post'
+import Block from '@/components/Block'
 
 Vue.use(Router)
 
@@ -21,6 +22,10 @@ export default new Router({
       path: '/@:account/:permlink',
       name: 'Post',
       component: Post
+    },{
+      path: '/b/:id',
+      name: 'Block',
+      component: Block
     },    
   ],
   //mode: 'history',
