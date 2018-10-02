@@ -6,19 +6,26 @@
       <div class="row">
         <div :class="{
           key: true,
-          keyO: (typeof data === 'object'),
-          keyA: Array.isArray(data)}">
+          keyO: (typeof data === 'object' && typeCard==''),
+          keyA: Array.isArray(data)  && typeCard=='',
+          keyA2: typeCard=='witnesses'}">
           {{key}}
         </div
         ><div :class="{
           value: true,
-          valueO: (typeof data === 'object'),
-          valueA: Array.isArray(data)}">        
+          valueO: (typeof data === 'object' && typeCard==''),
+          valueA: Array.isArray(data)  && typeCard=='',
+          valueA2: typeCard=='witnesses'}">        
           <div v-if="typeof item === 'object'">
-            <card-data :data="item"></card-data>
+            <div v-if="link==true && item.link">
+              <a :href="item.link">{{item.text}}</a>
+            </div>
+            <div v-else>
+              <card-data :data="item"></card-data>
+            </div>
           </div>
-          <div v-else>
-            {{item}}
+          <div v-else>            
+            {{item}}            
           </div>
         </div>        
       </div>
@@ -38,6 +45,16 @@ export default {
       type: String,
       required: false,
       default: ''
+    },
+    typeCard:{
+      type: String,
+      required: false,
+      default: ''
+    },
+    link:{
+      type: Boolean,
+      required: false,
+      default: false
     }
   }
 }
@@ -113,12 +130,20 @@ export default {
   width: 2rem; 
 }
 
+.keyA2{
+  width: 3rem; 
+}
+
 .valueO{
   width: calc(100% - 8rem);
 }
 
 .valueA{
   width: calc(100% - 2rem);
+}
+
+.valueA2{
+  width: calc(100% - 3rem);
 }
 
 @media only screen and (min-width: 768px) {

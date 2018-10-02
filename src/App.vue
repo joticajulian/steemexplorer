@@ -39,6 +39,10 @@ body{
   margin-top: 60px;
 }
 
+.center {
+  text-align: center;
+}
+
 .break-word{
   overflow-wrap: break-word;
   word-wrap: break-word;

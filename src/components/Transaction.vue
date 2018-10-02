@@ -11,22 +11,22 @@
         <a :href="'#/@'+op.voter">{{op.voter}}</a> upvote <a :href="link(op.author,op.permlink)">{{linkCut(op.author, op.permlink)}}</a> ({{(op.weight/100).toFixed(2)}}%)
       </div>
       <div v-else-if="typeOp == 'transfer'">
-        <a :href="'#/@'+op.from">{{op.from}}</a> transfer {{op.amount}} to {{op.to}}. Memo: <span class="memo">{{op.memo}}</span>
+        <a :href="'#/@'+op.from">{{op.from}}</a> transfer {{op.amount}} to <a :href="'#/@'+op.to">{{op.to}}</a>. Memo: <span class="memo">{{op.memo}}</span>
       </div>
       <div v-else-if="typeOp == 'delegate_vesting_shares'">
-        <a :href="'#/@'+op.delegator">{{op.delegator}}</a> delegate {{op.delegatee}} {{this.vests2sp(op.vesting_shares)}}
-      </div>
-      <div v-else-if="typeOp == 'account_create_with_delegation'">
-        <a :href="'#/@'+op.creator">{{op.creator}}</a> create account {{op.new_account_name}}. Fee: {{op.fee}}. Delegation: {{this.vests2sp(op.delegation)}}
+        <a :href="'#/@'+op.delegator">{{op.delegator}}</a> delegate <a :href="'#/@'+op.delegatee">{{op.delegatee}}</a> {{this.vests2sp(op.vesting_shares)}}
       </div>
       <div v-else-if="typeOp == 'comment' && op.parent_author != ''">
-        <a :href="'#/@'+op.author">{{op.author}}</a> replied to <a :href="link(op.parent_author,op.parent_permlink)">{{linkCut(op.parent_author,op.parent_permlink)}}</a>
+        <a :href="'#/@'+op.author">{{op.author}}</a> replied to <a :href="link(op.parent_author,op.parent_permlink)">{{linkCut(op.parent_author,op.parent_permlink)}}</a>. <span class="memo">{{op.body.substring(0,140)}}{{op.body.length>140?'...':''}}</span>
       </div>
       <div v-else-if="typeOp == 'comment' && op.parent_author == ''">
         <a :href="'#/@'+op.author">{{op.author}}</a> authored a post: <a :href="link(op.author,op.permlink)">{{linkCut(op.author,op.permlink)}}</a>
       </div>
       <div v-else-if="typeOp == 'transfer_to_vesting'">
-        <a :href="'#/@'+op.from">{{op.from}}</a> power up {{op.amount}} to {{op.to}}
+        <a :href="'#/@'+op.from">{{op.from}}</a> power up {{op.amount}} to <a :href="'#/@'+op.to">{{op.to}}</a>
+      </div>
+      <div v-else-if="typeOp == 'withdraw_vesting'">
+        <a :href="'#/@'+op.account">{{op.account}}</a> start power down {{this.vests2sp(op.vesting_shares)}}
       </div>
       <div v-else-if="typeOp == 'fill_vesting_withdraw'">
         <a :href="'#/@'+op.from_account">{{op.from_account}}</a> withdraw {{op.withdrawn}} as {{op.deposited}}
@@ -34,8 +34,14 @@
       <div v-else-if="typeOp == 'return_vesting_delegation'">
         <a :href="'#/@'+op.account">{{op.account}}</a> return of {{this.vests2sp(op.vesting_shares)}} delegation
       </div>
+      <div v-else-if="typeOp == 'account_create_with_delegation'">
+        <a :href="'#/@'+op.creator">{{op.creator}}</a> create account <a :href="'#/@'+op.new_account_name">{{op.new_account_name}}</a>. Fee: {{op.fee}}. Delegation: {{this.vests2sp(op.delegation)}}
+      </div>
       <div v-else-if="typeOp == 'claim_account'">
         <a :href="'#/@'+op.creator">{{op.creator}}</a> claim account. Fee: {{op.fee}}
+      </div>
+      <div v-else-if="typeOp == 'create_claimed_account'">
+        <a :href="'#/@'+op.creator">{{op.creator}}</a> create claimed account <a :href="'#/@'+op.new_account_name">{{op.new_account_name}}</a>
       </div>
       <div v-else-if="typeOp == 'producer_reward'">
         <a :href="'#/@'+op.producer">{{op.producer}}</a> producer reward: {{this.vests2sp(op.vesting_shares)}}
@@ -47,7 +53,7 @@
         <a :href="'#/@'+op.owner">{{op.owner}}</a> update witness. Creation fee: {{op.props.account_creation_fee}}
       </div>
       <div v-else-if="typeOp == 'account_witness_vote'">
-        <a :href="'#/@'+op.account">{{op.account}}</a> <span v-if="op.approve">approve</span><span v-else>unapprove</span> witness {{op.witness}}
+        <a :href="'#/@'+op.account">{{op.account}}</a> <span v-if="op.approve">approve</span><span v-else>unapprove</span> witness <a :href="'#/@'+op.witness">{{op.witness}}</a>
       </div>
       <div v-else-if="typeOp == 'claim_reward_balance'">
         <a :href="'#/@'+op.account">{{op.account}}</a> claim reward: {{op.reward_sbd}}, {{op.reward_steem}}, {{this.vests2sp(op.reward_vests)}}

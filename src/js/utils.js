@@ -46,5 +46,20 @@ export default{
       return url;
     }
     return '';
+  },
+  
+  getQuery: function(p) {
+    var path = p.split('?');
+    var result = {}
+    result.page = path[0];
+    if(path.length > 1)
+      result.params = JSON.parse("{\"" +
+        path[1].replace(/\&/gi, "\",\"").replace(/\=/gi, "\":\"") +
+        "\"}");
+    console.log("getQuery");
+    console.log(document.location.search);
+    console.log(path);
+    console.log(result);
+    return result;
   }
 }
