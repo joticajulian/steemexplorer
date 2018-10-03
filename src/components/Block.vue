@@ -8,16 +8,15 @@
     ><div class="info2">
       <h2>{{block.transactions.length}} Transactions</h2>
       <div v-for="(tx,key,index) in block.transactions">
-        <transaction :tx="tx"></transaction>
+        <trx :tx="tx"></trx>
       </div>
     </div>    
   </div>
 </template>
 
 <script>
-import Utils from '@/js/utils.js'
 import CardData from '@/components/CardData'
-import Transaction from '@/components/Transaction'
+import Trx from '@/components/Trx'
 
 export default {
   name: 'Block',
@@ -32,7 +31,7 @@ export default {
   
   components: {
     CardData,
-    Transaction
+    Trx
   },
   
   created() {
@@ -67,10 +66,6 @@ export default {
         }
         
         self.blockGenerals = blk;        
-      });
-      
-      steem.api.getBlockHeader(blocknum, function(err, result) {
-        console.log(err, result);
       });
     },
   }

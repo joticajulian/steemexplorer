@@ -4,6 +4,7 @@ import HelloWorld from '@/components/HelloWorld'
 import Account from '@/components/Account'
 import Post from '@/components/Post'
 import Block from '@/components/Block'
+import Transaction from '@/components/Transaction'
 
 Vue.use(Router)
 
@@ -26,6 +27,10 @@ export default new Router({
       path: '/b/:id',
       name: 'Block',
       component: Block
+    },{
+      path: '/b/:id/:tx',
+      name: 'Transaction',
+      component: Transaction
     },    
   ],
   //mode: 'history',

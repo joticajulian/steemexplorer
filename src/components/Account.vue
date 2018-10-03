@@ -31,7 +31,7 @@
         </div>
         <h2>Transactions</h2>
         <div v-for="(tx,key,index) in transactions">
-          <transaction :tx="tx"></transaction>
+          <trx :tx="tx"></trx>
         </div>
         <div class="center">
           <div v-for="(p,key,index) in pages" class="page"
@@ -49,7 +49,7 @@
 <script>
 import Utils from '@/js/utils.js'
 import CardData from '@/components/CardData'
-import Transaction from '@/components/Transaction'
+import Trx from '@/components/Trx'
 
 export default {
   name: 'Account',
@@ -76,7 +76,7 @@ export default {
   
   components: {
     CardData,
-    Transaction
+    Trx
   },
   
   created() {
