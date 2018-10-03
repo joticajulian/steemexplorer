@@ -1,6 +1,9 @@
 # steemexplorer
 
-> A Vue.js project
+> Steem Explorer
+
+## Config
+Change the configuration file `/config.js` with the symbols and rpc_node of the blockchain.
 
 ## Build Setup
 
