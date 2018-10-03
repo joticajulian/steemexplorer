@@ -146,13 +146,16 @@ export default {
         var from = -1;
         var limit = self.limit;
         var total_pages = Math.ceil(last_tx / limit);
-        var page = parseInt(self.$route.query.page);
+        var page = 1;
         
         if(self.$route.query && self.$route.query.page){
-          from = last_tx - limit*( page - 1 );
-          if(from < 0) from = 0;
-          if(from < limit) limit = from;
+          page = parseInt(self.$route.query.page);
+          from = last_tx - limit*( page - 1 );          
+        }else{
+          from = last_tx;          
         }
+        if(from < 0) from = 0;
+        if(from < limit) limit = from;
         
         self.pages = [];
         var NUMBER_PAGES_DISPLAYED = 10;

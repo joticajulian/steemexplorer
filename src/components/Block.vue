@@ -1,16 +1,18 @@
 <template>
   <div class="block">
-    <h1>Block {{$route.params.id}}</h1>
-    <div class="info1">
-      <h2>Block info</h2>
-      <card-data :data="this.blockGenerals"></card-data>
-    </div
-    ><div class="info2">
-      <h2>{{block.transactions.length}} Transactions</h2>
-      <div v-for="(tx,key,index) in block.transactions">
-        <trx :tx="tx"></trx>
+    <div v-if="this.exists">
+      <h1>Block {{$route.params.id}}</h1>
+      <div class="info1">
+        <h2>Block info</h2>
+        <card-data :data="this.blockGenerals"></card-data>
+      </div
+      ><div class="info2">
+        <h2>{{block.transactions.length}} Transactions</h2>
+        <div v-for="(tx,key,index) in block.transactions">
+          <trx :tx="tx"></trx>
+        </div>
       </div>
-    </div>    
+    </div>
   </div>
 </template>
 
@@ -26,6 +28,7 @@ export default {
       },
       blockGenerals:{
       },
+      exists: false,
     }
   },
   
@@ -50,11 +53,18 @@ export default {
       console.log('Fetching data for block '+blocknum);
       var self = this;
       steem.api.getBlock(blocknum, function (err, result) {      
-        if (err || !result || result.length == 0) {
+        if (err || !result) {
           console.log(err, result);
           //Update UI
           return;
         }
+        
+        for(var i=0;i<result.transactions.length;i++){
+          if(!result.transactions[i].transaction_id){
+            result.transactions[i].transaction_id = result.transaction_ids[i];            
+          }
+        }
+        
         self.block = result;
         
         var no_keys = ['extensions','transaction_ids','transactions'];
@@ -65,7 +75,8 @@ export default {
           blk[key] = self.block[key];
         }
         
-        self.blockGenerals = blk;        
+        self.blockGenerals = blk;
+        self.exists = true;       
       });
     },
   }

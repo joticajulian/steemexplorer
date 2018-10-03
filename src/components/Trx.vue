@@ -34,14 +34,17 @@
       <div v-else-if="typeOp == 'return_vesting_delegation'">
         <a :href="'#/@'+op.account">{{op.account}}</a> return of {{this.vests2sp(op.vesting_shares)}} delegation
       </div>
-      <div v-else-if="typeOp == 'account_create_with_delegation'">
-        <a :href="'#/@'+op.creator">{{op.creator}}</a> create account <a :href="'#/@'+op.new_account_name">{{op.new_account_name}}</a>. Fee: {{op.fee}}. Delegation: {{this.vests2sp(op.delegation)}}
-      </div>
       <div v-else-if="typeOp == 'claim_account'">
         <a :href="'#/@'+op.creator">{{op.creator}}</a> claim account. Fee: {{op.fee}}
       </div>
       <div v-else-if="typeOp == 'create_claimed_account'">
         <a :href="'#/@'+op.creator">{{op.creator}}</a> create claimed account <a :href="'#/@'+op.new_account_name">{{op.new_account_name}}</a>
+      </div>
+      <div v-else-if="typeOp == 'account_create_with_delegation'">
+        <a :href="'#/@'+op.creator">{{op.creator}}</a> create account <a :href="'#/@'+op.new_account_name">{{op.new_account_name}}</a>. Fee: {{op.fee}}. Delegation: {{this.vests2sp(op.delegation)}}
+      </div>
+      <div v-else-if="typeOp == 'account_create'">
+        <a :href="'#/@'+op.creator">{{op.creator}}</a> create account <a :href="'#/@'+op.new_account_name">{{op.new_account_name}}</a>. Fee: {{op.fee}}.
       </div>
       <div v-else-if="typeOp == 'producer_reward'">
         <a :href="'#/@'+op.producer">{{op.producer}}</a> producer reward: {{this.vests2sp(op.vesting_shares)}}

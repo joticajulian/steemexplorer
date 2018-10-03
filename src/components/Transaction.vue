@@ -52,6 +52,13 @@ export default {
           //Update UI
           return;
         }
+        
+        for(var i=0;i<result.transactions.length;i++){
+          if(!result.transactions[i].transaction_id){
+            result.transactions[i].transaction_id = result.transaction_ids[i];            
+          }
+        }
+        
         self.block = result;
         var index = self.block.transaction_ids.indexOf(self.$route.params.tx);        
         if(index >= 0) self.tx = self.block.transactions[index];

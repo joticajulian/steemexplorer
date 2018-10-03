@@ -2,13 +2,12 @@ const SBD = 'SBD'
 const STEEM = 'STEEM'
 const SP = 'SP'
 const VESTS = 'VESTS'
-
-const HASH = '#/';
+const RPC_NODE = { url: 'https://api.steemit.com' }
 
 export default {
   SBD: SBD,
   STEEM: STEEM,
   SP: SP,
   VESTS: VESTS,
-  HASH: HASH,  
+  RPC_NODE: RPC_NODE,
 }
