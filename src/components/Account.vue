@@ -30,9 +30,14 @@
           <card-data :data="this.account.json_metadata"></card-data>
         </div>
         <h2>Transactions</h2>
-        <div v-for="(tx,key,index) in transactions">
-          <trx :tx="tx"></trx>
+        <div v-if="exists.transactions">
+          <div v-for="(tx,key,index) in transactions">
+            <trx :tx="tx"></trx>
+          </div>
         </div>
+        <div v-else>
+          <div class="loader"></div>
+        </div>        
         <div class="center">
           <div v-for="(p,key,index) in pages" class="page"
             ><span v-if="p.link"
@@ -42,6 +47,9 @@
           ></div>
         </div>
       </div>  
+    </div>
+    <div v-else>
+      <div class="loader"></div>
     </div>
   </div>
 </template>
@@ -70,6 +78,7 @@ export default {
         json_metadata: false,
         witness_votes: false,
         voting_manabar: false,
+        transactions: false,
       },      
     }
   },
@@ -93,6 +102,8 @@ export default {
       var name = this.$route.params.account;
             
       console.log('Fetching data for '+name);
+      this.exists.account = false;
+      this.exists.transactions = false;
       var self = this;
       steem.api.getAccounts([name], function (err, result) {      
         if (err || !result || result.length == 0) {
@@ -193,6 +204,7 @@ export default {
             return;
           }        
           self.transactions = result.reverse();
+          self.exists.transactions = true;
         });
       });
     },
@@ -214,16 +226,6 @@ export default {
   display: block;
   height: 10rem;
   background-color: black;
-}
-
-.info1{
-  display: block;
-  margin: 15px 50px;
-}
-
-.info2{
-  display: block;
-  margin: 15px 50px;
 }
 
 .image{
@@ -253,19 +255,4 @@ export default {
   margin: 10px 4px;
 }
 
-@media only screen and (min-width: 768px) {
-  .info1{
-    display: inline-block;
-    width: 18rem;
-    vertical-align: top;
-    margin: 15px 10px 15px 50px;    
-  }
-
-  .info2{
-    display: inline-block;
-    width: calc(100% - 18rem - 120px);
-    vertical-align: top;
-    margin: 15px 50px 15px 10px;
-  }
-}
 </style>

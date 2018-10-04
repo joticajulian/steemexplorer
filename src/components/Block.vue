@@ -13,6 +13,9 @@
         </div>
       </div>
     </div>
+    <div v-else>
+      <div class="loader"></div>
+    </div>        
   </div>
 </template>
 
@@ -86,29 +89,4 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 
-.info1{
-  display: block;
-  margin: 15px 50px;
-}
-
-.info2{
-  display: block;
-  margin: 15px 50px;
-}
-
-@media only screen and (min-width: 768px) {
-  .info1{
-    display: inline-block;
-    width: 18rem;
-    vertical-align: top;
-    margin: 15px 10px 15px 50px;    
-  }
-
-  .info2{
-    display: inline-block;
-    width: calc(100% - 18rem - 120px);
-    vertical-align: top;
-    margin: 15px 50px 15px 10px;
-  }
-}
 </style>

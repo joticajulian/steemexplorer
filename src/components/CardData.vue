@@ -68,11 +68,11 @@ export default {
 .title{
   display: block;
   width: 100%;
-  background-color: #256ca5;
+  background-color: #72b4e8;
   font-weight: bold;
   color: white;
   border: solid 1px #8a8a8a;
-  padding: 13px 10px;
+  padding: 8px 10px;
 }
 
 .line{
@@ -93,7 +93,7 @@ export default {
   display: inline-block;
   color: #a0a0a0;
   vertical-align: top;
-  padding: 10px 10px;
+  padding: 8px 10px;
   
   overflow-wrap: break-word;
   word-wrap: break-word;
@@ -109,7 +109,7 @@ export default {
 .value{
   display: inline-block;
   background-color: white;
-  padding: 10px 10px;
+  padding: 8px 10px;
   
   overflow-wrap: break-word;
   word-wrap: break-word;

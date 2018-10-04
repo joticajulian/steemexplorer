@@ -7,6 +7,9 @@
       <h2>Raw</h2>
       <card-data :data="tx"></card-data>
     </div>
+    <div v-else>
+      <div class="loader"></div>
+    </div>
   </div>
 </template>
 

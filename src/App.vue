@@ -40,6 +40,20 @@ body{
   text-align: center;
 }
 
+.right{
+  text-align: right;
+}
+
+.info1{
+  display: block;
+  margin: 15px 50px;
+}
+
+.info2{
+  display: block;
+  margin: 15px 50px;
+}
+
 .break-word{
   overflow-wrap: break-word;
   word-wrap: break-word;
@@ -50,6 +64,45 @@ body{
   -moz-hyphens: auto;
   -webkit-hyphens: auto;
   hyphens: auto;
+}
+
+.loader {
+  margin: 20px auto;
+  border: 3px solid #f3f3f3;  
+  border-radius: 50%;
+  border-top: 3px solid #72b4e8;
+  border-right: 3px solid #72b4e8;
+  width: 2rem;
+  height: 2rem;
+  -webkit-animation: spin 0.7s linear infinite; /* Safari */
+  animation: spin 0.7s linear infinite;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media only screen and (min-width: 768px) {
+  .info1{
+    display: inline-block;
+    width: 18rem;
+    vertical-align: top;
+    margin: 15px 10px 15px 50px;    
+  }
+
+  .info2{
+    display: inline-block;
+    width: calc(100% - 18rem - 120px);
+    vertical-align: top;
+    margin: 15px 50px 15px 10px;
+  }
 }
 
 </style>

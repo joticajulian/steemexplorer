@@ -185,7 +185,7 @@ export default {
 
 .operation{
   display: block;
-  padding: 12px 5px;
+  padding: 8px 10px;
 }
 
 .operation a{

@@ -1,31 +1,59 @@
 <template>
   <div class="post">
     <div v-if="this.exists">
-      <div class="header">
-        <div class="payout">{{payout.total}}</div>
-        <div class="title">{{post.title}}</div>        
+      <div class="info1">
+        <h3 class="right">Payout: {{payout.total}}</h3>
+        <card-data :data="this.payout.card"></card-data>
+        <div v-if="post.depth==0">
+          <h2>Post Info</h2>
+        </div>
+        <div v-else>
+          <h2>Comment Info</h2>
+        </div>
+        <card-data :data="this.postGenerals"></card-data>  
+      </div
+      ><div class="info2">
+        <h2><a :href="'#/@'+post.author">@{{post.author}}</a> ({{this.getReputation(post.author_reputation)}})</h2>
+        <div v-if="post.depth==0">
+          <h1>{{post.title}}</h1>
+        </div>
+        <div v-else>
+          <h1>Comment</h1>
+          <div v-if="post.depth > 1">
+            <a :href="'#/@'+post.parent_author+'/'+post.parent_permlink">Parent Comment</a>
+          </div>
+          <a :href="'#/@'+post.root_author+'/'+post.root_permlink">Root Post</a>
+        </div>
+        <div class="body break-word">{{post.body}}</div>
+        <h2>JSON metadata</h2>
+        <card-data :data="this.post.json_metadata"></card-data>
+        <h2>{{this.post.active_votes.length}} Votes</h2>
+        <votes :data="this.post.active_votes" :payout="payout"></votes>
+        <div v-if="this.post.beneficiaries.length > 0">
+          <h2>Beneficiaries</h2>
+          <beneficiaries :data="this.post.beneficiaries" :payout="payout"></beneficiaries>
+        </div>        
       </div>
-      <div class="body break-word">{{post.body}}</div>
-      <votes :data="this.post.active_votes" :payout="payout"></votes>
-      
-      <div class="raw">
-        <card-data :data="this.post" title="Post"></card-data>      
-      </div>
+    </div>  
+    <div v-else>
+      <div class="loader"></div>
     </div>
   </div>  
 </template>
 
 <script>
 import Config from '@/config.js'
+import Utils from '@/js/utils.js'
 import CardData from '@/components/CardData'
 import Votes from '@/components/Votes'
+import Beneficiaries from '@/components/Beneficiaries'
 
 export default {
   name: 'post',
   data () {
     return {
       post:{},
-      payout:{total:''},
+      payout:{total:'',card:{}},
       exists: false,      
     }
   },
@@ -33,6 +61,7 @@ export default {
   components: {
     CardData,
     Votes,
+    Beneficiaries,
   },
   
   created() {
@@ -44,6 +73,8 @@ export default {
   },
 
   methods: {
+    getReputation: Utils.getReputation,
+    
     fetchData() {
       var author = this.$route.params.account;
       var permlink = this.$route.params.permlink;
@@ -55,10 +86,18 @@ export default {
           //Update UI
           return;
         }
-        self.exists = true;
         result.json_metadata = JSON.parse(result.json_metadata);
         self.post = result;
         
+        var no_keys = ['body','json_metadata','beneficiaries','active_votes','replies','body_length','reblogged_by'];
+        
+        var pst = {};
+        for(var key in self.post){
+          if(no_keys.indexOf(key) >= 0) continue;
+          pst[key] = self.post[key];
+        }        
+        self.postGenerals = pst;
+                
         self.payout.old_post = (new Date()) - (new Date(result.cashout_time+'Z')) > 0;
         if(self.payout.old_post){
           self.payout.total = (parseFloat(result.total_payout_value) + parseFloat(result.curator_payout_value)).toFixed(3) +' '+ Config.SBD;
@@ -67,14 +106,45 @@ export default {
         }else{
           self.payout.total = result.pending_payout_value;
           self.payout.total_vote_weight = result.total_vote_weight;
-        }        
+        }
+        self.payoutCard();
+        self.exists = true;
+                
       });      
     },
+    
+    payoutCard: function(){
+      var total_payout_sbd = parseFloat(this.payout.total);
+      var total_payout_author_sbd = 0;
+      var total_payout_curator_sbd = 0;
+      
+      if(this.payout.old_post){
+       total_payout_author_sbd = parseFloat(this.payout.author);
+       total_payout_curator_sbd = parseFloat(this.payout.curator);
+      }else{
+       total_payout_author_sbd = 0.75 * total_payout_sbd;
+       total_payout_curator_sbd = 0.25 * total_payout_sbd;
+      }
+      
+      var total_weight_beneficiaries = this.post.beneficiaries.reduce(function(t,b){return t+parseInt(b.weight)},0);
+      var total_payout_beneficiaries_sbd = total_payout_author_sbd * total_weight_beneficiaries / 10000;
+      total_payout_author_sbd -= total_payout_beneficiaries_sbd;
+      
+      this.payout.card = {
+        Author: total_payout_author_sbd.toFixed(3) + ' ' + Config.SBD +
+               ' ('+(100*total_payout_author_sbd/total_payout_sbd).toFixed(2)+'%)',
+        Curators: total_payout_curator_sbd.toFixed(3) + ' ' + Config.SBD +
+               ' ('+(100*total_payout_curator_sbd/total_payout_sbd).toFixed(2)+'%)',
+        Beneficiaries: total_payout_beneficiaries_sbd.toFixed(3) + ' ' + Config.SBD +
+               ' ('+(100*total_payout_beneficiaries_sbd/total_payout_sbd).toFixed(2)+'%)',
+      };
+    }
   }
 }
 </script>
 
 <style scoped>
+
 .header{
   width: 100%;
   display: block;
