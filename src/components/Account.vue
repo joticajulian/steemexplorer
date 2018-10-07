@@ -12,9 +12,21 @@
         </div>
         <h2>Account info</h2>
         <card-data :data="this.accountGenerals"></card-data>
-        <h2>Witness votes</h2>
+        <div v-if="this.exists.witness">
+          <h2>Witness info</h2>
+          <card-data :data="this.witnessGenerals"></card-data>
+          <h3>Witness props</h3>
+          <card-data :data="this.witness.props"></card-data>
+          <h3>SBD exchange rate</h3>
+          <card-data :data="this.witness.sbd_exchange_rate"></card-data>          
+        </div>
+        <h2>{{this.account.name}} votes for</h2>
         <card-data :data="this.account.witness_votes" typeCard="witnesses" :link="true"></card-data>
         <h2>Authorities</h2>
+        <div v-if="this.exists.witness">
+          <h3>Signing Auth</h3>
+          <card-data :data="this.authorities.signing"></card-data>
+        </div>
         <h3>Owner Auth</h3>
         <card-data :data="this.authorities.owner" :link="true"></card-data>
         <h3>Active Auth</h3>
@@ -65,7 +77,11 @@ export default {
     return {
       account: {
       },
+      witness: {
+      },
       accountGenerals: {      
+      },
+      witnessGenerals: {
       },
       authorities:{
       },
@@ -75,6 +91,7 @@ export default {
       pages: [],
       exists: {
         account: false,
+        witness: false,
         json_metadata: false,
         witness_votes: false,
         voting_manabar: false,
@@ -104,6 +121,7 @@ export default {
       console.log('Fetching data for '+name);
       this.exists.account = false;
       this.exists.transactions = false;
+      this.exists.witness = false;
       var self = this;
       steem.api.getAccounts([name], function (err, result) {      
         if (err || !result || result.length == 0) {
@@ -143,7 +161,7 @@ export default {
         self.authorities.owner   = self.arrayAuthorities(self.account.owner);
         self.authorities.active  = self.arrayAuthorities(self.account.active);
         self.authorities.posting = self.arrayAuthorities(self.account.posting);
-        self.authorities.memo    = [self.account.memo_key];                
+        self.authorities.memo    = [self.account.memo_key];
       });
       
       steem.api.getAccountHistory(name,-1,0, function(err, result) {
@@ -206,6 +224,26 @@ export default {
           self.transactions = result.reverse();
           self.exists.transactions = true;
         });
+      });
+      
+      steem.api.getWitnessByAccount(name, function(err, result){
+        if (err || !result) {
+          //not a witness
+          return;
+        }
+        self.witness = result;
+        
+        var no_keys = ['signing_key','props','sbd_exchange_rate'];
+        
+        var wit = {};
+        for(var key in self.witness){
+          if(no_keys.indexOf(key) >= 0) continue;
+          wit[key] = self.witness[key];
+        }
+        
+        self.witnessGenerals = wit;
+        self.authorities.signing  = [self.witness.signing_key];
+        self.exists.witness = true;
       });
     },
     
