@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Config from '@/config.js'
-import HelloWorld from '@/components/HelloWorld'
+import Home from '@/components/Home'
 import Account from '@/components/Account'
 import Post from '@/components/Post'
 import Block from '@/components/Block'
@@ -14,8 +14,8 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'HelloWorld',
-      component: HelloWorld
+      name: 'Home',
+      component: Home
     },
     {
       path: '/@:account',

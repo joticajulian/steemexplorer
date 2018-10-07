@@ -11,7 +11,7 @@ export default {
         recent_claims: 1,
         sbd_per_rshare: 0,
         steem_per_rshare: 0,
-      }  
+      } 
     }
   },
   
