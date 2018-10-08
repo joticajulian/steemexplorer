@@ -1,9 +1,11 @@
 <template>
   <div class="account">
     <div v-if="this.exists.account">
-      <div class="profile">
-        <div class="image" :style="'background-image: url('+this.account.profile_image+');'"></div>
-        <div class="name"><h1><strong>@{{this.account.name}}</strong> ({{account.rep_log}})</h1></div>
+      <div class="profile" :style="this.account.cover_image==''?'background-color: black;':'background-image: url('+this.account.cover_image+');'">
+        <div>
+          <div class="image" :style="'background-image: url('+this.account.profile_image+');'"></div>
+          <div class="name"><h1><strong>@{{this.account.name}}</strong> ({{account.rep_log}})</h1></div>
+        </div>
       </div>
       <div class="info1">
         <div v-if="this.exists.voting_manabar">
@@ -143,13 +145,14 @@ export default {
         
         result[0].rep_log = Utils.getReputation(result[0].reputation);
         result[0].profile_image = Utils.extractUrlProfileImage(result[0].json_metadata);
+        result[0].cover_image = Utils.extractUrlCoverImage(result[0].json_metadata);
         for(var i=0;i<result[0].witness_votes.length;i++){
           result[0].witness_votes[i] = {link:'#/@'+result[0].witness_votes[i] , text:result[0].witness_votes[i]};
         }
         
         self.account = result[0];
         
-        var no_keys = ['owner','active','posting','memo_key','json_metadata','voting_manabar','proxied_vsf_votes','transfer_history','market_history','post_history','vote_history','other_history','witness_votes','tags_usage','guest_bloggers','rep_log','profile_image'];
+        var no_keys = ['owner','active','posting','memo_key','json_metadata','voting_manabar','proxied_vsf_votes','transfer_history','market_history','post_history','vote_history','other_history','witness_votes','tags_usage','guest_bloggers','rep_log','profile_image','cover_image'];
         
         var acc = {};
         for(var key in self.account){
@@ -262,8 +265,17 @@ export default {
 .profile{  
   text-align: center;
   display: block;
-  height: 10rem;
-  background-color: black;
+  height: 8rem;  
+  overflow: hidden;
+  background-size: cover;
+  background-position: center center;
+
+  color: white;
+  text-shadow: 2px 2px 5px #000000;  
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .image{
@@ -280,12 +292,8 @@ export default {
 }
 
 .name{
-  display: inline-block;  
-}
-
-.reputation{
-  font-size: 1.5rem;
   display: inline-block;
+  vertical-align: middle;
 }
 
 .page{
