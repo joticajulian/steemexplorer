@@ -1,32 +1,39 @@
 <template>
   <div class="home">      
     <div v-if="this.exists">
-      <h1>Steem Explorer</h1>
+      <div class="info0">
+        <h1>Steem Explorer</h1>
+      </div>
       <div class="info1">
         <h2>Global props</h2>
         <card-data :data="this.chainprops"></card-data>
       </div
       ><div class="info2">
         <h2>Last Blocks</h2>
-        <transition-group name="list-blocks" tag="div" class="block-group">
-          <div v-for="(b,key,index) in lastBlocks" :key="b.block_num" class="list-blocks-item">
-            <div class="block-left">
-              <a :href="'#/b/'+b.block_num">{{b.block_num}}</a>
-              <span v-if="b.loaded">
-                - {{b.size_txs}} transactions
-                <span v-if="b.size_posts>0">
-                  ({{b.size_posts}} posts)
+        <div v-if="lastBlocks.length > 0">
+          <transition-group name="list-blocks" tag="div" class="block-group">
+            <div v-for="(b,key,index) in lastBlocks" :key="b.block_num" class="list-blocks-item">
+              <div class="block-left">
+                <a :href="'#/b/'+b.block_num">{{b.block_num}}</a>
+                <span v-if="b.loaded">
+                  - {{b.size_txs}} transactions
+                  <span v-if="b.size_posts>0">
+                    ({{b.size_posts}} posts)
+                  </span>
                 </span>
-              </span>
-              <span v-else>
-                loading...
-              </span>
-            </div
-            ><div class="block-right">
-              <span class="small">witness</span><br><a :href="'#/@'+b.witness">{{b.witness}}</a>
+                <span v-else>
+                  loading...
+                </span>
+              </div
+              ><div class="block-right">
+                <span class="small">witness</span><br><a :href="'#/@'+b.witness">{{b.witness}}</a>
+              </div>
             </div>
-          </div>
-        </transition-group>
+          </transition-group>
+        </div>
+        <div v-else>
+          <div class="loader"></div>
+        </div>
       </div>      
     </div>
     <div v-else>

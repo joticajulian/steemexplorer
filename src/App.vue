@@ -44,6 +44,11 @@ body{
   text-align: right;
 }
 
+.info0{
+  display: block;
+  margin: 15px 50px;
+}
+
 .info1{
   display: block;
   margin: 15px 50px;

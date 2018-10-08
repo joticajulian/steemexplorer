@@ -1,7 +1,9 @@
 <template>
   <div class="block">
     <div v-if="this.exists">
-      <h1>Block {{$route.params.id}}</h1>
+      <div class="info0">
+        <h1>Block {{$route.params.id}}</h1>
+      </div>
       <div class="info1">
         <h2>Block info</h2>
         <card-data :data="this.blockGenerals"></card-data>
