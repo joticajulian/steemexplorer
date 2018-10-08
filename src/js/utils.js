@@ -1,3 +1,5 @@
+import Config from '@/config.js'
+
 export default{
   getReputation: function (reputation){
     var rep = parseInt(reputation);
@@ -48,6 +50,15 @@ export default{
     return '';
   },
   
+  getVotingPower: function(account){
+     var voting_power = account.voting_power;
+     var last_vote_time = new Date((account.last_vote_time) + 'Z');
+     var elapsed_seconds = (new Date() - last_vote_time) / 1000;
+     var regenerated_power = Math.round((Config.STEEM_100_PERCENT * elapsed_seconds) / Config.STEEM_VOTE_REGENERATION_SECONDS);
+     var current_power = Math.min(voting_power + regenerated_power, Config.STEEM_100_PERCENT);
+     return current_power;
+  },
+ 
   extractUrlCoverImage: function(metadata){
     if(typeof metadata.profile !== 'undefined' && typeof metadata.profile.cover_image !== 'undefined' ){
       var url = metadata.profile.cover_image;
@@ -58,8 +69,6 @@ export default{
     }
     return '';
   },
-  
-  
   
   getQuery: function(p) {
     var path = p.split('?');

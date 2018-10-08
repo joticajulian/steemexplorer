@@ -8,12 +8,14 @@
         </div>
       </div>
       <div class="info1">
+        <h2>Generals</h2>
+        <card-data :data="this.accountGenerals"></card-data>
         <div v-if="this.exists.voting_manabar">
           <h2>Voting manabar</h2>
           <card-data :data="this.account.voting_manabar"></card-data>
         </div>
         <h2>Account info</h2>
-        <card-data :data="this.accountGenerals"></card-data>
+        <card-data :data="this.accountGenerals2"></card-data>
         <div v-if="this.exists.witness">
           <h2>Witness info</h2>
           <card-data :data="this.witnessGenerals"></card-data>
@@ -82,6 +84,8 @@ export default {
       witness: {
       },
       accountGenerals: {      
+      },
+      accountGenerals2: {      
       },
       witnessGenerals: {
       },
@@ -152,7 +156,8 @@ export default {
         
         self.account = result[0];
         
-        var no_keys = ['owner','active','posting','memo_key','json_metadata','voting_manabar','proxied_vsf_votes','transfer_history','market_history','post_history','vote_history','other_history','witness_votes','tags_usage','guest_bloggers','rep_log','profile_image','cover_image'];
+        var no_keys = ['owner','active','posting','memo_key','json_metadata','voting_manabar','proxied_vsf_votes','transfer_history','market_history','post_history','vote_history','other_history','witness_votes','tags_usage','guest_bloggers','rep_log','profile_image','cover_image',
+        'balance','sbd_balance','savings_balance'];
         
         var acc = {};
         for(var key in self.account){
@@ -160,11 +165,20 @@ export default {
           acc[key] = self.account[key];
         }
         
-        self.accountGenerals = acc;
+        self.accountGenerals2 = acc;
         self.authorities.owner   = self.arrayAuthorities(self.account.owner);
         self.authorities.active  = self.arrayAuthorities(self.account.active);
         self.authorities.posting = self.arrayAuthorities(self.account.posting);
         self.authorities.memo    = [self.account.memo_key];
+        
+        var delegated = parseFloat(self.account.received_vesting_shares) - parseFloat(self.account.delegated_vesting_shares);
+        self.accountGenerals = {
+          voting_power: Utils.getVotingPower(self.account)/100 + '%',
+          balance: self.account.balance,
+          sbd_balance: self.account.sbd_balance,
+          savings_balance: self.account.savings_balance,
+          steem_power: self.vests2sp(self.account.vesting_shares) + ' (' + (delegated>0?'+':'') + self.vests2sp(delegated) + ')',
+        }
       });
       
       steem.api.getAccountHistory(name,-1,0, function(err, result) {
