@@ -63,9 +63,9 @@ export default {
           v.curation = (total_payout_curator_sbd * v.weight / total_weight).toFixed(3) +' '+ Config.SBD;
         }else{
           if(this.chain.feed_price >= 0){
-            v.curation = (0.25 * total_payout_sbd * v.weight / total_weight / this.chain.feed_price).toFixed(3) +' '+ Config.SP;
+            v.curation = (total_payout_curator_sbd * v.weight / total_weight / this.chain.feed_price).toFixed(3) +' '+ Config.SP;
           }else{
-            v.curation = (0.25 * total_payout_sbd * v.weight / total_weight).toFixed(3) +' '+ Config.SBD;
+            v.curation = (total_payout_curator_sbd * v.weight / total_weight).toFixed(3) +' '+ Config.SBD;
           }
         }
         v.time_text = Utils.getTimestamp(v.time);

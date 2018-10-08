@@ -3,6 +3,7 @@ const STEEM = 'STEEM'
 const SP = 'SP'
 const VESTS = 'VESTS'
 const RPC_NODE = { url: 'https://api.steemit.com' }
+const HARDFORK = 20
 
 const STEEM_100_PERCENT = 10000
 const STEEM_VOTE_REGENERATION_SECONDS = 432000 //5 DAYS

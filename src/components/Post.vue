@@ -117,13 +117,22 @@ export default {
       var total_payout_sbd = parseFloat(this.payout.total);
       var total_payout_author_sbd = 0;
       var total_payout_curator_sbd = 0;
+      var total_payout_reward_pool_sbd = 0;
+      var forward_curation_remainder = Config.HARDFORK <= 19;
       
       if(this.payout.old_post){
-       total_payout_author_sbd = parseFloat(this.payout.author);
-       total_payout_curator_sbd = parseFloat(this.payout.curator);
+        total_payout_author_sbd = parseFloat(this.payout.author);
+        total_payout_curator_sbd = parseFloat(this.payout.curator);
       }else{
-       total_payout_author_sbd = 0.75 * total_payout_sbd;
-       total_payout_curator_sbd = 0.25 * total_payout_sbd;
+        total_payout_author_sbd = 0.75 * total_payout_sbd ;
+        total_payout_curator_sbd = 0.25 * total_payout_sbd;
+        var curation_remainder = total_payout_curator_sbd * (this.post.total_vote_weight - this.post.active_votes.reduce(function(t,v){return t+v.weight}, 0) ) / this.post.total_vote_weight;
+        total_payout_curator_sbd -= curation_remainder;
+        if( forward_curation_remainder ){
+          total_payout_author_sbd += curation_remainder;
+        }else{
+          total_payout_reward_pool_sbd = curation_remainder;
+        }
       }
       
       var total_weight_beneficiaries = this.post.beneficiaries.reduce(function(t,b){return t+parseInt(b.weight)},0);
@@ -138,6 +147,11 @@ export default {
         Beneficiaries: total_payout_beneficiaries_sbd.toFixed(3) + ' ' + Config.SBD +
                ' ('+(100*total_payout_beneficiaries_sbd/total_payout_sbd).toFixed(2)+'%)',
       };
+      
+      if(total_payout_reward_pool_sbd > 0){
+        this.payout.card.Reward_Pool = total_payout_reward_pool_sbd.toFixed(3) + ' ' + Config.SBD +
+               ' ('+(100*total_payout_reward_pool_sbd/total_payout_sbd).toFixed(2)+'%)';
+      }
     }
   }
 }
