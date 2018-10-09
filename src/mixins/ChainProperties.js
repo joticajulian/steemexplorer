@@ -11,11 +11,19 @@ export default {
         recent_claims: 1,
         sbd_per_rshare: 0,
         steem_per_rshare: 0,
-      } 
+      },
+      
+      STEEM_SYMBOL: Config.STEEM,
+      SBD_SYMBOL: Config.SBD,
+      VESTS_SYMBOL: Config.VESTS,
+      SP_SYMBOL: Config.SP,
+      
+      STEEM_SBD_START_PERCENT: Config.STEEM_SBD_START_PERCENT,
+      STEEM_SBD_STOP_PERCENT: Config.STEEM_SBD_STOP_PERCENT,
     }
   },
   
-  created() {
+  created() {    
     this.getChainProperties()
   },
   

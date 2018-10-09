@@ -163,10 +163,17 @@ export default {
 <style scoped>
 .trx{
   border: solid 1px #dcdcdc;
+  /*border-left-width: 4px;  */
   border-radius: 5px;
   margin: 10px auto;
   display: block;
   background-color: white;
+}
+
+.trx:hover{
+  /*border-left-color: #72b4e8;*/
+  /*background-color: #f9f9ff;*/
+  box-shadow: 0px 0px 2px #72b4e8; 
 }
 
 .tx-link{

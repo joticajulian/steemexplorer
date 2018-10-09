@@ -7,8 +7,8 @@ import Post from '@/components/Post'
 import Block from '@/components/Block'
 import Transaction from '@/components/Transaction'
 
-Vue.use(Router)
 steem.api.setOptions(Config.RPC_NODE);
+Vue.use(Router)
 
 export default new Router({
   routes: [

@@ -118,7 +118,7 @@ export default {
       var total_payout_author_sbd = 0;
       var total_payout_curator_sbd = 0;
       var total_payout_reward_pool_sbd = 0;
-      var forward_curation_remainder = Config.HARDFORK <= 19;
+      var forward_curation_remainder = this.HARDFORK <= 19;
       
       if(this.payout.old_post){
         total_payout_author_sbd = parseFloat(this.payout.author);
