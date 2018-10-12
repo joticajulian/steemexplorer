@@ -23,12 +23,7 @@
           >Shares: {{this.chainprops.total_vesting_shares}}<br
           ><hr
           >{{this.chainprops.steem_per_mvests.toFixed(3)}} {{this.STEEM_SYMBOL}} per m{{this.VESTS_SYMBOL}}          
-        </div>
-      </div>
-      <div v-else>
-        <div class="loader"></div>
-      </div>
-      <div v-if="this.exists.globals && this.exists.price">
+        </div>      
         <div class="card"> 
           <div class="title">{{this.SBD_SYMBOL}}</div><br
           >{{this.chainprops.current_sbd_supply}}<br
@@ -45,7 +40,7 @@
       <div v-else>
         <div class="loader"></div>
       </div>      
-      <div v-if="this.exists.globals && this.exists.price && this.exists.reward">  
+      <div v-if="this.exists.globals && this.exists.reward">  
         <div class="card">
           <div class="title">Reward fund</div><br
           >{{this.chainprops.reward_balance}}<br
@@ -61,27 +56,37 @@
       </div>      
     </div
     ><div class="info2">
-      <h2>Last Blocks</h2>
       <div v-if="lastBlocks.length > 0">
-        <transition-group name="list-blocks" tag="div" class="block-group">
-          <div v-for="(b,key,index) in lastBlocks" :key="b.block_num" class="list-blocks-item">
-            <div class="block-left">
-              <a :href="'#/b/'+b.block_num">{{b.block_num}}</a>
-              <span v-if="b.loaded">
-                - {{b.size_txs}} transactions
-                <span v-if="b.size_posts>0">
-                  ({{b.size_posts}} posts)
+        <div class="last-blocks">
+          <h2>Last Blocks</h2>      
+          <transition-group name="list-blocks" tag="div" class="block-group">
+            <div v-for="(b,key,index) in lastBlocks" :key="b.block_num" class="list-blocks-item">
+              <div class="block-left">
+                <a :href="'#/b/'+b.block_num">{{b.block_num}}</a>
+                <span v-if="b.loaded">
+                  - {{b.size_txs}} transactions
+                  <span v-if="b.size_posts>0">
+                    ({{b.size_posts}} posts)
+                  </span>
                 </span>
-              </span>
-              <span v-else>
-                loading...
-              </span>
-            </div
-            ><div class="block-right">
-              <span class="small">witness</span><br><a :href="'#/@'+b.witness">{{b.witness}}</a>
+                <span v-else>
+                  loading...
+                </span>
+              </div
+              ><div class="block-right">
+                <span class="small">witness</span><br><a :href="'#/@'+b.witness">{{b.witness}}</a>
+              </div>
             </div>
-          </div>
-        </transition-group>
+          </transition-group>
+        </div
+        ><div class="schedule">
+          <h2>Schedule</h2>
+          <transition-group name="list-schedule" tag="div">
+            <div v-for="(wit,key,index) in schedule" :key="wit" class="list-schedule-item">
+              {{wit}}
+            </div>
+          </transition-group>
+        </div>
       </div>
       <div v-else>
         <div class="loader"></div>
@@ -116,9 +121,10 @@ export default {
       ],
       lastBlocks:[
       ],
+      schedule:[
+      ],
       exists: {
         globals: false,
-        price: false,
         reward: false,
       },
       ints: {},
@@ -162,31 +168,6 @@ export default {
   
     getDynamicGlobalProperties() {
       var self = this;
-      steem.api.getDynamicGlobalProperties(function(err, result){
-        if (err || !result) {
-          console.log(err, result);
-          return;
-        }
-        
-        var keys = ['current_supply', 'current_sbd_supply', 'virtual_supply', 'total_vesting_fund_steem', 'total_vesting_shares', 'pending_rewarded_vesting_shares', 'pending_rewarded_vesting_steem', 'sbd_interest_rate', 'sbd_print_rate', 'maximum_block_size'];
-        
-        for(var key in result){
-          if(keys.indexOf(key) < 0) continue;
-          self.chainprops[key] = result[key];
-        }
-        self.chainprops.steem_per_mvests = parseFloat(self.chainprops.total_vesting_fund_steem)*1000000/parseFloat(self.chainprops.total_vesting_shares);
-        
-        var current_inflation_rate = Utils.getInflationRate(result.head_block_number)
-        self.chainprops.current_inflation_rate = current_inflation_rate/100 + '%'
-        self.chainprops.new_steem_per_day = (Config.STEEM_BLOCKS_PER_DAY * parseFloat(self.chainprops.virtual_supply) * (current_inflation_rate / 10000) / Config.STEEM_BLOCKS_PER_YEAR ).toFixed(3) + ' ' + Config.STEEM;
-        self.chainprops.sp_percent = parseFloat(self.chainprops.total_vesting_fund_steem) * 100 / parseFloat(self.chainprops.virtual_supply);    
-         
-        self.exists.globals = true;
-        
-        if(self.first_time) self.last_block_num = result.head_block_number;
-        self.first_time = false;        
-      });
-      
       steem.api.getRewardFund('post', function (err, result) {      
         if (err || !result) {
           console.log(err, result);
@@ -200,13 +181,50 @@ export default {
         self.exists.reward = true;
       });
       
-      steem.api.getCurrentMedianHistoryPrice(function(err, result){
+      steem.api.getState('',function(err,result){
         if (err || !result) {
           console.log(err, result);
           return;
         }
-        self.chainprops.feed_price = parseFloat(result.base)/parseFloat(result.quote);
-        self.exists.price = true;
+        
+        //DYNAMIC GLOBAL PROPERTIES
+        var keys = ['current_supply', 'current_sbd_supply', 'virtual_supply', 'total_vesting_fund_steem', 'total_vesting_shares', 'pending_rewarded_vesting_shares', 'pending_rewarded_vesting_steem', 'sbd_interest_rate', 'sbd_print_rate', 'maximum_block_size'];
+        
+        for(var key in result.props){
+          if(keys.indexOf(key) < 0) continue;
+          self.chainprops[key] = result.props[key];
+        }
+        self.chainprops.steem_per_mvests = parseFloat(self.chainprops.total_vesting_fund_steem)*1000000/parseFloat(self.chainprops.total_vesting_shares);
+        
+        var current_inflation_rate = Utils.getInflationRate(result.props.head_block_number)
+        self.chainprops.current_inflation_rate = current_inflation_rate/100 + '%'
+        self.chainprops.new_steem_per_day = (Config.STEEM_BLOCKS_PER_DAY * parseFloat(self.chainprops.virtual_supply) * (current_inflation_rate / 10000) / Config.STEEM_BLOCKS_PER_YEAR ).toFixed(3) + ' ' + Config.STEEM;
+        self.chainprops.sp_percent = parseFloat(self.chainprops.total_vesting_fund_steem) * 100 / parseFloat(self.chainprops.virtual_supply);    
+        self.chainprops.feed_price = parseFloat(result.feed_price.base)/parseFloat(result.feed_price.quote);
+         
+        self.exists.globals = true;
+        
+        if(self.first_time) self.last_block_num = result.props.head_block_number;
+        self.first_time = false; 
+        
+        
+        // SCHEDULE
+        if(self.schedule.length == 0){
+          self.schedule = result.witness_schedule.current_shuffled_witnesses;
+          return;
+        }
+        var current_witness = '';
+        if(self.lastBlocks.length > 0) current_witness = self.lastBlocks[0].witness;
+        var round = result.witness_schedule.current_shuffled_witnesses;
+        var id = round.indexOf(current_witness);
+        if(id == -1) return;
+        for(var i=id+1;i<round.length;i++){
+          self.$set(self.schedule, i-id-1, round[i]);
+        }
+        for(var i=0;i<id;i++){
+          self.$set(self.schedule, round.length-id-1+i, round[i]);
+        }
+        self.$set(self.schedule, round.length-1, round[id]);
       });
     },
   
@@ -258,13 +276,13 @@ export default {
           b.timestamp_milis = (new Date(resultBlock.timestamp+'Z')).getTime();
           b.witness = resultBlock.witness;
           b.loaded = true;
-          var pos = self.lastBlocks.find(function(blk){return blk.block_num == num});
+          var pos = self.lastBlocks.findIndex(function(blk){return blk.block_num == num});
           if(pos >= 0){
             self.$set(self.lastBlocks, pos, b);
+            if(pos == 0 && b.witness == self.schedule[0]) self.schedule.shift()
           }
         });  
-      });
-       
+      });       
     },
   }
 }
@@ -272,6 +290,19 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
+.last-blocks{
+  width: calc(100% - 8rem - 10px);
+  display: inline-block;
+  vertical-align: top;
+}
+
+.schedule{
+  width: 8rem;
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 10px;
+}
 
 .block-left{
   display: inline-block;
@@ -324,6 +355,29 @@ export default {
 
 .list-blocks-enter, .list-blocks-leave-to{
   opacity: 0;  
+}
+
+.list-schedule-item {
+  transition: all 1s;
+  border: solid 1px #dcdcdc;
+  border-radius: 5px;
+  margin: 3px auto;
+  padding: 3px 5px;
+  display: block;
+  background-color: white;
+}
+
+.list-schedule-enter{
+  opacity: 0;
+}
+
+.list-schedule-leave-to{
+  opacity: 0;  
+  transform: translateX(-8rem);
+}
+
+.list-schedule-leave-active {
+  position: absolute;
 }
 
 .green{
