@@ -68,6 +68,10 @@ export default {
           if(!result.transactions[i].transaction_id){
             result.transactions[i].transaction_id = result.transaction_ids[i];            
           }
+          
+          if(!result.transactions[i].block_num){
+            result.transactions[i].block_num = blocknum;
+          }
         }
         
         self.block = result;
