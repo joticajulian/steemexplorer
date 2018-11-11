@@ -1,0 +1,378 @@
+[{
+    "owner": "blockbrothers",
+    "url": "seed1.blockbrothers.io:2001",
+    "country": "Germany",
+    "city": "Regensburg",
+    "latlong": [48.99976321609233, 12.118796082110006],
+    "latlong_original": [48.9965, 12.1202],
+    "ip": "2a01:4f8:a0:52ea::2"
+  }, {
+    "owner": "liondani",
+    "url": "seed.liondani.com:2016",
+    "country": "United Kingdom",
+    "city": "Maidstone",
+    "latlong": [51.25694911712027, 0.528544597834323],
+    "latlong_original": [51.2539, 0.5327],
+    "ip": "185.183.182.147"
+  }, {
+    "owner": "riverhead",
+    "url": "seed.riversteem.com:2001",
+    "country": "France",
+    "city": null,
+    "latlong": [48.859391446419195, 2.342585223576531],
+    "latlong_original": [48.8582, 2.3387000000000002],
+    "ip": "195.154.82.127"
+  }, {
+    "owner": "smooth",
+    "url": "52.74.152.79:2001",
+    "country": "Singapore",
+    "city": "Singapore",
+    "latlong": [1.2953977285563965, 103.85984237553383],
+    "latlong_original": [1.2931, 103.8558],
+    "ip": "52.74.152.79"
+  }, {
+    "owner": "rossco99",
+    "url": "seed.rossco99.com:2001",
+    "country": "United States",
+    "city": "Kansas City",
+    "latlong": [39.10418853040939, -94.57048573303659],
+    "latlong_original": [39.1052, -94.5699],
+    "ip": "173.208.146.132"
+  }, {
+    "owner": "lafona",
+    "url": "lafonasteem.com:2001",
+    "country": "France",
+    "city": null,
+    "latlong": [48.85588779251996, 2.3382813567899587],
+    "latlong_original": [48.8582, 2.3387000000000002],
+    "ip": "163.172.190.33"
+  }, {
+    "owner": "anyx",
+    "url": "anyx.co:2001",
+    "country": "Canada",
+    "city": "Montreal",
+    "latlong": [45.50041593034943, -73.57577186875015],
+    "latlong_original": [45.504, -73.5747],
+    "ip": "66.70.181.184"
+  }, {
+    "owner": "ihashfury",
+    "url": "steem-seed.altcap.io:40696",
+    "country": "France",
+    "city": null,
+    "latlong": [48.86107064269296, 2.342241717511309],
+    "latlong_original": [48.8582, 2.3387000000000002],
+    "ip": "195.154.80.121"
+  }, {
+    "owner": "gtg",
+    "url": "gtg.steem.house:2001",
+    "country": "Poland",
+    "city": null,
+    "latlong": [52.24249942499784, 21.03539521155322],
+    "latlong_original": [52.2394, 21.0362],
+    "ip": "51.254.67.207"
+  }, {
+    "owner": "privex",
+    "url": "steemseed-fin.privex.io:2001",
+    "country": "Germany",
+    "city": null,
+    "latlong": [50.999095966558485, 8.995784354521271],
+    "latlong_original": [51, 9],
+    "ip": "2a01:4f9:2a:3d4::2"
+  }, {
+    "owner": "roelandp",
+    "url": "seed.roelandp.nl:2001",
+    "country": "Finland",
+    "city": null,
+    "latlong": [60.17018483949662, 24.941843021369657],
+    "latlong_original": [60.1708, 24.9375],
+    "ip": "95.216.14.144"
+  }, {
+    "owner": "timcliff",
+    "url": "seed.timcliff.com:2001",
+    "country": "Finland",
+    "city": null,
+    "latlong": [60.174759490581984, 24.939090656484666],
+    "latlong_original": [60.1708, 24.9375],
+    "ip": "95.216.24.247"
+  }, {
+    "owner": "ausbitbank",
+    "url": "seed.steemviz.com:2001",
+    "country": "Germany",
+    "city": null,
+    "latlong": [51.29970910256539, 9.490388697417837],
+    "latlong_original": [51.2993, 9.491],
+    "ip": "195.201.197.118"
+  }, {
+    "owner": "lukestokes",
+    "url": "steem-seed.lukestokes.info:2001",
+    "country": "Germany",
+    "city": null,
+    "latlong": [51.30405551861688, 9.490606775575813],
+    "latlong_original": [51.2993, 9.491],
+    "ip": "88.99.165.91"
+  }, {
+    "owner": "drakos",
+    "url": "seed.steemian.info:2001",
+    "country": "Germany",
+    "city": null,
+    "latlong": [51.30366700990509, 9.492460519560064],
+    "latlong_original": [51.2993, 9.491],
+    "ip": "195.201.147.168"
+  }, {
+    "owner": "followbtcnews",
+    "url": "seed.followbtcnews.com:2001",
+    "country": "Germany",
+    "city": null,
+    "latlong": [51.29699137747743, 9.492005449522091],
+    "latlong_original": [51.2993, 9.491],
+    "ip": "136.243.101.205"
+  }, {
+    "owner": "mahdiyari",
+    "url": "node.mahdiyari.info:2001",
+    "country": "Finland",
+    "city": null,
+    "latlong": [60.166205655578636, 24.938143068450994],
+    "latlong_original": [60.1708, 24.9375],
+    "ip": "95.216.40.109"
+  }, {
+    "owner": "jamzed",
+    "url": "seed.jamzed.pl:2001",
+    "country": "Germany",
+    "city": null,
+    "latlong": [51.29531109403844, 9.493719730397784],
+    "latlong_original": [51.2993, 9.491],
+    "ip": "89.163.146.180"
+  }, {
+    "owner": "lux-witness",
+    "url": "seed.steemit.lu:2001",
+    "country": "Netherlands",
+    "city": "Amsterdam",
+    "latlong": [52.35266537704278, 4.916354429514065],
+    "latlong_original": [52.3556, 4.9135],
+    "ip": "52.232.113.131"
+  }, {
+    "owner": "prc",
+    "url": "seed.steem.prcolaco.com:2001",
+    "country": "Portugal",
+    "city": "Massama",
+    "latlong": [38.74770674798781, -9.28366567285764],
+    "latlong_original": [38.75, -9.2833],
+    "ip": "94.62.9.133"
+  }, {
+    "owner": "cervantes",
+    "url": "seed1.cervantes.one:2001",
+    "country": "Finland",
+    "city": null,
+    "latlong": [60.16841630605844, 24.937892960629664],
+    "latlong_original": [60.1708, 24.9375],
+    "ip": "95.216.16.124"
+  }, {
+    "owner": "koinbot",
+    "url": "steemseed.koinbot.org:2001",
+    "country": "Republic of Korea",
+    "city": "Suwon",
+    "latlong": [37.28717765583169, 127.01441452422581],
+    "latlong_original": [37.2859, 127.0099],
+    "ip": "175.118.46.144"
+  }, {
+    "owner": "quochuy",
+    "url": "seed01.steemulant.com:2001",
+    "country": "France",
+    "city": null,
+    "latlong": [48.857566358646835, 2.3358537528493253],
+    "latlong_original": [48.8582, 2.3387000000000002],
+    "ip": "51.15.228.161"
+  }, {
+    "owner": "steem-bounty2",
+    "url": "136.243.80.197:2001",
+    "country": "Germany",
+    "city": null,
+    "latlong": [51.30403149622235, 9.495160808791821],
+    "latlong_original": [51.2993, 9.491],
+    "ip": "136.243.80.197"
+  }, {
+    "owner": "reggaemuffin",
+    "url": "seed.minnowshares.net:2001",
+    "country": "Germany",
+    "city": null,
+    "latlong": [51.29496220363453, 9.494299160065156],
+    "latlong_original": [51.2993, 9.491],
+    "ip": "94.130.207.227"
+  }, {
+    "owner": "pharesim",
+    "url": "steemd.pharesim.me:2001",
+    "country": "Germany",
+    "city": "Neustadt an der Donau",
+    "latlong": [48.809919893778016, 11.768098054183694],
+    "latlong_original": [48.8071, 11.7695],
+    "ip": "94.130.48.111"
+  }, {
+    "owner": "wackou",
+    "url": "seed.steemnodes.com:2001",
+    "country": "Netherlands",
+    "city": "Amsterdam",
+    "latlong": [52.3872371935787, 4.660140083623574],
+    "latlong_original": [52.3904, 4.6563],
+    "ip": "45.77.136.107"
+  }, {
+    "owner": "abit",
+    "url": "steem-seed1.abit-more.com:2001",
+    "country": "Australia",
+    "city": "Sydney",
+    "latlong": [-33.863399345535655, 151.20516657187267],
+    "latlong_original": [-33.8591, 151.2002],
+    "ip": "54.252.214.47"
+  }, {
+    "owner": "roadscape",
+    "url": "seed.steemd.com:34191",
+    "country": "United States",
+    "city": "Austin",
+    "latlong": [30.3139931600848, -97.72723391963862],
+    "latlong_original": [30.3093, -97.7242],
+    "ip": "162.213.199.171"
+  }, {
+    "owner": "clayop",
+    "url": "104.199.118.92:2001",
+    "country": "United States",
+    "city": "Mountain View",
+    "latlong": [37.40125709211594, -122.07881655509998],
+    "latlong_original": [37.4056, -122.0775],
+    "ip": "104.199.118.92"
+  }, {
+    "owner": "jesta",
+    "url": "seed.jesta.us:2001",
+    "country": "United States",
+    "city": "Reston",
+    "latlong": [38.96636363031823, -77.33977535476605],
+    "latlong_original": [38.9615, -77.3418],
+    "ip": "147.135.11.74"
+  }, {
+    "owner": "good-karma",
+    "url": "seed.esteem.ws:2001",
+    "country": "Finland",
+    "city": null,
+    "latlong": [60.169289486842764, 24.93597469001093],
+    "latlong_original": [60.1708, 24.9375],
+    "ip": "95.216.13.30"
+  }, {
+    "owner": "thecryptodrive",
+    "url": "seed.thecryptodrive.com:2001",
+    "country": "South Africa",
+    "city": null,
+    "latlong": [-28.995723350590964, 24.000635373538337],
+    "latlong_original": [-29, 24],
+    "ip": "129.232.204.82"
+  }, {
+    "owner": "pfunk",
+    "url": "5.9.18.213:2001",
+    "country": "Germany",
+    "city": null,
+    "latlong": [51.297249596395346, 9.494613063364138],
+    "latlong_original": [51.2993, 9.491],
+    "ip": "5.9.18.213"
+  }, {
+    "owner": "curie",
+    "url": "seed.curiesteem.com:2001",
+    "country": "Germany",
+    "city": null,
+    "latlong": [51.29514645294501, 9.493164475936307],
+    "latlong_original": [51.2993, 9.491],
+    "ip": "88.99.151.145"
+  }, {
+    "owner": "libertyranger",
+    "url": "seed1.cryptobot.news:2001",
+    "country": "United States",
+    "city": null,
+    "latlong": [37.755409957314185, -97.81865910671537],
+    "latlong_original": [37.751, -97.822],
+    "ip": "64.118.64.145"
+  }, {
+    "owner": "yuriks2000",
+    "url": "46.4.37.176:2001",
+    "country": "Germany",
+    "city": null,
+    "latlong": [51.29856066700623, 9.494560772846276],
+    "latlong_original": [51.2993, 9.491],
+    "ip": "46.4.37.176"
+  }, {
+    "owner": "justinadams",
+    "url": "seed.chainchopper.com:2001",
+    "country": "United States",
+    "city": null,
+    "latlong": [38.6575761704646, -77.24942078322157],
+    "latlong_original": [38.6582, -77.2497],
+    "ip": "35.196.219.52"
+  }, {
+    "owner": "furion",
+    "url": "steem-seed.furion.me:2001",
+    "country": "Germany",
+    "city": null,
+    "latlong": [51.299966170343936, 9.488336049985598],
+    "latlong_original": [51.2993, 9.491],
+    "ip": "195.201.22.109"
+  }, {
+    "owner": "piquet",
+    "url": "steem-seed.freshterrain.com:2001",
+    "country": "Australia",
+    "city": "Sydney",
+    "latlong": [-33.86522250531427, 151.19768370050906],
+    "latlong_original": [-33.8612, 151.1982],
+    "ip": "52.187.229.159"
+  }, {
+    "owner": "xeldal",
+    "url": "seed.xeldal.com:12150",
+    "country": "United States",
+    "city": "Kansas City",
+    "latlong": [39.108656561926395, -94.5746513176218],
+    "latlong_original": [39.1052, -94.5699],
+    "ip": "204.12.248.146"
+  }, {
+    "owner": "brandonfrye",
+    "url": "seed.brandonfrye.us:2001",
+    "country": "Canada",
+    "city": "Beauharnois",
+    "latlong": [45.31982191684219, -73.86684066970243],
+    "latlong_original": [45.3168, -73.8659],
+    "ip": "144.217.71.190"
+  }, {
+    "owner": "firepower",
+    "url": "seed.firepower.ltd:2001",
+    "country": "Germany",
+    "city": null,
+    "latlong": [51.299311150866494, 9.494416464640564],
+    "latlong_original": [51.2993, 9.491],
+    "ip": "94.130.238.244"
+  }, {
+    "owner": "steem-bounty",
+    "url": "seed.steem-bounty.com:2001",
+    "country": "Germany",
+    "city": null,
+    "latlong": [51.30418833827543, 9.488188500107197],
+    "latlong_original": [51.2993, 9.491],
+    "ip": "148.251.237.104"
+  }, {
+    "owner": "maxlxl",
+    "url": "134.255.253.142:2001",
+    "country": "Germany",
+    "city": null,
+    "latlong": [51.30044030045534, 9.493362675441007],
+    "latlong_original": [51.2993, 9.491],
+    "ip": "134.255.253.142"
+  }, {
+    "owner": "klye",
+    "url": "steem.global:2001",
+    "country": null,
+    "city": null,
+    "latlong": [null, null],
+    "latlong_original": [null, null],
+    "ip": "steem.global"
+  }, {
+    "owner": "therealwolf",
+    "url": "seed.therealwolf.me:2001",
+    "country": "Finland",
+    "city": null,
+    "latlong": [60.1720925228684, 24.932872672006717],
+    "latlong_original": [60.1708, 24.9375],
+    "ip": "95.216.1.228"
+  }
+]

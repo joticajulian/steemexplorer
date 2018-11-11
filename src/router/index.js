@@ -6,6 +6,7 @@ import Account from '@/components/Account'
 import Post from '@/components/Post'
 import Block from '@/components/Block'
 import Transaction from '@/components/Transaction'
+import Map from '@/components/Map'
 
 steem.api.setOptions(Config.RPC_NODE);
 Vue.use(Router)
@@ -33,6 +34,10 @@ export default new Router({
       path: '/b/:id/:tx',
       name: 'Transaction',
       component: Transaction
+    },{
+      path: '/witnesses/map',
+      name: 'Map',
+      component: Map
     },    
   ],
   //mode: 'history',
