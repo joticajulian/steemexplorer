@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="info0">
-      <h1>Witnesses Schedule Map</h1>
+      <h1>Witnesses Monitor Map</h1>
     </div>
 	<div class="map">
       <div id="map"></div>
@@ -44,6 +44,7 @@
 </template>
 
 <script>
+import Config from '@/config.js'
 
 //Leaflet library for OpenStreetMap
 import L from 'leaflet';
@@ -127,12 +128,14 @@ export default {
     fetchWitnesses() {
       let self = this;
             
-      /* Tiles for the map:
+      // Set the map and initial view
+      this.map = L.map('map').setView(Config.MAP.INI_POS, Config.MAP.INI_ZOOM); //([30, 0], 1); // latitude 30, longitude 0. Zoom 1
+      
+	  /* Tiles for the map:
 	   *   Normal view: https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png
 	   *   Black map:   https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png
 	   */
-      this.map = L.map('map').setView([30, 0], 1);
-      L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png', {
+	  L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png', {
 		attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 	  }).addTo(self.map);
 	  
@@ -149,7 +152,7 @@ export default {
       });      
       
 	  //Taking the data from the blockchain (location stored in metadata)
-      steem.api.getWitnessesByVote('',20, function(err, result){
+      steem.api.getWitnessesByVote('',Config.MAP.TOP_WITNESSES, function(err, result){
         if (err || !result) {
           console.log("error loading witnesses, try again");
           return;

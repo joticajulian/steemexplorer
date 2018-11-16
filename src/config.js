@@ -15,6 +15,13 @@ const STEEM_BLOCKS_PER_DAY = 24*60*60/3
 const STEEM_SBD_START_PERCENT = 900
 const STEEM_SBD_STOP_PERCENT = 1000
 
+//witnesses map
+const MAP = {
+  TOP_WITNESSES: 20,
+  INI_POS : [30, 0], //latitude, longitude
+  INI_ZOOM : 1,
+}
+
 export default {
   SBD: SBD,
   STEEM: STEEM,
@@ -32,4 +39,6 @@ export default {
   STEEM_BLOCKS_PER_DAY: STEEM_BLOCKS_PER_DAY,
   STEEM_SBD_START_PERCENT: STEEM_SBD_START_PERCENT,
   STEEM_SBD_STOP_PERCENT: STEEM_SBD_STOP_PERCENT,  
+  
+  MAP: MAP,
 }

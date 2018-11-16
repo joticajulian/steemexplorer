@@ -26,7 +26,7 @@
     "ip": "195.154.82.127",
 	"status":"offline"
   }, {
-    "owner": "smooth",
+    "owner": "smooth.witness",
     "url": "52.74.152.79:2001",
     "country": "Singapore",
     "city": "Singapore",
@@ -420,6 +420,24 @@
     "latlong": [60.1720925228684, 24.932872672006717],
     "latlong_original": [60.1708, 24.9375],
     "ip": "95.216.1.228",
+	"status":"offline"
+  }, {
+    "owner": "someguy123",
+    "url": "5.196.157.116",
+    "country": "France",
+    "city": null,
+    "latlong": [48.8682, 2.3287],
+    "latlong_original": [48.8582, 2.3387],
+    "ip": "5.196.157.116",
+	"status":"offline"
+  }, {
+    "owner": "utopian-io",
+    "url": "seed.utopian.io:2001",
+    "country": "Germany",
+    "city": null,
+    "latlong": [51.2893, 9.501],
+    "latlong_original": [51.2993, 9.491],
+    "ip": "138.201.130.18",
 	"status":"offline"
   }
 ]
