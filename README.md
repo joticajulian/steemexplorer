@@ -1,5 +1,5 @@
-# pulsar
-> Pulsar is a Vue.js web interface for the European Financial Transparency Gateway (EFTG) first Pan-European Blockchain. Currently serving the OAM and Investor pages
+# Pulsar
+> Pulsar is the Vue.js web interface for the European Financial Transparency Gateway (EFTG) first Pan-European Blockchain. Currently serving the OAM and Investor pages
 
 ## Installation
 
