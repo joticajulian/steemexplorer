@@ -1,120 +1,111 @@
 <template>
   <div>
     <HeaderEFTG ref="headerEFTG"></HeaderEFTG>
-    <div id="bodyForm">
-      <div><div class="form-label">*Indicates required field</div></div>
-      <div class="form">
-        <div class="block-input">
-          <div class="form-label">*Company name</div>
-          <div class="form-input-error">
-            <input
-              type="text"
-              v-model="issuer_name"
-              placeholder="e.g. Company ABC"
-              :class="{ dangertext: error.issuer_name }"
-            />
-            <div v-if="error.issuer_name" class="small dangertext">
-              {{ errorText.issuer_name }}
+    <form novalidate>
+      <div class="container p-5 eftg-container">
+        <div class="col-md-6">
+          <div class="form-group row">
+            <label for="inputIssuerName" class="col-md-3 col-form-label">*Company name</label>
+            <div class="col-md-9">
+              <input type="text" id="inputIssuerName" v-model="issuer_name" placeholder="Company" :class="{'was-validated': !error.issuer_name }"/>    
+              <div v-if="error.issuer_name" class="invalid-feedback">{{ errorText.issuer_name }}</div>
             </div>
           </div>
-        </div>
-        <div class="block-input">
-          <div class="form-label">*Company country</div>
-          <div class="form-input-error">
-            <select v-model="home_member_state">
-              <option disabled value="">Please select one</option>
-              <option
-                v-for="option in optionsHomeMemberState"
-                v-bind:key="option.id"
-                v-bind:value="option.id"
-              >
-                {{ option.name }}
-              </option>
-            </select>
-            <div v-if="error.home_member_state" class="small dangertext">
-              {{ errorText.home_member_state }}
+          <div class="form-group row">
+            <label for="inputHomeMemberState" class="col-md-3 col-form-label">*Company country</label>
+            <div class="col-md-9">
+              <select class="form-control" id="inputHomeMemberState" v-model="home_member_state">
+                <option disabled value="">Please select one</option>
+                <option
+                  v-for="option in optionsHomeMemberState"
+                  v-bind:key="option.id"
+                  v-bind:value="option.id"
+                >
+                  {{ option.name }}
+                </option>
+              </select>
+              <div v-if="error.home_member_state" class="invalid-feedback">{{ errorText.home_member_state }}</div>
             </div>
           </div>
-        </div>
-        <div class="block-input">
-          <div class="form-label">*Legal entity identifier</div>
-          <div class="form-input-error">
-            <div>
-              <!-- if you change this values, verify Validation functions -->
-              <input type="radio" id="LEI" value="1" v-model="identifier_id" />
-              <label for="LEI">Lei</label>
-              <input type="radio" id="ISIN" value="4" v-model="identifier_id" />
-              <label for="ISIN">ISIN</label>
-              <input type="radio" id="VAT" value="2" v-model="identifier_id" />
-              <label for="VAT">Vat number</label>
-              <input
-                type="radio"
-                id="Reg_Num"
-                value="3"
-                v-model="identifier_id"
+          <div class="form-group row">
+            <label for="inputLegalIdentifier" class="col-md-3 col-form-label">*Legal entity identifier</label>
+            <div class="col-md-9">
+              <div class="btn-group" role="group" aria-label="legal identifier">
+                <button type="button" class="btn" v-model="identifier_id" value="1">LEI</button>
+                <button type="button" class="btn" v-model="identifier_id" value="4">ISIN</button>
+                <button type="button" class="btn" v-model="identifier_id" value="2">Vat number</button>
+                <button type="button" class="btn" v-model="identifier_id" value="3">Reg number</button>
+              </div>
+              <input type="text" id="inputLegalIdentifier" 
+                     v-model="identifier_value" placeholder="" 
+                     :class="{'was-validated': !error.identifier_value }"
               />
-              <label for="Reg_Num">Reg number</label>
+              <div v-if="error.identifier_value" class="invalid-feedback">{{ errorText.identifier_value }}</div>
             </div>
-            <input
-              type="text"
-              v-model="identifier_value"
-              placeholder=""
-              :class="{ dangertext: error.identifier_value }"
-            />
-            <div v-if="error.identifier_value" class="small dangertext">
-              {{ errorText.identifier_value }}
+          </div>
+          <div class="form-group row">
+            <label for="inputClass" class="col-md-3 col-form-label">*Document class and subclass</label>
+            <div class="col-md-9">
+              <select class="form-control" id="inputClass" v-model="subclass">
+                <option disabled value="">Please select one</option>
+                <option disabled value="">{{ docClasses[0].name }}</option>
+                <option
+                  v-for="option in docClasses[0].subclass"
+                  v-bind:key="option.id"
+                  v-bind:value="option.id"
+                >
+                  {{ option.name }}
+                </option>
+                <option disabled value="">{{ docClasses[1].name }}</option>
+                <option
+                  v-for="option in docClasses[1].subclass"
+                  v-bind:key="option.id"
+                  v-bind:value="option.id"
+                >
+                  {{ option.name }}
+                </option>
+              </select>
+              <div v-if="error.subclass" class="invalid-feedback">{{ errorText.subclass }}</div>
             </div>
           </div>
         </div>
-        <div class="block-input">
-          <div class="form-label">*Document class and subclass</div>
-          <div class="form-input-error">
-            <select v-model="subclass">
-              <option disabled value="">Please select one</option>
-              <option disabled value="">{{ docClasses[0].name }}</option>
-              <option
-                v-for="option in docClasses[0].subclass"
-                v-bind:key="option.id"
-                v-bind:value="option.id"
-              >
-                {{ option.name }}
-              </option>
-              <option disabled value="">{{ docClasses[1].name }}</option>
-              <option
-                v-for="option in docClasses[1].subclass"
-                v-bind:key="option.id"
-                v-bind:value="option.id"
-              >
-                {{ option.name }}
-              </option>
-            </select>
-            <div v-if="error.subclass" class="small dangertext">
-              {{ errorText.subclass }}
+        <div class="col-md-6">
+          <div class="form-group row">
+            <label for="inputDocumentDisclosureDate" class="col-md-3 col-form-label">Document disclosure date</label>
+            <div class="col-md-9">
+              <input type="text" id="inputDocumentDisclosureDate" 
+                 v-model="disclosure_date" placeholder="dd/mm/yyyy" 
+                 :class="{'was-validated': !error.disclosure_date }"
+              />    
+              <div v-if="error.disclosure_date" class="invalid-feedback">{{ errorText.disclosure_date }}</div>
             </div>
           </div>
+          <div class="form-group row">
+            <label for="inputDocumentLanguage" class="col-md-3 col-form-label">Document language</label>
+            <div class="col-md-9">
+              <select class="form-control" id="inputDocumentLanguage" v-model="document_language">
+                <option value="">Please select one</option>
+                <option
+                  v-for="option in optionsHomeMemberState"
+                  v-bind:key="option.id"
+                  v-bind:value="option.id"
+                >
+                  {{ option.name }}
+                </option>
+              </select>
+              <div v-if="error.home_member_state" class="invalid-feedback">{{ errorText.home_member_state }}</div>
+            </div>
+          </div>
+          
         </div>
       </div>
+    </form>  
+    <div id="bodyForm">
+      <div><div class="form-label">*Indicates required field</div></div>
+      <div class="form">        
+        
+      </div>
       <div class="form">
-        <div class="block-input">
-          <div class="form-label">Document disclosure date</div>
-          <div class="form-input-error">
-            <input
-              type="text"
-              v-model="disclosure_date"
-              placeholder="dd/mm/yyyy"
-              :class="{ dangertext: error.disclosure_date }"
-            />
-            <div v-if="error.disclosure_date" class="small dangertext">
-              {{ errorText.disclosure_date }}
-            </div>
-          </div>
-          <input
-            type="text"
-            v-model="disclosure_date"
-            placeholder="dd/mm/yyyy"
-            :class="{ danger: error.disclosure_date }"
-          />
-        </div>
         <div class="block-input">
           <div class="form-label">Document language</div>
           <select v-model="document_language">
