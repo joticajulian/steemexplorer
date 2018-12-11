@@ -58,6 +58,21 @@
     </div>
     </form>
     <div>
+      <search-vuetable
+      api-url="https://raw.githubusercontent.com/scr53005/eftg-steem/master/dictionary/search.json"
+      :fields="fields"
+      :sort-order="sortOrder"
+      :append-params="moreParams"
+      detail-row-component="my-detail-row"
+    >
+      <template slot="actions" slot-scope="props">
+        <div class="custom-actions">
+            <button type="button" class="btn btn-secondary eftg-btn-secondary" @click="onAction('view-item', props.rowData, props.rowIndex)">pdf</button>
+        </div>
+      </template>
+    </search-vuetable>
+    </div>
+    <div>
         <pre class="language-json">Issuer Name<code>{{ issuerName  }}</code></pre>
         <pre class="language-json">Home Member State<code>{{ homeMemberState  }}</code></pre>
         <pre class="language-json">Disclosure Date From<code>{{ disclosureDateFrom  }}</code></pre>
@@ -67,19 +82,34 @@
         <pre class="language-json">Title: <code>{{ title  }}</code></pre>
       </div>
   </div>
+  
 </template>
 
 <script>
+import Vue from 'vue';
 import Config from "@/config.js";
 import Utils from "@/js/utils.js";
 import HeaderEFTG from "@/components/HeaderEFTG";
 import Multiselect from 'vue-multiselect';
+import SearchVuetable from './SearchVuetable';
+import FieldDefs from './SearchFieldDefs.js';
+
+Vue.component('search-vuetable', SearchVuetable);
 
 
 export default {
   name: "SearchPage",
   data() {
     return {
+      fields: FieldDefs,
+      sortOrder: [
+        {
+          field: 'email',
+          sortField: 'email',
+          direction: 'asc'
+        }
+      ],
+      moreParams: {},
       issuerName: [{ id: "1", name: "Google S.A." }],
       optionsIssuerName: [{
           id: "1",
@@ -159,7 +189,7 @@ export default {
     };
   },
   components: {
-    HeaderEFTG, Multiselect
+    HeaderEFTG, Multiselect, SearchVuetable
   },
   mounted() {
     
@@ -180,6 +210,9 @@ export default {
     clear() {
       this.homeMemberState = [];
     },
+    onAction (action, data, index) {
+      console.log('slot action: ' + action, data.name, index)
+    },    
   }
 };
 </script>
