@@ -1,0 +1,33 @@
+[{
+	"id": 1,
+	"name": "Periodic Regulated Information",
+	"subclass": [{
+		"id": 3,
+		"name": "Annual Financial Report",
+		"tag": "AFR"
+	},
+	{
+		"id": 4,
+		"name": "Half-Year Financial Report",
+		"tag": "HYFR"
+	},
+	{
+		"id": 5,
+		"name": "Interim Management Statement",
+		"tag": "IMS"
+	}]
+},
+{
+	"id": 2,
+	"name": "Ongoing Regulated Information",
+	"subclass": [{
+		"id": 6,
+		"name": "Home Member State",
+		"tag": "HMS"
+	},
+	{
+		"id": 7,
+		"name": "Inside Information",
+		"tag": "IIF"
+	}]
+}]

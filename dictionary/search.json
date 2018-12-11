@@ -1,0 +1,58 @@
+{
+  "total": 200,
+  "per_page": 15,
+  "current_page": 1,
+  "last_page": 14,
+  "next_page_url": "https:\/\/vuetable.ratiw.net\/api\/users?page=2",
+  "prev_page_url": null,
+  "from": 1,
+  "to": 15,
+  "data": [
+    {
+      "issuer_name": "Auchan",
+      "home_member_state": "SP",
+      "identifier_id": 1,
+      "identifier_name": "LEI",
+      "identifier_value": "8156009F1ECE07075082",
+      "class": 1,
+      "class_name": "Periodic Regulated Information",
+      "subclass": 3,
+      "subclass_name": "Annual Financial Report",
+      "disclosure_date": "2008-09-15T00:00:00",
+      "document_language": "sp",
+      "document_language_name": "Spanish",
+      "comment": "This is the title field in the form",
+      "financial_year": 2017,
+      "tags": [
+        "Annual Financial Report",
+        "Auchan",
+        "SP",
+        "8156009F1ECE07075082"
+      ],
+      "submission_date": "2008-09-15T00:00:00"
+    },
+    {
+      "issuer_name": "Coca Cola SRO",
+      "home_member_state": "LU",
+      "identifier_id": 1,
+      "identifier_name": "LEI",
+      "identifier_value": "4000302021",
+      "class": 1,
+      "class_name": "Periodic Regulated Information",
+      "subclass": 3,
+      "subclass_name": "Annual Financial Report",
+      "disclosure_date": "2008-09-15T00:00:00",
+      "document_language": "sp",
+      "document_language_name": "Luxembourgish",
+      "comment": "This is the title field in the form",
+      "financial_year": 2018,
+      "tags": [
+        "Annual Financial Report",
+        "Auchan",
+        "SP",
+        "8156009F1ECE07075082"
+      ],
+      "submission_date": "2008-09-15T00:00:00"
+    }
+  ]
+}
