@@ -1,6 +1,6 @@
 <template>
   <div>
-    <HeaderEFTG ref="headerEFTG"></HeaderEFTG>
+    <HeaderEFTG portal="OAM Portal" ref="headerEFTG"></HeaderEFTG>
     <form id="eftg-form" novalidate>
       <div class="container p-5 eftg-container">
         <div class="row">

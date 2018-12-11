@@ -1,6 +1,6 @@
 <template>
   <div>
-    <HeaderEFTG ref="headerEFTG"></HeaderEFTG>
+    <HeaderEFTG portal="Investor Portal" ref="headerEFTG"></HeaderEFTG>
     <form>
     <div class="container p-5 eftg-container">
       <div class="row">

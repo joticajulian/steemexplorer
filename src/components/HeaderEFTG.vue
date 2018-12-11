@@ -4,7 +4,7 @@
       <div id="brand">
         <div id="logo"><img src="../assets/logo-eftg.png" /></div>
         <div class="powered">
-          <div>OAM Portal</div>
+          <div>{{portal}}</div>
           <div class="secondary-text">Powered by Blockchain</div>
         </div>
       </div>
@@ -21,9 +21,9 @@
               <div v-else><img src="../assets/no-picture-profile.png" /></div>
             -->
           </div>
-          <button @click="logout">Logout</button>
+          <button class="btn btn-primary" @click="logout">Logout</button>
         </div>
-        <div v-else><button @click="login">Login</button></div>
+        <div v-else><button class="btn btn-primary" @click="login">Login</button></div>
       </div>
       <div v-if="showModal">
         <Auth
@@ -42,6 +42,9 @@ import Auth from "@/components/Auth";
 
 export default {
   name: "HeaderEFTG",
+  props: {
+    portal: ""
+  },
   data() {
     return {
       auth: {
