@@ -7,7 +7,7 @@ import Vuetable from 'vuetable-2/src/components/Vuetable';
 import VuetablePagination from 'vuetable-2/src/components/VuetablePagination';
 import VuetablePaginationInfo from 'vuetable-2/src/components/VuetablePaginationInfo';
 import CustomActions from './SearchCustomActions';
-import FilterBar from './searchFilterBar';
+import FilterBar from './SearchFilterBar';
 
 Vue.use(VueEvents);
 Vue.component('custom-actions', CustomActions);

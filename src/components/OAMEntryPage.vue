@@ -1,164 +1,136 @@
 <template>
   <div>
     <HeaderEFTG ref="headerEFTG"></HeaderEFTG>
-    <form novalidate>
+    <form id="eftg-form" novalidate>
       <div class="container p-5 eftg-container">
-        <div class="col-md-6">
-          <div class="form-group row">
-            <label for="inputIssuerName" class="col-md-3 col-form-label">*Company name</label>
-            <div class="col-md-9">
-              <input type="text" id="inputIssuerName" v-model="issuer_name" placeholder="Company" :class="{'was-validated': !error.issuer_name }"/>    
-              <div v-if="error.issuer_name" class="invalid-feedback">{{ errorText.issuer_name }}</div>
-            </div>
-          </div>
-          <div class="form-group row">
-            <label for="inputHomeMemberState" class="col-md-3 col-form-label">*Company country</label>
-            <div class="col-md-9">
-              <select class="form-control" id="inputHomeMemberState" v-model="home_member_state">
-                <option disabled value="">Please select one</option>
-                <option
-                  v-for="option in optionsHomeMemberState"
-                  v-bind:key="option.id"
-                  v-bind:value="option.id"
-                >
-                  {{ option.name }}
-                </option>
-              </select>
-              <div v-if="error.home_member_state" class="invalid-feedback">{{ errorText.home_member_state }}</div>
-            </div>
-          </div>
-          <div class="form-group row">
-            <label for="inputLegalIdentifier" class="col-md-3 col-form-label">*Legal entity identifier</label>
-            <div class="col-md-9">
-              <div class="btn-group" role="group" aria-label="legal identifier">
-                <button type="button" class="btn" v-model="identifier_id" value="1">LEI</button>
-                <button type="button" class="btn" v-model="identifier_id" value="4">ISIN</button>
-                <button type="button" class="btn" v-model="identifier_id" value="2">Vat number</button>
-                <button type="button" class="btn" v-model="identifier_id" value="3">Reg number</button>
+        <div class="row">
+          <label class="col-md-12 col-form-label">*Indicates required field</label>          
+          <div class="col-md-6">
+            <div class="form-group row">
+              <label for="inputIssuerName" class="col-md-5 col-form-label">*Company name</label>
+              <div class="col-md-7">
+                <input class="form-control" type="text" id="inputIssuerName" v-model="issuer_name" placeholder="Company" :class="{'was-validated': !error.issuer_name }" required/>
+                <div v-if="error.issuer_name" class="invalid-feedback">{{ errorText.issuer_name }}</div>
               </div>
-              <input type="text" id="inputLegalIdentifier" 
-                     v-model="identifier_value" placeholder="" 
-                     :class="{'was-validated': !error.identifier_value }"
-              />
-              <div v-if="error.identifier_value" class="invalid-feedback">{{ errorText.identifier_value }}</div>
+            </div>
+            <div class="form-group row">
+              <label for="inputHomeMemberState" class="col-md-5 col-form-label">*Company country</label>
+              <div class="col-md-7">
+                <select class="form-control" id="inputHomeMemberState" v-model="home_member_state" required>
+                  <option disabled value="">Please select one</option>
+                  <option
+                    v-for="option in optionsHomeMemberState"
+                    v-bind:key="option.id"
+                    v-bind:value="option.id"
+                  >
+                    {{ option.name }}
+                  </option>
+                </select>
+                <div v-if="error.home_member_state" class="invalid-feedback">{{ errorText.home_member_state }}</div>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="inputLegalIdentifier" class="col-md-5 col-form-label">*Legal entity identifier</label>
+              <div class="col-md-7">
+                <div class="btn-group" role="group" aria-label="legal identifier">
+                  <button type="button" class="btn" v-model="identifier_id" value="1">LEI</button>
+                  <button type="button" class="btn" v-model="identifier_id" value="4">ISIN</button>
+                  <button type="button" class="btn" v-model="identifier_id" value="2">VAT</button>
+                  <button type="button" class="btn" v-model="identifier_id" value="3">REG</button>
+                </div>
+                <input type="text" id="inputLegalIdentifier" 
+                       v-model="identifier_value" placeholder="" 
+                       :class="{'was-validated': !error.identifier_value }"
+                />
+                <div v-if="error.identifier_value" class="invalid-feedback">{{ errorText.identifier_value }}</div>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="inputClass" class="col-md-5 col-form-label">*Document class and subclass</label>
+              <div class="col-md-7">
+                <select class="form-control" id="inputClass" v-model="subclass">
+                  <option disabled value="">Please select one</option>
+                  <option disabled value="">{{ docClasses[0].name }}</option>
+                  <option
+                    v-for="option in docClasses[0].subclass"
+                    v-bind:key="option.id"
+                    v-bind:value="option.id"
+                  >
+                    {{ option.name }}
+                  </option>
+                  <option disabled value="">{{ docClasses[1].name }}</option>
+                  <option
+                    v-for="option in docClasses[1].subclass"
+                    v-bind:key="option.id"
+                    v-bind:value="option.id"
+                  >
+                    {{ option.name }}
+                  </option>
+                </select>
+                <div v-if="error.subclass" class="invalid-feedback">{{ errorText.subclass }}</div>
+              </div>
             </div>
           </div>
-          <div class="form-group row">
-            <label for="inputClass" class="col-md-3 col-form-label">*Document class and subclass</label>
-            <div class="col-md-9">
-              <select class="form-control" id="inputClass" v-model="subclass">
-                <option disabled value="">Please select one</option>
-                <option disabled value="">{{ docClasses[0].name }}</option>
-                <option
-                  v-for="option in docClasses[0].subclass"
-                  v-bind:key="option.id"
-                  v-bind:value="option.id"
-                >
-                  {{ option.name }}
-                </option>
-                <option disabled value="">{{ docClasses[1].name }}</option>
-                <option
-                  v-for="option in docClasses[1].subclass"
-                  v-bind:key="option.id"
-                  v-bind:value="option.id"
-                >
-                  {{ option.name }}
-                </option>
-              </select>
-              <div v-if="error.subclass" class="invalid-feedback">{{ errorText.subclass }}</div>
+          <div class="col-md-6">
+            <div class="form-group row">
+              <label for="inputDocumentDisclosureDate" class="col-md-5 col-form-label">Document disclosure date</label>
+              <div class="col-md-7">
+                <input type="text" id="inputDocumentDisclosureDate" 
+                   v-model="disclosure_date" placeholder="dd/mm/yyyy" 
+                   :class="{'was-validated': !error.disclosure_date }"
+                />    
+                <div v-if="error.disclosure_date" class="invalid-feedback">{{ errorText.disclosure_date }}</div>
+              </div>
             </div>
+            <div class="form-group row">
+              <label for="inputDocumentLanguage" class="col-md-5 col-form-label">Document language</label>
+              <div class="col-md-7">
+                <select class="form-control" id="inputDocumentLanguage" v-model="document_language">
+                  <option value=""></option>
+                  <option
+                    v-for="option in languages"
+                    v-bind:key="option.id"
+                    v-bind:value="option.id"
+                  >
+                    {{ option.name }}
+                  </option>
+                </select>
+                <div v-if="error.document_language" class="invalid-feedback">{{ errorText.document_language }}</div>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="inputComment" class="col-md-5 col-form-label">Document title</label>
+              <div class="col-md-7">
+                <input type="text" id="inputComment" v-model="comment" placeholder="" :class="{'was-validated': !error.comment }"/>    
+                <div v-if="error.comment" class="invalid-feedback">{{ errorText.comment }}</div>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="inputFinancialYear" class="col-md-5 col-form-label">Document financial year</label>
+              <div class="col-md-7">
+                <input type="text" id="inputFinancialYear" v-model="financial_year" placeholder="" :class="{'was-validated': !error.financial_year }"/>
+                <div v-if="error.financial_year" class="invalid-feedback">{{ errorText.financial_year }}</div>
+              </div>
+            </div>            
+          </div>            
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+          <div class="custom-file">            
+            <input type="file" class="custom-file-input" id="file" @change="validateFile" required>
+            <label class="custom-file-label" for="file">Choose file...</label>
+            <div v-if="error.file" class="invalid-feedback">{{ errorText.file }}</div>          
+          </div>
           </div>
         </div>
-        <div class="col-md-6">
-          <div class="form-group row">
-            <label for="inputDocumentDisclosureDate" class="col-md-3 col-form-label">Document disclosure date</label>
-            <div class="col-md-9">
-              <input type="text" id="inputDocumentDisclosureDate" 
-                 v-model="disclosure_date" placeholder="dd/mm/yyyy" 
-                 :class="{'was-validated': !error.disclosure_date }"
-              />    
-              <div v-if="error.disclosure_date" class="invalid-feedback">{{ errorText.disclosure_date }}</div>
-            </div>
-          </div>
-          <div class="form-group row">
-            <label for="inputDocumentLanguage" class="col-md-3 col-form-label">Document language</label>
-            <div class="col-md-9">
-              <select class="form-control" id="inputDocumentLanguage" v-model="document_language">
-                <option value="">Please select one</option>
-                <option
-                  v-for="option in optionsHomeMemberState"
-                  v-bind:key="option.id"
-                  v-bind:value="option.id"
-                >
-                  {{ option.name }}
-                </option>
-              </select>
-              <div v-if="error.home_member_state" class="invalid-feedback">{{ errorText.home_member_state }}</div>
-            </div>
-          </div>
-          
-        </div>
-      </div>
-    </form>  
-    <div id="bodyForm">
-      <div><div class="form-label">*Indicates required field</div></div>
-      <div class="form">        
-        
-      </div>
-      <div class="form">
-        <div class="block-input">
-          <div class="form-label">Document language</div>
-          <select v-model="document_language">
-            <option value=""></option>
-            <option
-              v-for="option in languages"
-              v-bind:key="option.id"
-              v-bind:value="option.id"
-            >
-              {{ option.name }}
-            </option>
-          </select>
-        </div>
-        <div class="block-input">
-          <div class="form-label">Document title</div>
-          <input
-            type="text"
-            v-model="comment"
-            placeholder="e.g. Company ABC 2016 Annual Financial Report"
-          />
-        </div>
-        <div class="block-input">
-          <div class="form-label">*Document financial year</div>
-          <div class="form-input-error">
-            <input
-              type="text"
-              v-model="financial_year"
-              :class="{ dangertext: error.financial_year }"
-            />
-            <div v-if="error.financial_year" class="small dangertext">
-              {{ errorText.financial_year }}
-            </div>
+        <div class="row">
+          <div class="form-group col-md-3 align-bottom" style="padding-top: 8px;">
+            <button v-on:click="submit" class="btn btn-primary eftg-btn-primary">Submit</button>
+            <button v-on:click="clear"  class="btn btn-secondary eftg-btn-primary">Clear</button>
           </div>
         </div>
       </div>
-      <div class="form-input-error">
-        <input
-          type="file"
-          name="file"
-          id="file"
-          @change="validateFile"
-          class="inputfile"
-        />
-        <label for="file">Upload file</label>
-        <div v-if="error.file" class="small dangertext">
-          {{ errorText.file }}
-        </div>
-      </div>
-      <div class="right">
-        <button v-on:click="submit">Submit</button>
-        <button v-on:click="clear">Clear</button>
-      </div>
-    </div>
+    </form>
   </div>
 </template>
 
@@ -168,11 +140,12 @@ import Utils from "@/js/utils.js";
 import debounce from "lodash.debounce";
 import axios from "axios";
 import Crypto from "crypto";
-
 import HeaderEFTG from "@/components/HeaderEFTG";
+
 
 export default {
   name: "OAMEntryPage",
+  
   data() {
     return {
       issuer_name: "",
@@ -345,6 +318,9 @@ export default {
         valid = self.validateFinancialYear(true) && valid;
         valid = self.validateFile(true) && valid;
 
+        var form = document.getElementById('eftg-form');
+        form.classList.add('was-validated');
+        
         if (!valid) {
           console.log("Error validating fields!");
           return false;
@@ -394,7 +370,7 @@ export default {
           discDate = "";
         }
 
-        var body = "[[pdf link]](" + pdfUrl + "}})";
+        var body = "[[pdf link]](" + pdfUrl + ")";
 
         var json_metadata = {
           issuer_name: self.issuer_name,
@@ -499,6 +475,7 @@ export default {
       if (submit && this.issuer_name === "") {
         this.error.issuer_name = true;
         this.errorText.issuer_name = "Issuer name is empty";
+        document.getElementById('inputIssuerName').addClass('invalid');
         return false;
       }
       if (this.issuer_name.length > 200) {
@@ -657,16 +634,6 @@ export default {
 </script>
 
 <style scoped>
-#bodyForm {
-}
-
-.form {
-  display: inline-block;
-}
-
-.form-label {
-  display: inline-block;
-}
 
 .inputfile {
   width: 0.1px;
@@ -693,7 +660,15 @@ export default {
   outline: -webkit-focus-ring-color auto 5px;
 }
 
-.dangertext {
+.was-validated {  
+}
+
+.anvalid-feedback {
   color: red;
 }
+
+.invalid-feedback2 {
+  color: red;
+}
+
 </style>

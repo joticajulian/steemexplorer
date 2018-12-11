@@ -59,7 +59,7 @@
     </form>
     <div>
       <search-vuetable
-      api-url="https://vuetable.ratiw.net/api/users"
+      api-url="https://raw.githubusercontent.com/scr53005/eftg-steem/master/dictionary/search.json"
       :fields="fields"
       :sort-order="sortOrder"
       :append-params="moreParams"
