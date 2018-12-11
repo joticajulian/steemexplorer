@@ -9,14 +9,15 @@
             <div class="form-group row">
               <label for="inputIssuerName" class="col-md-5 col-form-label">*Company name</label>
               <div class="col-md-7">
-                <input class="form-control" type="text" id="inputIssuerName" v-model="issuer_name" placeholder="Company" :class="{'was-validated': !error.issuer_name }" required/>
+                <input class="form-control" type="text" id="inputIssuerName" 
+                       v-model="issuer_name" placeholder="Company" :class="{'is-invalid': error.issuer_name }"/>
                 <div v-if="error.issuer_name" class="invalid-feedback">{{ errorText.issuer_name }}</div>
               </div>
             </div>
             <div class="form-group row">
               <label for="inputHomeMemberState" class="col-md-5 col-form-label">*Company country</label>
               <div class="col-md-7">
-                <select class="form-control" id="inputHomeMemberState" v-model="home_member_state" required>
+                <select class="form-control" id="inputHomeMemberState" v-model="home_member_state" :class="{'is-invalid': error.home_member_state }">
                   <option disabled value="">Please select one</option>
                   <option
                     v-for="option in optionsHomeMemberState"
@@ -32,15 +33,24 @@
             <div class="form-group row">
               <label for="inputLegalIdentifier" class="col-md-5 col-form-label">*Legal entity identifier</label>
               <div class="col-md-7">
-                <div class="btn-group" role="group" aria-label="legal identifier">
-                  <button type="button" class="btn" v-model="identifier_id" value="1">LEI</button>
-                  <button type="button" class="btn" v-model="identifier_id" value="4">ISIN</button>
-                  <button type="button" class="btn" v-model="identifier_id" value="2">VAT</button>
-                  <button type="button" class="btn" v-model="identifier_id" value="3">REG</button>
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary" :class="{active: identifier_id==='1'}">
+                    <input type="radio" id="LEI" v-model="identifier_id" value="1" autocomplete="off" checked> LEI
+                  </label>
+                  <label class="btn btn-secondary" :class="{active: identifier_id==='4'}">
+                    <input type="radio" id="ISIN" v-model="identifier_id" value="4" autocomplete="off"> ISIN
+                  </label>
+                  <label class="btn btn-secondary" :class="{active: identifier_id==='2'}">
+                    <input type="radio" id="VAT" v-model="identifier_id" value="2" autocomplete="off"> VAT
+                  </label>
+                  <label class="btn btn-secondary" :class="{active: identifier_id==='3'}">
+                    <input type="radio" id="REG" v-model="identifier_id" value="3" autocomplete="off"> REG
+                  </label>
                 </div>
                 <input type="text" id="inputLegalIdentifier" 
                        v-model="identifier_value" placeholder="" 
-                       :class="{'was-validated': !error.identifier_value }"
+                       class="form-control"
+                       :class="{'is-invalid': error.identifier_value }"
                 />
                 <div v-if="error.identifier_value" class="invalid-feedback">{{ errorText.identifier_value }}</div>
               </div>
@@ -48,7 +58,7 @@
             <div class="form-group row">
               <label for="inputClass" class="col-md-5 col-form-label">*Document class and subclass</label>
               <div class="col-md-7">
-                <select class="form-control" id="inputClass" v-model="subclass">
+                <select class="form-control" id="inputClass" v-model="subclass" :class="{'is-invalid': error.subclass }">
                   <option disabled value="">Please select one</option>
                   <option disabled value="">{{ docClasses[0].name }}</option>
                   <option
@@ -76,8 +86,9 @@
               <label for="inputDocumentDisclosureDate" class="col-md-5 col-form-label">Document disclosure date</label>
               <div class="col-md-7">
                 <input type="text" id="inputDocumentDisclosureDate" 
-                   v-model="disclosure_date" placeholder="dd/mm/yyyy" 
-                   :class="{'was-validated': !error.disclosure_date }"
+                   v-model="disclosure_date" placeholder="dd/mm/yyyy"
+                   class="form-control" 
+                   :class="{'is-invalid': error.disclosure_date }"
                 />    
                 <div v-if="error.disclosure_date" class="invalid-feedback">{{ errorText.disclosure_date }}</div>
               </div>
@@ -85,7 +96,7 @@
             <div class="form-group row">
               <label for="inputDocumentLanguage" class="col-md-5 col-form-label">Document language</label>
               <div class="col-md-7">
-                <select class="form-control" id="inputDocumentLanguage" v-model="document_language">
+                <select class="form-control" id="inputDocumentLanguage" v-model="document_language" :class="{'is-invalid': error.document_language }">
                   <option value=""></option>
                   <option
                     v-for="option in languages"
@@ -101,14 +112,14 @@
             <div class="form-group row">
               <label for="inputComment" class="col-md-5 col-form-label">Document title</label>
               <div class="col-md-7">
-                <input type="text" id="inputComment" v-model="comment" placeholder="" :class="{'was-validated': !error.comment }"/>    
+                <input type="text" id="inputComment" v-model="comment" placeholder="" class="form-control" :class="{'is-invalid': error.comment }"/>    
                 <div v-if="error.comment" class="invalid-feedback">{{ errorText.comment }}</div>
               </div>
             </div>
             <div class="form-group row">
               <label for="inputFinancialYear" class="col-md-5 col-form-label">Document financial year</label>
               <div class="col-md-7">
-                <input type="text" id="inputFinancialYear" v-model="financial_year" placeholder="" :class="{'was-validated': !error.financial_year }"/>
+                <input type="text" id="inputFinancialYear" v-model="financial_year" placeholder="" class="form-control" :class="{'is-invalid': error.financial_year }"/>
                 <div v-if="error.financial_year" class="invalid-feedback">{{ errorText.financial_year }}</div>
               </div>
             </div>            
@@ -117,14 +128,14 @@
         <div class="row">
           <div class="col-md-6">
           <div class="custom-file">            
-            <input type="file" class="custom-file-input" id="file" @change="validateFile" required>
-            <label class="custom-file-label" for="file">Choose file...</label>
+            <input type="file" class="custom-file-input" id="inputFile" @change="validateFile" :class="{'is-invalid': error.file }">
+            <label class="custom-file-label" for="inputFile">Choose file...</label>
             <div v-if="error.file" class="invalid-feedback">{{ errorText.file }}</div>          
           </div>
           </div>
         </div>
         <div class="row">
-          <div class="form-group col-md-3 align-bottom" style="padding-top: 8px;">
+          <div class="form-group col-md-12 align-bottom" style="padding-top: 8px;">
             <button v-on:click="submit" class="btn btn-primary eftg-btn-primary">Submit</button>
             <button v-on:click="clear"  class="btn btn-secondary eftg-btn-primary">Clear</button>
           </div>
@@ -280,6 +291,7 @@ export default {
     },
     identifier_id: function() {
       this.debounced_validateIdentifierId();
+      this.debounced_validateIdentifierValue();
     },
     identifier_value: function() {
       this.debounced_validateIdentifierValue();
@@ -329,7 +341,7 @@ export default {
         //User credentials
         if (!self.$refs.headerEFTG.auth.logged) {
           self.$refs.headerEFTG.login();
-          //todo: make than after login it submits the post automatically
+          //todo: make that after login it submits the post automatically
           return;
         }
         var username = self.$refs.headerEFTG.auth.user;
@@ -337,7 +349,7 @@ export default {
 
         //read file, calculation of the hash, and signature with privkey
         //(format used in ImageHoster for uploading)
-        var localFile = document.getElementById("file").files[0];
+        var localFile = document.getElementById("inputFile").files[0];
         var fileData = await self.readFileAsBuffer(localFile);
         const imageHash = Crypto.createHash("sha256")
           .update("ImageSigningChallenge")
@@ -393,18 +405,21 @@ export default {
 
         //create a permlink taking into account the existing posts
         var client = new dsteem.Client(Config.RPC_NODE.url);
-        var addRandom = false;
+        
+        // TODO: addRandom starts false and we check if the post exists using dsteem 
+        var addRandom = true;
         while (true) {
           var permlink = Utils.createPermLink(self.comment, addRandom);
           var urlPost = "oam/@" + username + "/" + permlink;
           var post = await client.database.getState(urlPost);
           console.log(post);
+          //TODO: fix dsteem response problem... if the post exists, then addRandom=true and continue the while loop, else break
           break;
         }
 
         var post = {
           author: username,
-          body: body, //todo: link pdf
+          body: body,
           json_metadata: JSON.stringify(json_metadata),
           parent_author: "",
           parent_permlink: "oam",
@@ -435,7 +450,7 @@ export default {
     },
 
     startEventListenerFile() {
-      var input = document.getElementById("file");
+      var input = document.getElementById("inputFile");
       var label = input.nextElementSibling,
         labelVal = label.innerHTML;
 
@@ -469,22 +484,24 @@ export default {
         reader.readAsArrayBuffer(inputFile);
       });
     },
-
+    
     //validation
     validateIssuerName(submit) {
       if (submit && this.issuer_name === "") {
         this.error.issuer_name = true;
         this.errorText.issuer_name = "Issuer name is empty";
-        document.getElementById('inputIssuerName').addClass('invalid');
+        document.getElementById('inputIssuerName').setCustomValidity("invalid");
         return false;
       }
       if (this.issuer_name.length > 200) {
         this.error.issuer_name = true;
         this.errorText.issuer_name = "The issuer name is too long";
+        document.getElementById('inputIssuerName').setCustomValidity("invalid");
         return false;
       }
       this.error.issuer_name = false;
       this.errorText.issuer_name = "No error";
+      document.getElementById('inputIssuerName').setCustomValidity("");
       return true;
     },
 
@@ -492,30 +509,34 @@ export default {
       if (submit && this.home_member_state === "") {
         this.error.home_member_state = true;
         this.errorText.home_member_state = "Please select a home member state";
+        document.getElementById('inputHomeMemberState').setCustomValidity("invalid");
         return false;
       }
       this.error.home_member_state = false;
       this.errorText.home_member_state = "No error";
+      document.getElementById('inputHomeMemberState').setCustomValidity("");
       return true;
     },
 
     validateIdentifierId(submit) {
       //nothing to check
       this.error.identifier_id = false;
-      this.errorText.identifier_id = "No error";
+      this.errorText.identifier_id = "No error";      
       return true;
     },
 
-    validateIdentifierValue(submit) {
+    validateIdentifierValue(submit) {      
       if (submit && this.identifier_value === "") {
         this.error.identifier_value = true;
         this.errorText.identifier_value = "The identifier value is empty";
+        document.getElementById('inputLegalIdentifier').setCustomValidity("invalid");
         return false;
       }
 
       if (this.identifier_value.length < 3) {
         this.error.identifier_value = true;
         this.errorText.identifier_value = "The identifier value is too short";
+        document.getElementById('inputLegalIdentifier').setCustomValidity("invalid");
         return false;
       }
 
@@ -523,8 +544,8 @@ export default {
         case "1": //LEI
           if (this.identifier_value.length !== 20) {
             this.error.identifier_value = true;
-            this.errorText.identifier_value =
-              "Legal Entity Identifier must have 20 characters";
+            this.errorText.identifier_value = "Legal Entity Identifier must have 20 characters";
+            document.getElementById('inputLegalIdentifier').setCustomValidity("invalid");  
             return false;
           }
         case "2": //VAT Number
@@ -534,14 +555,14 @@ export default {
         case "4": //ISIN
           if (this.identifier_value.length !== 12) {
             this.error.identifier_value = true;
-            this.errorText.identifier_value =
-              "ISIN number must have 12 characters";
+            this.errorText.identifier_value = "ISIN number must have 12 characters";
+            document.getElementById('inputLegalIdentifier').setCustomValidity("invalid");
             return false;
           }
           if (!Utils.hasCountryCode(this.identifier_value)) {
             this.error.identifier_value = true;
-            this.errorText.identifier_value =
-              "ISIN number must starts with the country code";
+            this.errorText.identifier_value = "ISIN number must starts with the country code";
+            document.getElementById('inputLegalIdentifier').setCustomValidity("invalid");
             return false;
           }
         default:
@@ -549,6 +570,7 @@ export default {
 
       this.error.identifier_value = false;
       this.errorText.identifier_value = "No error";
+      document.getElementById('inputLegalIdentifier').setCustomValidity("");
       return true;
     },
 
@@ -556,11 +578,13 @@ export default {
       if (submit && this.subclass === "") {
         this.error.subclass = true;
         this.errorText.subclass = "Please select a subclass";
+        document.getElementById('inputClass').setCustomValidity("invalid");
         return false;
       }
 
       this.error.subclass = false;
       this.errorText.subclass = "No error";
+      document.getElementById('inputClass').setCustomValidity("");
       return true;
     },
 
@@ -568,7 +592,8 @@ export default {
       //this is an optional field
       if (this.disclosure_date === "") {
         this.error.disclosure_date = false;
-        this.errorText.disclosure_date = "No error";
+        this.errorText.disclosure_date = "No error";                                 
+        document.getElementById('inputDocumentDisclosureDate').setCustomValidity("");
         return true;
       }
 
@@ -576,11 +601,13 @@ export default {
         Utils.ddmmyyyytoDate(this.disclosure_date);
       } catch (e) {
         this.error.disclosure_date = true;
-        this.errorText.disclosure_date = "Invalid date format, use dd/mm/yyyy";
+        this.errorText.disclosure_date = "Invalid date format, use dd/mm/yyyy";                                 
+        document.getElementById('inputDocumentDisclosureDate').setCustomValidity("invalid");
         return false;
       }
       this.error.disclosure_date = false;
       this.errorText.disclosure_date = "No error";
+      document.getElementById('inputDocumentDisclosureDate').setCustomValidity("");
       return true;
     },
 
@@ -589,6 +616,7 @@ export default {
       //nothing to check
       this.error.document_language = false;
       this.errorText.document_language = "No error";
+      document.getElementById('inputDocumentLanguage').setCustomValidity("");
       return true;
     },
 
@@ -597,6 +625,7 @@ export default {
       //nothing to check
       this.error.comment = false;
       this.errorText.comment = "No error";
+      document.getElementById('inputComment').setCustomValidity("");
       return true;
     },
 
@@ -605,6 +634,7 @@ export default {
       if (this.financial_year === "") {
         this.error.financial_year = false;
         this.errorText.financial_year = "No error";
+        document.getElementById('inputFinancialYear').setCustomValidity("");
         return true;
       }
 
@@ -612,21 +642,25 @@ export default {
       if (number !== String(parseInt(number, 10))) {
         this.error.financial_year = true;
         this.errorText.financial_year = "Incorrect year";
+        document.getElementById('inputFinancialYear').setCustomValidity("invalid");
         return false;
       }
       this.error.financial_year = false;
       this.errorText.financial_year = "No error";
+      document.getElementById('inputFinancialYear').setCustomValidity("");
       return true;
     },
 
     validateFile(submit) {
-      if (submit && document.getElementById("file").files.length === 0) {
+      if (submit && document.getElementById("inputFile").files.length === 0) {
         this.error.file = true;
         this.errorText.file = "Please select a file";
+        document.getElementById('inputFile').setCustomValidity("invalid");
         return false;
       }
       this.error.file = false;
       this.errorText.file = "No error";
+      document.getElementById('inputFile').setCustomValidity("");
       return true;
     }
   }
