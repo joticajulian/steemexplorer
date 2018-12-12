@@ -55,11 +55,11 @@
                 <div v-if="error.identifier_value" class="invalid-feedback">{{ errorText.identifier_value }}</div>
               </div>
             </div>
-            <div class="form-group row">
+            <div class="form-group row" id="formClass">
               <label for="inputClass" class="col-md-5 col-form-label">*Document class and subclass</label>
               <div class="col-md-7">
                 <select class="form-control" id="inputClass" v-model="subclass" :class="{'is-invalid': error.subclass }">
-                  <option disabled value="">Please select one</option>
+                  <option disabled value=""></option>
                   <option disabled value="">{{ docClasses[0].name }}</option>
                   <option
                     v-for="option in docClasses[0].subclass"
@@ -115,9 +115,9 @@
                 <input type="text" id="inputComment" v-model="comment" placeholder="" class="form-control" :class="{'is-invalid': error.comment }"/>    
                 <div v-if="error.comment" class="invalid-feedback">{{ errorText.comment }}</div>
               </div>
-            </div>
-            <div class="form-group row">
-              <label for="inputFinancialYear" class="col-md-5 col-form-label">Document financial year</label>
+            </div>            
+            <div v-if="showFinancialYear" class="form-group row">
+              <label for="inputFinancialYear" class="col-md-5 col-form-label">*Document financial year</label>
               <div class="col-md-7">
                 <input type="text" id="inputFinancialYear" v-model="financial_year" placeholder="" class="form-control" :class="{'is-invalid': error.financial_year }"/>
                 <div v-if="error.financial_year" class="invalid-feedback">{{ errorText.financial_year }}</div>
@@ -223,6 +223,7 @@ export default {
         "2": "VAT",
         "3": "RegistrationNumber"
       },
+      showFinancialYear: false,
       error: {
         issuer_name: false,
         home_member_state: false,
@@ -306,8 +307,10 @@ export default {
     identifier_value: function() {
       this.debounced_validateIdentifierValue();
     },
-    subclass: function() {
+    subclass: function(newVal) {
       this.debounced_validateSubclass();
+      if(newVal == "3" || newVal == "4") this.showFinancialYear = true;
+      else this.showFinancialYear = false;      
     },
     disclosure_date: function() {
       this.debounced_validateDisclosureDate();
@@ -336,9 +339,15 @@ export default {
         valid = self.validateIdentifierValue(true) && valid;
         valid = self.validateSubclass(true) && valid;
         valid = self.validateDisclosureDate(true) && valid;
-        valid = self.validateComment(true) && valid;
-        valid = self.validateFinancialYear(true) && valid;
+        valid = self.validateComment(true) && valid;        
         valid = self.validateFile(true) && valid;
+        
+        // Validate year in case subclass Annual or half-year Financial Report 
+        if(self.subclass == "3" || self.subclass == "4"){         
+          valid = self.validateFinancialYear(true) && valid;
+        }else{
+          self.financial_year = '';
+        }
 
         var form = document.getElementById('eftg-form');
         form.classList.add('was-validated');
@@ -456,15 +465,14 @@ export default {
         self.alertText.danger = '';
         
         console.log("document publised!");
-        console.log(result);
       }
       submit_async().catch(function(error){
         console.log(error);
-        this.alert.success = false;
-        this.alertText.success = '';
+        self.alert.success = false;
+        self.alertText.success = '';
         
-        this.alert.danger = false;
-        this.alertText.danger = error.message;
+        self.alert.danger = true;
+        self.alertText.danger = error.message;
       });
     },
 
@@ -700,40 +708,9 @@ export default {
 
 <style scoped>
 
-.inputfile {
-  width: 0.1px;
-  height: 0.1px;
-  opacity: 0;
-  overflow: hidden;
-  position: absolute;
-  z-index: -1;
-}
-
-.inputfile + label {
-  font-size: 1.25em;
-  font-weight: 700;
-  color: white;
-  background-color: black;
-  display: inline-block;
-  cursor: pointer;
-}
-
-.inputfile:focus + label,
-.inputfile + label:hover {
-  background-color: red;
-  outline: 1px dotted #000;
-  outline: -webkit-focus-ring-color auto 5px;
-}
-
-.was-validated {  
-}
-
-.anvalid-feedback {
-  color: red;
-}
-
-.invalid-feedback2 {
-  color: red;
+#formClass select option:disabled {  
+  font-weight: bold;
+  color: black;
 }
 
 </style>
