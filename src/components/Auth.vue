@@ -1,5 +1,5 @@
 <template>
-  <div class="modal-backdrop">
+  <!--<div class="modal-backdrop">
     <div class="modal">
       <header class="modal-header"><slot name="header">Login</slot></header>
       <section class="modal-body">
@@ -18,12 +18,6 @@
             placeholder="Password or WIF"
           />
         </div>
-        <!--
-          <div>
-            <input type="checkbox" id="save-password" v-model="savePassword" />
-            <label for="save-password">Keep me logged in</label>
-          </div>
-        -->
         <div>
           <button @click="try_to_login">Login</button>
           <button @click="close">Cancel</button>
@@ -31,7 +25,32 @@
         <div v-if="error" class="dangertext">{{ errorText }}</div>
       </section>
     </div>
-  </div>
+  </div>-->
+  <div class="container">
+    <form novalidate>
+      <div class="form-group row">
+        <label for="inputUsername" class="col-md-4 col-form-label">username</label>
+        <div class="col-md-8">
+          <input class="form-control" type="text" id="inputUsername" 
+             v-model="username" placeholder="Enter your username"/>        
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="inputPassword" class="col-md-4 col-form-label">password</label>
+        <div class="col-md-8">
+          <input class="form-control" type="password" id="inputPassword" 
+             v-model="password" placeholder="Password or WIF"/>        
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-md-12 align-bottom" style="padding-top: 8px;">
+          <button @click="try_to_login" class="btn btn-primary eftg-btn-primary">Login</button>
+          <button @click="close"  class="btn btn-secondary eftg-btn-primary">Cancel</button>
+        </div>
+      </div>
+      <div v-if="error"  class="alert alert-danger" role="alert">{{errorText}}</div>   
+    </form>
+  </div>  
 </template>
 
 <script>
@@ -80,7 +99,14 @@ export default {
       }
       main().catch(function(error) {
         self.error = true;
-        self.errorText = error.message;
+        console.log(error);
+        if(error.name == 'UserError') {
+          self.errorText = error.message;
+        }else if(error.name == 'PasswordError'){
+          self.errorText = error.message;
+        }else {
+          self.errorText = 'Password format mismatch';        
+        }                
       });
     },
 
@@ -88,10 +114,27 @@ export default {
      * Checks if the password or WIF is valid for that user
      */
     async login(_username, _password) {
-      /*We check if the password is:
-        1. WIF: the master key that generates the keys for all roles (owner, active, posting)
-         or
-        2. role key: The password could be the key for a specific role
+    
+      if (_username === ''){
+        var e = new Error("Please insert your username");
+        e.name = "UserError";
+        throw e;
+      }
+      
+      // Check if the user exists      
+      var client = new dsteem.Client(Config.RPC_NODE.url);
+      const accounts = await client.database.getAccounts([_username]);
+      if (accounts.length === 0){        
+        var e = new Error("User @" + _username + " does not exists");
+        e.name = "UserError";
+        throw e;
+      }
+
+
+      /* We check if the password is:
+         1. WIF: the master key that generates the keys for all roles (owner, active, posting)
+          or
+         2. role key: The password could be the key for a specific role
       */
 
       // keysFromWIF: suppossing that password is WIF
@@ -119,14 +162,9 @@ export default {
         .createPublic(Config.STEEM_ADDRESS_PREFIX)
         .toString();
 
-      var client = new dsteem.Client(Config.RPC_NODE.url);
       //var roles = ["owner", "active", "posting"];
       var roles = ["posting"];
       //let self = this;
-
-      const accounts = await client.database.getAccounts([_username]);
-      if (accounts.length === 0)
-        throw new Error("user @" + _username + " does not exists");
 
       var account = accounts[0];
       var json_metadata = JSON.parse(account.json_metadata);
@@ -144,7 +182,7 @@ export default {
         }
       };
 
-      //check owner, active and posting keys
+      // check owner, active and posting keys
       for (var i = 0; i < roles.length; i++) {
         role = roles[i];
         //multisignature: A specific role could have several keys
@@ -165,7 +203,11 @@ export default {
         }
       }
 
-      if (!keyFound) throw new Error("incorrect posting key or WIF");
+      if (!keyFound){
+        var e = new Error("Incorrect password. Please use posting key or WIF");
+        e.name = "PasswordError";
+        throw e;
+      }
 
       auth.logged = true;
       auth.user = _username;
@@ -194,63 +236,5 @@ export default {
 </script>
 
 <style scoped>
-.modal-backdrop {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: rgba(0, 0, 0, 0.3);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 
-.modal {
-  background: #ffffff;
-  box-shadow: 2px 2px 20px 1px;
-  overflow-x: auto;
-  display: flex;
-  flex-direction: column;
-}
-
-.modal-header {
-  padding: 15px;
-  display: flex;
-}
-
-.modal-header {
-  color: #4aae9b;
-  justify-content: space-between;
-}
-
-.modal-body {
-  position: relative;
-  padding: 20px 10px;
-}
-
-.btn-close {
-  border: none;
-  font-size: 20px;
-  padding: 20px;
-  cursor: pointer;
-  font-weight: bold;
-  color: #4aae9b;
-  background: transparent;
-}
-
-.btn-green {
-  color: white;
-  background: #4aae9b;
-  border: 1px solid #4aae9b;
-  border-radius: 2px;
-}
-
-.prefix {
-  display: inline-block;
-}
-
-.dangertext {
-  color: red;
-}
 </style>

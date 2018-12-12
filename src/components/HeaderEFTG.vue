@@ -5,7 +5,7 @@
         <div id="logo"><img src="../assets/logo-eftg.png" /></div>
         <div class="powered">
           <div>{{portal}}</div>
-          <div class="secondary-text">Powered by Blockchain</div>
+          <div class="secondary-text">Powered by Steem Blockchain</div>
         </div>
       </div>
       <div id="auth">
@@ -23,15 +23,17 @@
           </div>
           <button class="btn btn-primary" @click="logout">Logout</button>
         </div>
-        <div v-else><button class="btn btn-primary" @click="login">Login</button></div>
+        <div v-else>
+          <button class="btn btn-primary" @click="login">Login</button>
+          <b-modal ref="modalAuth" hide-footer title="Login">
+            <Auth ref="auth" v-on:login="auth = $event;" v-on:close="hideModal"></Auth>
+          </b-modal>
+        </div>
       </div>
-      <div v-if="showModal">
-        <Auth
-          ref="auth"
-          v-on:login="auth = $event;"
-          v-on:close="showModal = false;"
-        >
-        </Auth>
+      
+      <!--<div v-if="showModal">-->
+        <!--
+        -->
       </div>
     </div>
   </div>
@@ -79,7 +81,8 @@ export default {
     },
 
     login() {
-      this.showModal = true;
+      //this.showModal = true;
+      this.$refs.modalAuth.show()
     },
     logout() {
       console.log("@" + this.auth.user + " logout");
@@ -96,6 +99,9 @@ export default {
       };
       localStorage.removeItem("username");
       localStorage.removeItem("password");
+    },
+    hideModal() {
+      this.$refs.modalAuth.hide()
     },
     validImageUrl(url) {
       return url && url.length > 0; //todo: validate the whole path

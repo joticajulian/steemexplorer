@@ -140,8 +140,10 @@
             <button v-on:click="clear"  class="btn btn-secondary eftg-btn-primary">Clear</button>
           </div>
         </div>
+        <div v-if="alert.success" class="alert alert-success" role="alert">{{alertText.success}}</div>
+        <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alertText.danger}}</div>
       </div>
-    </form>
+    </form>    
   </div>
 </template>
 
@@ -244,7 +246,15 @@ export default {
         comment: "No error",
         financial_year: "No error",
         file: "No error"
-      }
+      },
+      alert: {
+        success: false,
+        danger: false,
+      },
+      alertText: {
+        success: '',
+        danger: '',
+      },
     };
   },
   components: {
@@ -335,6 +345,13 @@ export default {
         
         if (!valid) {
           console.log("Error validating fields!");
+          
+          self.alert.success = false;
+          self.alertText.success = '';
+        
+          self.alert.danger = true;
+          self.alertText.danger = 'Error validating fields';
+          
           return false;
         }
 
@@ -431,10 +448,24 @@ export default {
         console.log(post);
 
         var result = await client.broadcast.comment(post, privKey);
+        
+        self.alert.success = true;
+        self.alertText.success = 'Document published! https://explorer.blkcc.xyz/#/@'+username+'/'+permlink;
+        
+        self.alert.danger = false;
+        self.alertText.danger = '';
+        
         console.log("document publised!");
         console.log(result);
       }
-      submit_async().catch(console.error);
+      submit_async().catch(function(error){
+        console.log(error);
+        this.alert.success = false;
+        this.alertText.success = '';
+        
+        this.alert.danger = false;
+        this.alertText.danger = error.message;
+      });
     },
 
     clear() {
