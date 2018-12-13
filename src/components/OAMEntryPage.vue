@@ -21,10 +21,10 @@
                   <option disabled value="">Please select one</option>
                   <option
                     v-for="option in optionsHomeMemberState"
-                    v-bind:key="option.id"
-                    v-bind:value="option.id"
+                    v-bind:key="option.code"
+                    v-bind:value="option.code"
                   >
-                    {{ option.name }}
+                    {{ option.country }}
                   </option>
                 </select>
                 <div v-if="error.home_member_state" class="invalid-feedback">{{ errorText.home_member_state }}</div>
@@ -99,9 +99,9 @@
                 <select class="form-control" id="inputDocumentLanguage" v-model="document_language" :class="{'is-invalid': error.document_language }">
                   <option value=""></option>
                   <option
-                    v-for="option in languages"
-                    v-bind:key="option.id"
-                    v-bind:value="option.id"
+                    v-for="(option, code) in languages"
+                    v-bind:key="code"
+                    v-bind:value="code"
                   >
                     {{ option.name }}
                   </option>
@@ -166,18 +166,19 @@ export default {
       identifier_id: "1",
       identifier_value: "",
       subclass: "",
+      subclassTag: "",
       disclosure_date: "",
       document_language: "",
       comment: "",
       financial_year: "",
       optionsHomeMemberState: [
         {
-          id: "RO",
-          name: "Romania"
+          code: "RO",
+          country: "Romania"
         },
         {
-          id: "SP",
-          name: "Spain"
+          code: "SP",
+          country: "Spain"
         }
       ],
       docClasses: [
@@ -214,9 +215,10 @@ export default {
           ]
         }
       ],
+      docClassTags: {},
       languages: [
-        { id: "en-uk", name: "English" },
-        { id: "sp", name: "Spanish" }
+        { name: "English" },
+        { name: "Spanish" }
       ],
       identifiers: {
         "1": "LEI",
@@ -258,10 +260,16 @@ export default {
       },
     };
   },
+  
   components: {
     HeaderEFTG
   },
+  
   created() {
+    //load JSONs
+    this.loadJSONs();
+  
+    //validate fields while typing
     this.debounced_validateIssuerName = debounce(this.validateIssuerName, 300);
     this.debounced_validateHomeMemberState = debounce(
       this.validateHomeMemberState,
@@ -309,8 +317,19 @@ export default {
     },
     subclass: function(newVal) {
       this.debounced_validateSubclass();
-      if(newVal == "3" || newVal == "4") this.showFinancialYear = true;
-      else this.showFinancialYear = false;      
+      if(newVal == 3 || newVal == 4) this.showFinancialYear = true;
+      else this.showFinancialYear = false;
+      
+      this.subclassTag = this.docClassTags[newVal+""];
+      //search the corresponding Tag.
+      /*this.subclassTag = '';
+      for(var i=0; i<this.docClasses.length; i++) {
+        for(var j=0; j<this.docClasses[i].subclass.length; j++) {
+          if(this.docClasses[i].subclass[j].id === newVal){
+            this.subclassTag = this.docClasses[i].subclass[j].tag;            
+          }
+        }
+      }*/           
     },
     disclosure_date: function() {
       this.debounced_validateDisclosureDate();
@@ -343,7 +362,7 @@ export default {
         valid = self.validateFile(true) && valid;
         
         // Validate year in case subclass Annual or half-year Financial Report 
-        if(self.subclass == "3" || self.subclass == "4"){         
+        if(self.subclass == 3 || self.subclass == 4){         
           valid = self.validateFinancialYear(true) && valid;
         }else{
           self.financial_year = '';
@@ -355,11 +374,13 @@ export default {
         if (!valid) {
           console.log("Error validating fields!");
           
-          self.alert.success = false;
+          self.showAlert(false,"Error validating fields!");
+          
+          /*self.alert.success = false;
           self.alertText.success = '';
         
           self.alert.danger = true;
-          self.alertText.danger = 'Error validating fields';
+          self.alertText.danger = 'Error validating fields';*/
           
           return false;
         }
@@ -413,7 +434,7 @@ export default {
         var json_metadata = {
           issuer_name: self.issuer_name,
           home_member_state: self.home_member_state,
-          identifier_id: self.identifier_id,
+          identifier_id: parseInt(self.identifier_id),
           identifier_value: self.identifier_value,
           subclass: self.subclass,
           disclosure_date: discDate,
@@ -421,7 +442,7 @@ export default {
           comment: self.comment,
           financial_year: self.financial_year,
           tags: [
-            self.subclass,
+            self.subclassTag,
             self.issuer_name,
             self.home_member_state,
             self.identifier_value
@@ -458,24 +479,25 @@ export default {
 
         var result = await client.broadcast.comment(post, privKey);
         
-        self.alert.success = true;
+        /*self.alert.success = true;
         self.alertText.success = 'Document published! https://explorer.blkcc.xyz/#/@'+username+'/'+permlink;
         
         self.alert.danger = false;
-        self.alertText.danger = '';
-        
+        self.alertText.danger = '';*/
+        self.showAlert(true,'Document published! https://explorer.blkcc.xyz/#/@'+username+'/'+permlink);        
         console.log("document publised!");
       }
       submit_async().catch(function(error){
         console.log(error);
-        self.alert.success = false;
+        self.showAlert(false,error.message);
+        /*self.alert.success = false;
         self.alertText.success = '';
         
         self.alert.danger = true;
-        self.alertText.danger = error.message;
+        self.alertText.danger = error.message;*/
       });
     },
-
+    
     clear() {
       this.issuer_name = "";
       this.home_member_state = "";
@@ -522,6 +544,90 @@ export default {
         };
         reader.readAsArrayBuffer(inputFile);
       });
+    },
+    
+    showAlert(success, message){
+      if(success) {
+        this.alert.success = true;
+        this.alertText.success = message;
+        
+        this.alert.danger = false;
+        this.alertText.danger = '';
+      }else{
+        this.alert.success = false;
+        this.alertText.success = '';
+        
+        this.alert.danger = true;
+        this.alertText.danger = message;
+      }
+    },
+    
+    loadJSON(variable, url){
+      let self = this;
+      axios.get(url).then(function(result){
+        console.log("Response for "+variable);
+        console.log(result);
+        self[variable] = result.data;
+      }).catch(function(error){
+        console.log("Error with axios "+variable);
+        console.log(error);
+      });
+    },
+    
+    loadJSONs(){
+      let self = this;
+      
+      
+      // JSON Home member states
+      axios.get('https://cdn.blkcc.xyz/home_member_states.json').then(function(result){
+        self.optionsHomeMemberState = result.data;
+      }).catch(function(error){
+        console.log("Error downloading json file for home member states");
+        console.log(error);
+        self.showAlert(false,"Error downloading json file for home member states: "+error.message);    
+      });
+      
+      
+      // JSON Classes and Subclasses
+      axios.get('https://cdn.blkcc.xyz/class_subclass_tree.json').then(function(result){
+        self.docClasses = result.data;
+        
+        // saving tags in docClassTags
+        for(var i=0; i<self.docClasses.length; i++){
+          for(var j=0; j<self.docClasses[i].subclass.length; j++){
+            var subc = self.docClasses[i].subclass[j];
+            self.docClassTags[subc.id+""] = subc.tag;
+          }
+        }
+      }).catch(function(error){
+        console.log("Error downloading json file for classes");
+        console.log(error);
+        self.showAlert(false,"Error downloading json file for docClasses: "+error.message);        
+      });
+      
+      
+      // JSON Identifiers
+      axios.get('https://cdn.blkcc.xyz/identifier.json').then(function(result){
+        self.identifiers = result.data;
+        
+        // ids to string to use them in the attribute Value in radio button
+        for(var i=0; i<self.identifiers.length; i++) self.identifiers[i].id = String(self.identifiers[i].id);
+      }).catch(function(error){
+        console.log("Error downloading json file for identifiers");
+        console.log(error);
+        self.showAlert(false,"Error downloading json file for identifiers: "+error.message);        
+      });
+      
+      
+      // JSON Languages
+      axios.get('https://cdn.blkcc.xyz/lang.json').then(function(result){
+        self.languages = result.data;        
+      }).catch(function(error){
+        console.log("Error downloading json file for languages");        
+        console.log(error);
+        self.showAlert(false,"Error downloading json file for languages: "+error.message);
+      });
+      
     },
     
     //validation

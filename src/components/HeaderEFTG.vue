@@ -1,41 +1,38 @@
 <template
   ><div>
-    <div id="header">
-      <div id="brand">
-        <div id="logo"><img src="../assets/logo-eftg.png" /></div>
-        <div class="powered">
-          <div>{{portal}}</div>
-          <div class="secondary-text">Powered by Steem Blockchain</div>
+    <div class="full-container" id="header">
+      <div class="row">
+        <div class="col d-flex justify-content-start">
+          <div class="d-flex align-items-center">
+            <div id="logo-eftg"><img src="../assets/logo-eftg.png" /></div>
+          </div>          
         </div>
-      </div>
-      <div id="auth">
-        <div v-if="auth.logged">
-          <div
-            id="image-profile"
-            v-bind:style="{ backgroundImage: 'url(' + auth.imgUrl + ')' }"
-          >
-            <!--
-              <div v-if="validImageUrl(auth.imgUrl)">
-                <img :src="auth.imgUrl" />
-              </div>
-              <div v-else><img src="../assets/no-picture-profile.png" /></div>
-            -->
+        <div class="col d-flex justify-content-center">  
+          <div class="d-flex align-items-center">
+            <div id="logo-ec"><img src="../assets/logo2018commission.png" /></div>
           </div>
-          <button class="btn btn-primary" @click="logout">Logout</button>
         </div>
-        <div v-else>
-          <button class="btn btn-primary" @click="login">Login</button>
-          <b-modal ref="modalAuth" hide-footer title="Login">
-            <Auth ref="auth" v-on:login="auth = $event;" v-on:close="hideModal"></Auth>
-          </b-modal>
+        <div class="col d-flex justify-content-end">
+          <div class="d-flex align-items-center"> 
+            <div>           
+            <div v-if="auth.logged">
+              <div id="image-profile"
+                v-bind:style="{ backgroundImage: 'url(' + auth.imgUrl + ')' }"
+              >            
+              </div>
+              <button class="btn btn-primary" @click="logout">Logout</button>
+            </div>
+            <div v-else>
+              <button class="btn btn-primary" @click="login">Login</button>
+              <b-modal ref="modalAuth" hide-footer title="Login">
+                <Auth ref="auth" v-on:login="auth = $event;" v-on:close="hideModal"></Auth>
+              </b-modal>
+            </div>
+            </div>
+          </div>
         </div>
       </div>
-      
-      <!--<div v-if="showModal">-->
-        <!--
-        -->
-      </div>
-    </div>
+    </div>    
   </div>
 </template>
 
@@ -120,34 +117,24 @@ export default {
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
 }
 
-#logo {
+#logo-eftg {
   display: inline-block;
-  height: 2rem;
+  height: 1.9rem;
 }
 
-#logo img {
+#logo-eftg img {
   max-width: 100%;
   max-height: 100%;
 }
 
-#brand {
+#logo-ec {
   display: inline-block;
+  height: 3.7rem;
 }
 
-#auth {
-  display: flex;
-  justify-content: flex-end;
-  float: right;
-  align-items: center;
-  height: 2rem;
+#logo-ec img {
+  max-width: 100%;
   max-height: 100%;
-  //display: inline-block;
-  //float:right;
-}
-
-#auth div {
-  max-height: 100%;
-  vertical-align: middle;
 }
 
 #image-profile {
@@ -159,12 +146,7 @@ export default {
   background-size: cover;
   background-position: center center;
   border-radius: 50%;
-  //padding: 7px;
+  vertical-align: middle;
 }
 
-.powered {
-  display: inline-block;
-  margin-left: 10px;
-  font-size: 0.6rem;
-}
 </style>
