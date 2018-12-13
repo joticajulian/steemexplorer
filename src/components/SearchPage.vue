@@ -59,11 +59,11 @@
     </form>
     <div>
       <search-vuetable
-      api-url="https://raw.githubusercontent.com/scr53005/eftg-steem/master/dictionary/search.json"
+      api-url="https://cdn.blkcc.xyz/search.json"
       :fields="fields"
       :sort-order="sortOrder"
       :append-params="moreParams"
-      detail-row-component="my-detail-row"
+      :pagination-component="VuetablePagination"
     >
       <template slot="actions" slot-scope="props">
         <div class="custom-actions">
@@ -93,8 +93,10 @@ import HeaderEFTG from "@/components/HeaderEFTG";
 import Multiselect from 'vue-multiselect';
 import SearchVuetable from './SearchVuetable';
 import FieldDefs from './SearchFieldDefs.js';
+import DetailRow from './SearchDetailRow';
 
 Vue.component('search-vuetable', SearchVuetable);
+Vue.component('search-detail-row', DetailRow);
 
 
 export default {

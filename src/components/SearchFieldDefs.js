@@ -16,26 +16,33 @@ export default [
     dataClass: 'center aligned'
   },
   {
-    name: 'issuerName',
+    name: 'issuer_name',
     title: 'Issuer Name',
-    sortField: 'issuerName',
+    sortField: 'issuer_name',
   }, 
   {
-    name: 'homeMemberState',
+    name: 'home_member_state',
     title: 'HBS',
-    sortField: 'homeMemberState'
+    sortField: 'home_member_state'
   }, 
   {
-    name: 'language',
-    sortField: 'language'
+    name: 'document_language',
+    title: 'Language',
+    sortField: 'document_language'
   },
   {
-    name: 'docDisclosureDate',
+    name: 'disclosure_date',
     title: 'Disclosure date',
-    sortField: 'docDisclosureDate',
+    sortField: 'disclosure_date',
   },
   {
-    name: 'title',
+    name: 'financial_year',
+    title: 'Financial year',
+    sortField: 'financial_year',
+  },
+  {
+    name: 'comment',
+    title: 'Title',
     sortField: 'title',
   },
   {
