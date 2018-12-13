@@ -4,17 +4,17 @@
 	"subclass": [{
 		"id": 3,
 		"name": "Annual Financial Report",
-		"tag": "AFR"
+		"tag": "annual-financreport"
 	},
 	{
 		"id": 4,
 		"name": "Half-Year Financial Report",
-		"tag": "HYFR"
+		"tag": "halfyear-financreport"
 	},
 	{
 		"id": 5,
 		"name": "Interim Management Statement",
-		"tag": "IMS"
+		"tag": "interim-mgmtstatement"
 	}]
 },
 {
@@ -23,11 +23,11 @@
 	"subclass": [{
 		"id": 6,
 		"name": "Home Member State",
-		"tag": "HMS"
+		"tag": "memberstate"
 	},
 	{
 		"id": 7,
 		"name": "Inside Information",
-		"tag": "IIF"
+		"tag": "inside-information"
 	}]
 }]

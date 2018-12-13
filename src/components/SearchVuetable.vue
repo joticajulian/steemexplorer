@@ -108,11 +108,6 @@ export default {
     allcap (value) {
       return value.toUpperCase()
     },
-    genderLabel (value) {
-      return value === 'M'
-        ? '<span class="ui teal label"><i class="large man icon"></i>Male</span>'
-        : '<span class="ui pink label"><i class="large woman icon"></i>Female</span>'
-    },
     formatNumber (value) {
       return accounting.formatNumber(value, 2)
     },
