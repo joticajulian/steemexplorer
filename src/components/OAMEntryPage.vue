@@ -1,8 +1,10 @@
 <template>
   <div>
     <HeaderEFTG portal="OAM Portal" ref="headerEFTG"></HeaderEFTG>
-    <form id="eftg-form" novalidate>
-      <div class="container p-5 eftg-container">
+    <div class="container p-5 eftg-container">
+      <h2 class="text-center">European Financial Transparency Gateway</h2>                            
+      <h3 class="text-center">OAM Portal</h3>
+      <form id="eftg-form" novalidate>      
         <div class="row">
           <label class="col-md-12 col-form-label">*Indicates required field</label>          
           <div class="col-md-6">
@@ -142,8 +144,8 @@
         </div>
         <div v-if="alert.success" class="alert alert-success" role="alert">{{alertText.success}}</div>
         <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alertText.danger}}</div>
-      </div>
-    </form>    
+      </form>
+    </div>        
   </div>
 </template>
 
