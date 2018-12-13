@@ -449,7 +449,8 @@ export default {
             self.home_member_state,
             self.identifier_value
           ],
-          submission_date: Utils.dateToString(new Date())
+          submission_date: Utils.dateToString(new Date()),
+          app:Config.APP_VERSION
         };
 
         //create a permlink taking into account the existing posts
