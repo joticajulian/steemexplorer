@@ -22,7 +22,7 @@
                 <select class="form-control" id="inputHomeMemberState" v-model="home_member_state" :class="{'is-invalid': error.home_member_state }">
                   <option disabled value="">Please select one</option>
                   <option
-                    v-for="option in optionsHomeMemberState"
+                    v-for="option in dictionary.homeMemberStates"
                     v-bind:key="option.code"
                     v-bind:value="option.code"
                   >
@@ -62,17 +62,17 @@
               <div class="col-md-7">
                 <select class="form-control" id="inputClass" v-model="subclass" :class="{'is-invalid': error.subclass }">
                   <option disabled value=""></option>
-                  <option disabled value="">{{ docClasses[0].name }}</option>
+                  <option disabled value="">{{ dictionary.docClasses[0].name }}</option>
                   <option
-                    v-for="option in docClasses[0].subclass"
+                    v-for="option in dictionary.docClasses[0].subclass"
                     v-bind:key="option.id"
                     v-bind:value="option.id"
                   >
                     {{ option.name }}
                   </option>
-                  <option disabled value="">{{ docClasses[1].name }}</option>
+                  <option disabled value="">{{ dictionary.docClasses[1].name }}</option>
                   <option
-                    v-for="option in docClasses[1].subclass"
+                    v-for="option in dictionary.docClasses[1].subclass"
                     v-bind:key="option.id"
                     v-bind:value="option.id"
                   >
@@ -101,7 +101,7 @@
                 <select class="form-control" id="inputDocumentLanguage" v-model="document_language" :class="{'is-invalid': error.document_language }">
                   <option value=""></option>
                   <option
-                    v-for="(option, code) in languages"
+                    v-for="(option, code) in dictionary.languages"
                     v-bind:key="code"
                     v-bind:value="code"
                   >
@@ -150,13 +150,14 @@
 </template>
 
 <script>
-import Config from "@/config.js";
-import Utils from "@/js/utils.js";
 import debounce from "lodash.debounce";
 import axios from "axios";
 import Crypto from "crypto";
-import HeaderEFTG from "@/components/HeaderEFTG";
 
+import Config from "@/config.js";
+import Utils from "@/js/utils.js";
+import Dictionary from "@/mixins/Dictionary.js";
+import HeaderEFTG from "@/components/HeaderEFTG";
 
 export default {
   name: "OAMEntryPage",
@@ -173,60 +174,6 @@ export default {
       document_language: "",
       comment: "",
       financial_year: "",
-      optionsHomeMemberState: [
-        {
-          code: "RO",
-          country: "Romania"
-        },
-        {
-          code: "SP",
-          country: "Spain"
-        }
-      ],
-      docClasses: [
-        {
-          id: 1,
-          name: "Periodic Regulated Information",
-          subclass: [
-            {
-              id: 3,
-              name: "Annual Financial Report"
-            },
-            {
-              id: 4,
-              name: "Half-Year Financial Report"
-            },
-            {
-              id: 5,
-              name: "Interim Management Statement"
-            }
-          ]
-        },
-        {
-          id: 2,
-          name: "Ongoing Regulated Information",
-          subclass: [
-            {
-              id: 6,
-              name: "Home Member State"
-            },
-            {
-              id: 7,
-              name: "Inside Information"
-            }
-          ]
-        }
-      ],
-      docClassTags: {},
-      languages: [
-        { name: "English" },
-        { name: "Spanish" }
-      ],
-      identifiers: {
-        "1": "LEI",
-        "2": "VAT",
-        "3": "RegistrationNumber"
-      },
       showFinancialYear: false,
       error: {
         issuer_name: false,
@@ -267,10 +214,12 @@ export default {
     HeaderEFTG
   },
   
-  created() {
-    //load JSONs
-    this.loadJSONs();
+  mixins: [
+    Dictionary
+  ],
   
+  created() {
+    
     //validate fields while typing
     this.debounced_validateIssuerName = debounce(this.validateIssuerName, 300);
     this.debounced_validateHomeMemberState = debounce(
@@ -322,16 +271,7 @@ export default {
       if(newVal == 3 || newVal == 4) this.showFinancialYear = true;
       else this.showFinancialYear = false;
       
-      this.subclassTag = this.docClassTags[newVal+""];
-      //search the corresponding Tag.
-      /*this.subclassTag = '';
-      for(var i=0; i<this.docClasses.length; i++) {
-        for(var j=0; j<this.docClasses[i].subclass.length; j++) {
-          if(this.docClasses[i].subclass[j].id === newVal){
-            this.subclassTag = this.docClasses[i].subclass[j].tag;            
-          }
-        }
-      }*/           
+      this.subclassTag = this.dictionary.docClassTags[newVal+""];               
     },
     disclosure_date: function() {
       this.debounced_validateDisclosureDate();
@@ -349,7 +289,7 @@ export default {
   methods: {
     submit() {
       let self = this;
-
+      
       //Principal function to submit the file and data
       async function submit_async() {
         //Validation of data
@@ -476,22 +416,12 @@ export default {
 
         var result = await client.broadcast.comment(post, privKey);
         
-        /*self.alert.success = true;
-        self.alertText.success = 'Document published! https://explorer.blkcc.xyz/#/@'+username+'/'+permlink;
-        
-        self.alert.danger = false;
-        self.alertText.danger = '';*/
         self.showAlert(true,'Document published! https://explorer.blkcc.xyz/#/@'+username+'/'+permlink);        
         console.log("document publised!");
       }
       submit_async().catch(function(error){
         console.log(error);
-        self.showAlert(false,error.message);
-        /*self.alert.success = false;
-        self.alertText.success = '';
-        
-        self.alert.danger = true;
-        self.alertText.danger = error.message;*/
+        self.showAlert(false,error.message);        
       });
     },
     
@@ -569,62 +499,6 @@ export default {
         console.log("Error with axios "+variable);
         console.log(error);
       });
-    },
-    
-    loadJSONs(){
-      let self = this;
-      
-      
-      // JSON Home member states
-      axios.get('https://cdn.blkcc.xyz/home_member_states.json').then(function(result){
-        self.optionsHomeMemberState = result.data;
-      }).catch(function(error){
-        console.log("Error downloading json file for home member states");
-        console.log(error);
-        self.showAlert(false,"Error downloading json file for home member states: "+error.message);    
-      });
-      
-      
-      // JSON Classes and Subclasses
-      axios.get('https://cdn.blkcc.xyz/class_subclass_tree.json').then(function(result){
-        self.docClasses = result.data;
-        
-        // saving tags in docClassTags
-        for(var i=0; i<self.docClasses.length; i++){
-          for(var j=0; j<self.docClasses[i].subclass.length; j++){
-            var subc = self.docClasses[i].subclass[j];
-            self.docClassTags[subc.id+""] = subc.tag;
-          }
-        }
-      }).catch(function(error){
-        console.log("Error downloading json file for classes");
-        console.log(error);
-        self.showAlert(false,"Error downloading json file for docClasses: "+error.message);        
-      });
-      
-      
-      // JSON Identifiers
-      axios.get('https://cdn.blkcc.xyz/identifier.json').then(function(result){
-        self.identifiers = result.data;
-        
-        // ids to string to use them in the attribute Value in radio button
-        for(var i=0; i<self.identifiers.length; i++) self.identifiers[i].id = String(self.identifiers[i].id);
-      }).catch(function(error){
-        console.log("Error downloading json file for identifiers");
-        console.log(error);
-        self.showAlert(false,"Error downloading json file for identifiers: "+error.message);        
-      });
-      
-      
-      // JSON Languages
-      axios.get('https://cdn.blkcc.xyz/lang.json').then(function(result){
-        self.languages = result.data;        
-      }).catch(function(error){
-        console.log("Error downloading json file for languages");        
-        console.log(error);
-        self.showAlert(false,"Error downloading json file for languages: "+error.message);
-      });
-      
     },
     
     //validation
