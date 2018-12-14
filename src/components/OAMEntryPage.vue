@@ -33,6 +33,7 @@
               </div>
             </div>
             <div class="form-group row">
+              <!-- TODO: Take identifiers from dictionary -->
               <label for="inputLegalIdentifier" class="col-md-5 col-form-label">*Legal entity identifier</label>
               <div class="col-md-7">
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">

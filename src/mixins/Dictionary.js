@@ -51,6 +51,14 @@ export default {
     });      
       
     
+    // JSON Identifiers
+    axios.get('https://cdn.blkcc.xyz/identifier.json').then(function(result){
+      self.dictionary.identifiers = result.data;      
+    }).catch(function(error){
+      self.dictionary.error.identifiers = error;              
+    });
+    
+    
     // JSON Classes and Subclasses
     axios.get('https://cdn.blkcc.xyz/class_subclass_tree.json').then(function(result){
       self.dictionary.docClasses = result.data;
@@ -64,18 +72,6 @@ export default {
       }
     }).catch(function(error){
       self.dictionary.error.docClasses = error;        
-    });      
-      
-    
-    // JSON Identifiers
-    axios.get('https://cdn.blkcc.xyz/identifier.json').then(function(result){
-      self.dictionary.identifiers = result.data;
-      
-      // todo: don't change to string
-      // ids to string to use them in the attribute Value in radio button      
-      for(var i=0; i<self.dictionary.identifiers.length; i++) self.dictionary.identifiers[i].id = String(self.dictionary.identifiers[i].id);
-    }).catch(function(error){
-      self.dictionary.error.identifiers = error;              
-    });
+    });    
   }
 }
