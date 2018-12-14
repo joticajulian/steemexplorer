@@ -3,7 +3,7 @@
     <HeaderEFTG portal="OAM Portal" ref="headerEFTG"></HeaderEFTG>
     <div class="container p-5 eftg-container">
       <h2 class="text-center">European Financial Transparency Gateway</h2>                            
-      <h3 class="text-center">OAM Portal</h3>
+      <h3 class="text-center">OAM Data Entry Portal</h3>
       <form id="eftg-form" novalidate>      
         <div class="row">
           <label class="col-md-12 col-form-label">*Indicates required field</label>          
@@ -378,16 +378,10 @@ export default {
           
           self.showAlert(false,"Error validating fields!");
           
-          /*self.alert.success = false;
-          self.alertText.success = '';
-        
-          self.alert.danger = true;
-          self.alertText.danger = 'Error validating fields';*/
-          
           return false;
         }
 
-        //User credentials
+        // User credentials
         if (!self.$refs.headerEFTG.auth.logged) {
           self.$refs.headerEFTG.login();
           //todo: make that after login it submits the post automatically
@@ -396,8 +390,8 @@ export default {
         var username = self.$refs.headerEFTG.auth.user;
         var privKey = self.$refs.headerEFTG.auth.keys.posting;
 
-        //read file, calculation of the hash, and signature with privkey
-        //(format used in ImageHoster for uploading)
+        // read file, calculation of the hash, and signature with privkey
+        // (format used in ImageHoster for uploading)
         var localFile = document.getElementById("inputFile").files[0];
         var fileData = await self.readFileAsBuffer(localFile);
         const imageHash = Crypto.createHash("sha256")
@@ -407,21 +401,21 @@ export default {
         const signature = privKey.sign(imageHash).toString();
         console.log("signature:" + signature);
 
-        //Uploading the file
+        // Uploading the file
 
         var formFile = new FormData();
         formFile.append("pdf", localFile);
         var urlWithSignature =
           Config.IMAGE_HOSTER.url + "/" + username + "/" + signature;
 
-        //TODO: try - catch to check if the file size is too long and there is an error
+        // TODO: try - catch to check if the file size is too long and there is an error
         var response = await axios.post(urlWithSignature, formFile);
         var pdfUrl = response.data.url;
 
         console.log("response from image hoster");
         console.log(response);
 
-        //Creation of the new post in the blockchain
+        // Creation of the new post in the blockchain
         var discDate = "";
         try {
           discDate = Utils.dateToString(
@@ -453,7 +447,7 @@ export default {
           app:Config.APP_VERSION
         };
 
-        //create a permlink taking into account the existing posts
+        // create a permlink taking into account the existing posts
         var client = new dsteem.Client(Config.RPC_NODE.url);
         
         // TODO: addRandom starts false and we check if the post exists using dsteem 
@@ -778,12 +772,11 @@ export default {
     },
 
     validateFinancialYear(submit) {
-      //this is an optional field
-      if (this.financial_year === "") {
-        this.error.financial_year = false;
-        this.errorText.financial_year = "No error";
-        document.getElementById('inputFinancialYear').setCustomValidity("");
-        return true;
+      if (submit && this.financial_year === "") {
+        this.error.financial_year = true;
+        this.errorText.financial_year = "Insert the financial year";
+        document.getElementById('inputFinancialYear').setCustomValidity("invalid");
+        return false;
       }
 
       var number = this.financial_year;

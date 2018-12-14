@@ -144,9 +144,6 @@ export default {
         posting: { public: "", private: "" }
       };
 
-      // keysRole: suppossing that password is a specific role
-      var keyRole = { public: "", private: "" };
-
       for (var role in keysFromWIF) {
         keysFromWIF[role].private = dsteem.PrivateKey.fromLogin(
           _username,
@@ -157,10 +154,16 @@ export default {
           .createPublic(Config.STEEM_ADDRESS_PREFIX)
           .toString();
       }
-      keyRole.private = dsteem.PrivateKey.fromString(_password);
-      keyRole.public = keyRole.private
-        .createPublic(Config.STEEM_ADDRESS_PREFIX)
-        .toString();
+      
+      // keysRole: suppossing that password is a specific role
+      var keyRole = { public: "", private: "" };
+      
+      try{
+        keyRole.private = dsteem.PrivateKey.fromString(_password);
+        keyRole.public = keyRole.private
+          .createPublic(Config.STEEM_ADDRESS_PREFIX)
+          .toString();
+      }catch(error){}
 
       //var roles = ["owner", "active", "posting"];
       var roles = ["posting"];
