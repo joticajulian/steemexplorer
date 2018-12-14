@@ -5,28 +5,27 @@ export default [
     dataClass: 'center aligned'
   },
   {
-    name: '__sequence',
-    title: '#',
-    titleClass: 'center aligned',
-    dataClass: 'right aligned'
-  },
-  {
     name: '__checkbox',
     titleClass: 'center aligned',
     dataClass: 'center aligned'
   },
   {
-    name: 'issuer_name',
+    name: 'oam_name',
+    title: 'OAM Name',
+    sortField: 'oam_name',
+  }, 
+  {
+    name: 'issuer_name_identifier',
     title: 'Issuer Name',
     sortField: 'issuer_name',
   }, 
   {
-    name: 'home_member_state',
-    title: 'HBS',
+    name: 'home_member_state_name',
+    title: 'HMS',
     sortField: 'home_member_state'
   }, 
   {
-    name: 'document_language',
+    name: 'document_language_name',
     title: 'Language',
     sortField: 'document_language'
   },
@@ -34,6 +33,7 @@ export default [
     name: 'disclosure_date',
     title: 'Disclosure date',
     sortField: 'disclosure_date',
+    callback: 'formatDate|DD/MM/YYYY'
   },
   {
     name: 'financial_year',
@@ -42,7 +42,7 @@ export default [
   },
   {
     name: 'comment',
-    title: 'Title',
+    title: 'Document Title',
     sortField: 'title',
   },
   {

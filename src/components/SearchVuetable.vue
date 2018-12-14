@@ -111,7 +111,7 @@ export default {
     formatNumber (value) {
       return accounting.formatNumber(value, 2)
     },
-    formatDate (value, fmt = 'D MMM YYYY') {
+    formatDate (value, fmt = 'DD/MM/YYYY') {
       return (value == null)
         ? ''
         : moment(value, 'YYYY-MM-DD').format(fmt)

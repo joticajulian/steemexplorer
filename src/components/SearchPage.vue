@@ -3,6 +3,8 @@
     <HeaderEFTG portal="Investor Portal" ref="headerEFTG"></HeaderEFTG>
     <form>
     <div class="container p-5 eftg-container">
+      <h2 class="text-center">European Financial Transparency Gateway</h2>                            
+      <h3 class="text-center">Investor Portal</h3>
       <div class="row">
         <div class="col-md-9">
           <div class="form-row">
@@ -52,7 +54,9 @@
           </div>
         </div>
         <div class="col-md-3">
-            <div class="eftg-pdf-preview">PDF PREVIEW</div>
+            <div class="eftg-pdf-preview">
+              <img src="../assets/pdf-preview.png" style="width: 95%"/>           
+            </div>
         </div>
       </div>
     </div>
@@ -63,24 +67,23 @@
       :fields="fields"
       :sort-order="sortOrder"
       :append-params="moreParams"
-      :pagination-component="VuetablePagination"
+      detail-row-id="id"
+      detail-row-component="search-detail-row"
     >
       <template slot="actions" slot-scope="props">
         <div class="custom-actions">
-            <button type="button" class="btn btn-secondary eftg-btn-secondary" @click="onAction('view-item', props.rowData, props.rowIndex)">pdf</button>
+          <div class="row">
+            <div class="col-md-6">
+              <button class="ui basic button" @click="onAction('view-item', props.rowData, props.rowIndex)"><font-awesome-icon :icon="faEye" /></button>
+            </div>
+            <div class="col-md-6">
+              <button class="ui basic button" @click="onAction('download-item', props.rowData, props.rowIndex)"><font-awesome-icon :icon="faDownload" /></button>
+            </div>
+          </div>
         </div>
       </template>
     </search-vuetable>
     </div>
-    <div>
-        <pre class="language-json">Issuer Name<code>{{ issuerName  }}</code></pre>
-        <pre class="language-json">Home Member State<code>{{ homeMemberState  }}</code></pre>
-        <pre class="language-json">Disclosure Date From<code>{{ disclosureDateFrom  }}</code></pre>
-        <pre class="language-json">Disclosure Date To<code>{{ disclosureDateTo  }}</code></pre>
-        <pre class="language-json">Legal identifier<code>{{ legalIdentifier  }}</code></pre>
-        <pre class="language-json">Financial year<code>{{ financialYear  }}</code></pre>
-        <pre class="language-json">Title: <code>{{ title  }}</code></pre>
-      </div>
   </div>
   
 </template>
@@ -94,15 +97,21 @@ import Multiselect from 'vue-multiselect';
 import SearchVuetable from './SearchVuetable';
 import FieldDefs from './SearchFieldDefs.js';
 import DetailRow from './SearchDetailRow';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
+import { faEye } from '@fortawesome/free-solid-svg-icons';
 
 Vue.component('search-vuetable', SearchVuetable);
 Vue.component('search-detail-row', DetailRow);
+Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 
 export default {
   name: "SearchPage",
   data() {
     return {
+      faDownload: faDownload,
+      faEye: faEye,
       fields: FieldDefs,
       sortOrder: [
         {
@@ -191,7 +200,7 @@ export default {
     };
   },
   components: {
-    HeaderEFTG, Multiselect, SearchVuetable
+    HeaderEFTG, Multiselect, SearchVuetable, FontAwesomeIcon
   },
   mounted() {
     
@@ -213,7 +222,9 @@ export default {
       this.homeMemberState = [];
     },
     onAction (action, data, index) {
-      console.log('slot action: ' + action, data.name, index)
+      if(action === "download-item") {
+        window.open(data.document_url, '_blank'); return false;
+      }
     },    
   }
 };
@@ -237,12 +248,17 @@ export default {
   color: #AEAEAE;
 }
 
+.eftg-container {
+  
+}
+
 .eftg-pdf-preview {
-  height: 350px;
+  height: 340px;
   padding: 5px;
   text-align: center;
   background-color: #ccc;
-  border: 1px solid #aaa;
+  border: 5px solid #aaa;
+  overflow: hidden;
 }
 
 .eftg-btn-primary {
