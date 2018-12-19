@@ -54,8 +54,8 @@
           </div>
         </div>
         <div class="col-md-3">
-            <div class="eftg-pdf-preview">
-              <img src="../assets/pdf-preview.png" style="width: 95%"/>           
+            <div id="pdfPreview" class="eftg-pdf-preview">
+              <!-- <img src="../assets/pdf-preview.png" style="width: 95%"/>            -->
             </div>
         </div>
       </div>
@@ -100,6 +100,7 @@ import DetailRow from './SearchDetailRow';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import { faEye } from '@fortawesome/free-solid-svg-icons';
+import PDFObject from 'pdfobject';
 
 Vue.component('search-vuetable', SearchVuetable);
 Vue.component('search-detail-row', DetailRow);
@@ -203,7 +204,7 @@ export default {
     HeaderEFTG, Multiselect, SearchVuetable, FontAwesomeIcon
   },
   mounted() {
-    
+    //this.viewPdf('http://www.africau.edu/images/default/sample.pdf');
   },
   methods: {
     addTag (newTag) {
@@ -222,10 +223,25 @@ export default {
       this.homeMemberState = [];
     },
     onAction (action, data, index) {
-      if(action === "download-item") {
+      if (action === 'view-item') {
+        this.viewPdf(data.document_url);
+      } else if(action === "download-item") {
         window.open(data.document_url, '_blank'); return false;
       }
-    },    
+    }, 
+    viewPdf(file){
+      var options = {
+        pdfOpenParams: {
+          pagemode: "thumbs",
+          navpanes: 0,
+          toolbar: 0,
+          statusbar: 0,
+          view: "FitH"
+        }
+      };
+      var myPDF = PDFObject.embed(file, "#pdfPreview", options);
+      console.log(file);
+    },   
   }
 };
 </script>
