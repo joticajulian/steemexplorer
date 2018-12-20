@@ -17,7 +17,7 @@
               </div>
             </div>
             <div class="form-group row">
-              <label for="inputHomeMemberState" class="col-md-5 col-form-label">*Company country</label>
+              <label for="inputHomeMemberState" class="col-md-5 col-form-label">*Home Member State</label>
               <div class="col-md-7">
                 <select class="form-control" id="inputHomeMemberState" v-model="home_member_state" :class="{'is-invalid': error.home_member_state }">
                   <option disabled value="">Please select one</option>
@@ -414,11 +414,35 @@ export default {
 
         console.log("post");
         console.log(post);
+        
+        
 
+        
+        // new Date(Date.now() + expireTime).toISOString().slice(0, -5),
+        var head_block_number = 2854535; 
+        var head_block_id = "002b8e87b878c726a2f4c21a799d35cd576e890c"     
+        var prefix = Buffer.from(head_block_id, 'hex')
+        var prefix2 = prefix.readUInt32LE(4);
+          
+        var op = {
+            "ref_block_num": head_block_number,
+            "ref_block_prefix": prefix2,
+            "expiration": "2018-12-19T19:20:15",
+            "operations": [["comment", post ]],
+            "extensions": []            
+          };
+          
+        var signed_transaction = client.broadcast.sign(op , privKey);
+        
+        var params = [signed_transaction]; 
+        
+        //var result = await client.broadcast.call("broadcast_transaction_synchronous", params);                              
+        //var result = await client.broadcast.send(signed_transaction);
         var result = await client.broadcast.comment(post, privKey);
         
         self.showAlert(true,'Document published! https://explorer.blkcc.xyz/#/@'+username+'/'+permlink);        
         console.log("document publised!");
+        console.log(result);
       }
       submit_async().catch(function(error){
         console.log(error);
