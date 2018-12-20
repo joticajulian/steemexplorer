@@ -6,7 +6,7 @@
       <h2 class="text-center">European Financial Transparency Gateway</h2>                            
       <h3 class="text-center">Investor Portal</h3>
       <div class="row">
-        <div class="col-md-9">
+        <div class="col-md-12">
           <div class="form-row">
             <fieldset class="form-group col-md-6">
               <label class="eftg-label">ISSUER NAME</label>
@@ -53,13 +53,29 @@
             </fieldset>
           </div>
         </div>
-        <div class="col-md-3">
-            <div id="pdfPreview" class="eftg-pdf-preview">
+        <div class="col-md-3" hidden>
+            <div id="pdfPreview_" class="eftg-pdf-preview">
               <!-- <img src="../assets/pdf-preview.png" style="width: 95%"/>            -->
             </div>
         </div>
       </div>
     </div>
+      <div>
+        <!-- Modal Component -->
+        <b-modal id="mdPdfPreview" v-bind:title="docName" size="lg" centered>
+          <div id="pdfPreview" style="min-height: 600px !important; height: 600px !important;"></div>
+          <div slot="modal-footer" class="w-100">                        
+            <div class="text-right">
+              <button size="sm" class="btn ui basic button" @click="hideModal">
+                Close
+              </button>
+              <button size="sm" class="btn ui basic button" @click="onAction('download-item', tempData, tempIndex)">
+                <font-awesome-icon :icon="faDownload" />
+              </button>
+            </div>
+          </div>
+        </b-modal>
+      </div>
     </form>
     <div>
       <search-vuetable
@@ -74,10 +90,10 @@
         <div class="custom-actions">
           <div class="row">
             <div class="col-md-6">
-              <button class="ui basic button" @click="onAction('view-item', props.rowData, props.rowIndex)"><font-awesome-icon :icon="faEye" /></button>
+              <button class="btn ui basic button" @click="onAction('view-item', props.rowData, props.rowIndex)" v-b-modal.mdPdfPreview><font-awesome-icon :icon="faEye" /></button>
             </div>
             <div class="col-md-6">
-              <button class="ui basic button" @click="onAction('download-item', props.rowData, props.rowIndex)"><font-awesome-icon :icon="faDownload" /></button>
+              <button class="btn ui basic button" @click="onAction('download-item', props.rowData, props.rowIndex)"><font-awesome-icon :icon="faDownload" /></button>
             </div>
           </div>
         </div>
@@ -109,8 +125,12 @@ Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 export default {
   name: "SearchPage",
-  data() {
+  data() {    
     return {
+      docName: 'PDF Download',
+      tempData: '',
+      tempIndex: '',
+      showModal: false,
       faDownload: faDownload,
       faEye: faEye,
       fields: FieldDefs,
@@ -224,8 +244,12 @@ export default {
     },
     onAction (action, data, index) {
       if (action === 'view-item') {
+        this.docName = data.comment + ' - ' + data.financial_year ;
+        this.tempData = data;
+        this.tempIndex = index;
         this.viewPdf(data.document_url);
       } else if(action === "download-item") {
+        this.hideModal();
         window.open(data.document_url, '_blank'); return false;
       }
     }, 
@@ -240,8 +264,10 @@ export default {
         }
       };
       var myPDF = PDFObject.embed(file, "#pdfPreview", options);
-      console.log(file);
-    },   
+    },
+    hideModal () {
+      this.$root.$emit('bv::hide::modal','mdPdfPreview')
+    },
   }
 };
 </script>
