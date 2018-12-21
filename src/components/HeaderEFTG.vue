@@ -1,5 +1,5 @@
-<template
-  ><div>
+<template>
+  <div>
     <div class="full-container" id="header">
       <div class="row">
         <div class="col d-flex justify-content-start">
@@ -112,9 +112,12 @@ export default {
 
 <style scoped>
 #header {
-  padding: 10px;
+  padding: 10px;  
   border-bottom: 1px solid #eee;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+}
+#header .row{
+  margin: 0px !important;
 }
 
 #logo-eftg {
