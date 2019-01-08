@@ -1,42 +1,15 @@
 <template>
-  <!--<div class="modal-backdrop">
-    <div class="modal">
-      <header class="modal-header"><slot name="header">Login</slot></header>
-      <section class="modal-body">
-        <div>
-          <div class="prefix">@</div>
-          <input
-            type="text"
-            v-model="username"
-            placeholder="Enter your username"
-          />
-        </div>
-        <div>
-          <input
-            type="password"
-            v-model="password"
-            placeholder="Password or WIF"
-          />
-        </div>
-        <div>
-          <button @click="try_to_login">Login</button>
-          <button @click="close">Cancel</button>
-        </div>
-        <div v-if="error" class="dangertext">{{ errorText }}</div>
-      </section>
-    </div>
-  </div>-->
   <div class="container">
     <form novalidate>
       <div class="form-group row">
-        <label for="inputUsername" class="col-md-4 col-form-label">username</label>
+        <label for="inputUsername" class="col-md-4 col-form-label">USERNAME</label>
         <div class="col-md-8">
           <input class="form-control" type="text" id="inputUsername" 
              v-model="username" placeholder="Enter your username"/>        
         </div>
       </div>
       <div class="form-group row">
-        <label for="inputPassword" class="col-md-4 col-form-label">password</label>
+        <label for="inputPassword" class="col-md-4 col-form-label">PASSWORD</label>
         <div class="col-md-8">
           <input class="form-control" type="password" id="inputPassword" 
              v-model="password" placeholder="Password or WIF"/>        

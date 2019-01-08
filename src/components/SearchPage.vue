@@ -4,7 +4,7 @@
     <form>
     <div class="container p-5 eftg-container">
       <h2 class="text-center">European Financial Transparency Gateway</h2>                            
-      <h3 class="text-center">Investor Portal</h3>
+      <h3 class="text-center mb-5">Investor Portal</h3>
       <div class="row">
         <div class="col-md-12">
           <div class="form-row">

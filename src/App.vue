@@ -29,4 +29,22 @@ body {
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
 }
+
+#app .col-form-label{
+  font-size: 12px;
+  color: #AEAEAE;
+}
+
+#app .btn-primary {
+  background-color: #0F5494;
+}
+
+#app .btn-secondary {
+  background-color:#C3C3C3; 
+}
+
+#app .btn-secondary:not(:disabled):not(.disabled).active {
+  background-color:#0f5494; 
+}
+
 </style>

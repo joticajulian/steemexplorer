@@ -3,13 +3,12 @@
     <HeaderEFTG portal="OAM Portal" ref="headerEFTG"></HeaderEFTG>
     <div class="container p-5 eftg-container">
       <h2 class="text-center">European Financial Transparency Gateway</h2>                            
-      <h3 class="text-center">OAM Data Entry Portal</h3>
+      <h3 class="text-center mb-5">OAM Data Entry Portal</h3>
       <form id="eftg-form" novalidate>      
         <div class="row">
-          <label class="col-md-12 col-form-label">*Indicates required field</label>          
           <div class="col-md-6">
             <div class="form-group row">
-              <label for="inputIssuerName" class="col-md-5 col-form-label">*Company name</label>
+              <label for="inputIssuerName" class="col-md-5 col-form-label">ISSUER NAME*</label>
               <div class="col-md-7">
                 <input class="form-control" type="text" id="inputIssuerName" 
                        v-model="issuer_name" placeholder="Company" :class="{'is-invalid': error.issuer_name }"/>
@@ -17,7 +16,7 @@
               </div>
             </div>
             <div class="form-group row">
-              <label for="inputHomeMemberState" class="col-md-5 col-form-label">*Home Member State</label>
+              <label for="inputHomeMemberState" class="col-md-5 col-form-label">HOME MEMBER STATE*</label>
               <div class="col-md-7">
                 <select class="form-control" id="inputHomeMemberState" v-model="home_member_state" :class="{'is-invalid': error.home_member_state }">
                   <option disabled value="">Please select one</option>
@@ -34,7 +33,7 @@
             </div>
             <div class="form-group row">
               <!-- TODO: Take identifiers from dictionary -->
-              <label for="inputLegalIdentifier" class="col-md-5 col-form-label">*Legal entity identifier</label>
+              <label for="inputLegalIdentifier" class="col-md-5 col-form-label">LEGAL IDENTIFIER*</label>
               <div class="col-md-7">
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
                   <label class="btn btn-secondary" :class="{active: identifier_id==='1'}">
@@ -59,7 +58,7 @@
               </div>
             </div>
             <div class="form-group row" id="formClass">
-              <label for="inputClass" class="col-md-5 col-form-label">*Document class and subclass</label>
+              <label for="inputClass" class="col-md-5 col-form-label">DOCUMENT CLASS AND SUBCLASS*</label>
               <div class="col-md-7">
                 <select class="form-control" id="inputClass" v-model="subclass" :class="{'is-invalid': error.subclass }">
                   <option disabled value=""></option>
@@ -86,7 +85,7 @@
           </div>
           <div class="col-md-6">
             <div class="form-group row">
-              <label for="inputDocumentDisclosureDate" class="col-md-5 col-form-label">Document disclosure date</label>
+              <label for="inputDocumentDisclosureDate" class="col-md-5 col-form-label">DOCUMENT DISCLOSURE DATE</label>
               <div class="col-md-7">
                 <input type="text" id="inputDocumentDisclosureDate" 
                    v-model="disclosure_date" placeholder="dd/mm/yyyy"
@@ -97,7 +96,7 @@
               </div>
             </div>
             <div class="form-group row">
-              <label for="inputDocumentLanguage" class="col-md-5 col-form-label">Document language</label>
+              <label for="inputDocumentLanguage" class="col-md-5 col-form-label">DOCUMENT LANGUAGE</label>
               <div class="col-md-7">
                 <select class="form-control" id="inputDocumentLanguage" v-model="document_language" :class="{'is-invalid': error.document_language }">
                   <option value=""></option>
@@ -113,14 +112,14 @@
               </div>
             </div>
             <div class="form-group row">
-              <label for="inputComment" class="col-md-5 col-form-label">Document title</label>
+              <label for="inputComment" class="col-md-5 col-form-label">DOCUMENT TITLE</label>
               <div class="col-md-7">
                 <input type="text" id="inputComment" v-model="comment" placeholder="" class="form-control" :class="{'is-invalid': error.comment }"/>    
                 <div v-if="error.comment" class="invalid-feedback">{{ errorText.comment }}</div>
               </div>
             </div>            
             <div v-if="showFinancialYear" class="form-group row">
-              <label for="inputFinancialYear" class="col-md-5 col-form-label">*Document financial year</label>
+              <label for="inputFinancialYear" class="col-md-5 col-form-label">DOCUMENT FINANCIAL YEAR*</label>
               <div class="col-md-7">
                 <input type="text" id="inputFinancialYear" v-model="financial_year" placeholder="" class="form-control" :class="{'is-invalid': error.financial_year }"/>
                 <div v-if="error.financial_year" class="invalid-feedback">{{ errorText.financial_year }}</div>
@@ -138,10 +137,11 @@
           </div>
         </div>
         <div class="row">
-          <div class="form-group col-md-12 align-bottom" style="padding-top: 8px;">
+          <div class="form-group col-md-6 align-bottom" style="padding-top: 8px;">
             <button v-on:click="submit" class="btn btn-primary eftg-btn-primary">Submit</button>
             <button v-on:click="clear"  class="btn btn-secondary eftg-btn-primary">Clear</button>
           </div>
+          <label class="col-md-6 text-right col-form-label">*Indicates required field</label>
         </div>
         <div v-if="alert.success" class="alert alert-success" role="alert">{{alertText.success}}</div>
         <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alertText.danger}}</div>
@@ -248,7 +248,7 @@ export default {
     this.debounced_validateFinancialYear = debounce(
       this.validateFinancialYear,
       300
-    );
+    );  
   },
   mounted() {
     this.startEventListenerFile();
