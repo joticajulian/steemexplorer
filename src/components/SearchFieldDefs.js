@@ -21,7 +21,7 @@ export default [
   }, 
   {
     name: 'home_member_state_name',
-    title: 'HMS',
+    title: 'Company Country',
     sortField: 'home_member_state'
   }, 
   {
