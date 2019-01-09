@@ -13,7 +13,7 @@
               <multiselect v-model="issuerName" class="eftg-multiselect" tag-placeholder="Select" placeholder="Select Issuer Name" label="name" track-by="id" :options="optionsIssuerName" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
             </fieldset>
             <fieldset class="form-group col-md-6">
-              <label class="eftg-label">COMPANY COUNTRY</label>
+              <label class="eftg-label">HOME MEMBER STATE</label>
               <multiselect v-model="homeMemberState" class="eftg-multiselect" tag-placeholder="Select" placeholder="Select Home Member State" label="name" track-by="id" :options="optionsHomeMemberState" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
             </fieldset>
           </div>
@@ -28,7 +28,7 @@
             </fieldset>
             <fieldset class="form-group col-md-6">
               <label class="eftg-label">LEGAL IDENTIFIER</label>
-              <multiselect v-model="legalIdentifier" class="eftg-multiselect" tag-placeholder="Select" placeholder="Select legal identifier" label="name" track-by="id" :options="optionsLegalIdentifier" :multiple="false" :taggable="true" @tag="addTag"></multiselect>
+              <multiselect v-model="legalIdentifier" class="eftg-multiselect" tag-placeholder="Select" placeholder="Select legal identifier" label="name" track-by="id" :options="optionsLegalIdentifier" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
             </fieldset>
           </div>
           <div class="form-row">
