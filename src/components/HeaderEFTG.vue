@@ -1,38 +1,53 @@
 <template>
   <div>
-    <div class="full-container" id="header">
-    <div class="container">
-      <div class="row">
-        <div class="col d-flex justify-content-start">
-          <div class="d-flex align-items-end">
-            <div id="logo-ec"><img src="../assets/logo2018commissionname.png" /></div>            
+    <!--<div class="full-container" id="header">-->
+      <div class="container">
+        <div class="row">
+          <div class="col d-flex justify-content-start">
+            <div class="d-flex align-items-end">
+              <div id="logo-ec"><img src="../assets/logo2018commissionname.png" /></div>            
+            </div>
+            <div class="d-flex align-items-end">
+              <div id="logo-eftg" class="ml-2"><img src="../assets/logo-eftg.png" /></div>
+            </div>  
           </div>
-          <div class="d-flex align-items-end">
-            <div id="logo-eftg" class="ml-2"><img src="../assets/logo-eftg.png" /></div>
-          </div>  
-        </div>
-        <div class="col d-flex justify-content-end">
-          <div class="d-flex align-items-end"> 
-            <div>           
-            <div v-if="auth.logged">
-              <div id="image-profile"
-                v-bind:style="{ backgroundImage: 'url(' + auth.imgUrl + ')' }"
-              >            
+          <div v-if="showAuth" class="col d-flex justify-content-end">
+            <div class="d-flex align-items-end"> 
+              <div>           
+              <div v-if="auth.logged">
+                <div id="image-profile"
+                  v-bind:style="{ backgroundImage: 'url(' + auth.imgUrl + ')' }"
+                >            
+                </div>
+                <button class="btn btn-primary" @click="logout">Logout</button>
               </div>
-              <button class="btn btn-primary" @click="logout">Logout</button>
-            </div>
-            <div v-else>
-              <button class="btn btn-primary" @click="login">Login</button>
-              <b-modal ref="modalAuth" hide-footer title="Login">
-                <Auth ref="auth" v-on:login="auth = $event;" v-on:close="hideModal"></Auth>
-              </b-modal>
-            </div>
+              <div v-else>
+                <button class="btn btn-primary" @click="login">Login</button>
+                <b-modal ref="modalAuth" hide-footer title="Login">
+                  <Auth ref="auth" v-on:login="auth = $event;" v-on:close="hideModal"></Auth>
+                </b-modal>
+              </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+      <nav class="navbar navbar-expand">
+        <div class="collapse navbar-collapse">
+        <lu class="navbar-nav">
+          <li class="nav-item">
+            <router-link to="/" class="nav-item nav-link">OAM Portal</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link to="/search.html" class="nav-item nav-link">Investor Portal</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link to="/" class="nav-item nav-link">FAQ</router-link>
+          </li>
+        </lu>
       </div>
-    </div>    
+      </nav>
+    <!--</div>-->    
   </div>
 </template>
 
@@ -42,7 +57,8 @@ import Auth from "@/components/Auth";
 export default {
   name: "HeaderEFTG",
   props: {
-    portal: ""
+    portal: "",
+    showAuth: false
   },
   data() {
     return {

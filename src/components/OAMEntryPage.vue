@@ -1,6 +1,6 @@
 <template>
   <div>
-    <HeaderEFTG portal="OAM Portal" ref="headerEFTG"></HeaderEFTG>
+    <HeaderEFTG portal="OAM Portal" :showAuth="true" ref="headerEFTG"></HeaderEFTG>
     <div class="container">
       <h2 class="text-center">European Financial Transparency Gateway</h2>                            
       <h3 class="text-center mb-5">OAM Data Entry Portal</h3>
@@ -138,8 +138,8 @@
         </div>
         <div class="row">
           <div class="form-group col-md-6 align-bottom" style="padding-top: 8px;">
-            <button v-on:click="submit" class="btn btn-primary eftg-btn-primary">Submit</button>
-            <button v-on:click="clear"  class="btn btn-secondary eftg-btn-primary">Clear</button>
+            <button v-on:click="submit" class="btn btn-primary btn-large">Submit</button>
+            <button v-on:click="clear"  class="btn btn-secondary btn-large">Clear</button>
           </div>
           <label class="col-md-6 text-right col-form-label">*Indicates required field</label>
         </div>
