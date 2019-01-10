@@ -30,6 +30,12 @@ body {
   color: #2c3e50;
 }
 
+#app .container{
+  padding-left: 14px;
+  padding-right: 14px;
+  max-width: 1200px;
+}
+
 #app .col-form-label{
   font-size: 12px;
   color: #AEAEAE;
@@ -45,6 +51,15 @@ body {
 
 #app .btn-secondary:not(:disabled):not(.disabled).active {
   background-color:#0f5494; 
+}
+
+@media (min-width: 1200px) {
+
+  #app .container{
+    padding-left: 10%;
+    padding-right: 10%;
+  }
+
 }
 
 </style>

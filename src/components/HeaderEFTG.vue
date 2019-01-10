@@ -1,19 +1,18 @@
 <template>
   <div>
     <div class="full-container" id="header">
+    <div class="container">
       <div class="row">
         <div class="col d-flex justify-content-start">
-          <div class="d-flex align-items-center">
-            <div id="logo-eftg"><img src="../assets/logo-eftg.png" /></div>
-          </div>          
-        </div>
-        <div class="col d-flex justify-content-center">  
-          <div class="d-flex align-items-center">
-            <div id="logo-ec"><img src="../assets/logo2018commission.png" /></div>
+          <div class="d-flex align-items-end">
+            <div id="logo-ec"><img src="../assets/logo2018commissionname.png" /></div>            
           </div>
+          <div class="d-flex align-items-end">
+            <div id="logo-eftg" class="ml-2"><img src="../assets/logo-eftg.png" /></div>
+          </div>  
         </div>
         <div class="col d-flex justify-content-end">
-          <div class="d-flex align-items-center"> 
+          <div class="d-flex align-items-end"> 
             <div>           
             <div v-if="auth.logged">
               <div id="image-profile"
@@ -31,6 +30,7 @@
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>    
   </div>

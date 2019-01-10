@@ -1,7 +1,7 @@
 <template>
   <div>
     <HeaderEFTG portal="OAM Portal" ref="headerEFTG"></HeaderEFTG>
-    <div class="container p-5 eftg-container">
+    <div class="container">
       <h2 class="text-center">European Financial Transparency Gateway</h2>                            
       <h3 class="text-center mb-5">OAM Data Entry Portal</h3>
       <form id="eftg-form" novalidate>      
