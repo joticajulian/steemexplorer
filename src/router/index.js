@@ -2,6 +2,7 @@ import Vue from "vue";
 import Router from "vue-router";
 import OAMEntryPage from "@/components/OAMEntryPage";
 import SearchPage from "@/components/SearchPage";
+import Map from "@/components/Map";
 import SignTrx from "@/components/SignTrx";
 
 //steem.api.setOptions(Config.RPC_NODE);
@@ -23,6 +24,11 @@ export default new Router({
       path: "/test",
       name: "SignTrx",
       component: SignTrx
+    },
+    {
+      path: "/map",
+      name: "Map",
+      component: Map
     }
   ]
 });

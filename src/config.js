@@ -16,6 +16,12 @@ const STEEM_BLOCKS_PER_DAY = (24 * 60 * 60) / 3;
 const STEEM_SBD_START_PERCENT = 900;
 const STEEM_SBD_STOP_PERCENT = 1000;
 
+const MAP = {
+  TOP_WITNESSES: 30,
+  INI_POS : [50.5, 15], //latitude, longitude
+  INI_ZOOM : 4 ,
+}
+
 const APP_VERSION = "pulsar/0.0.1";
 
 export default {
@@ -36,6 +42,8 @@ export default {
   STEEM_BLOCKS_PER_DAY: STEEM_BLOCKS_PER_DAY,
   STEEM_SBD_START_PERCENT: STEEM_SBD_START_PERCENT,
   STEEM_SBD_STOP_PERCENT: STEEM_SBD_STOP_PERCENT,
+  
+  MAP:MAP,
   
   APP_VERSION: APP_VERSION,
 };

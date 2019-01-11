@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 744.09448819 1052.3622047"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="circles.svg">
+  <defs
+     id="defs4">
+    <linearGradient
+       id="linearGradient4217"
+       inkscape:collect="always">
+      <stop
+         id="stop4219"
+         offset="0"
+         style="stop-color:#002b00;stop-opacity:1" />
+      <stop
+         id="stop4221"
+         offset="1"
+         style="stop-color:#00d400;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient4211"
+       inkscape:collect="always">
+      <stop
+         id="stop4213"
+         offset="0"
+         style="stop-color:#2b0000;stop-opacity:1" />
+      <stop
+         id="stop4215"
+         offset="1"
+         style="stop-color:#ff2a2a;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient4138">
+      <stop
+         style="stop-color:#00002b;stop-opacity:1"
+         offset="0"
+         id="stop4140" />
+      <stop
+         style="stop-color:#5555ff;stop-opacity:1"
+         offset="1"
+         id="stop4142" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4138"
+       id="linearGradient4144"
+       x1="392.14288"
+       y1="440.93362"
+       x2="274.28574"
+       y2="280.21933"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.53563137,0,0,0.53563137,-32.626416,18.767065)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4211"
+       id="linearGradient4144-7"
+       x1="392.14288"
+       y1="440.93362"
+       x2="274.28574"
+       y2="280.21933"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.53563137,0,0,0.53563137,154.57169,15.802408)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4217"
+       id="linearGradient4144-1"
+       x1="392.14288"
+       y1="440.93362"
+       x2="274.28574"
+       y2="280.21933"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.53563137,0,0,0.53563137,340.43976,11.761798)" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.49497475"
+     inkscape:cx="299.41378"
+     inkscape:cy="860.10404"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1366"
+     inkscape:window-height="705"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Capa 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <circle
+       style="opacity:1;fill:url(#linearGradient4144);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3.13700008;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path4136"
+       cx="144.13193"
+       cy="212.85963"
+       r="51.267574"
+       inkscape:export-filename="D:\projects\steemexplorer\src\blue-circle.png"
+       inkscape:export-xdpi="17.549999"
+       inkscape:export-ydpi="17.549999" />
+    <circle
+       style="opacity:1;fill:url(#linearGradient4144-7);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3.13700008;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path4136-0"
+       cx="331.33005"
+       cy="209.89499"
+       r="51.267574"
+       inkscape:export-xdpi="17.549999"
+       inkscape:export-ydpi="17.549999" />
+    <circle
+       style="opacity:1;fill:url(#linearGradient4144-1);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3.13700008;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path4136-6"
+       cx="517.19812"
+       cy="205.85437"
+       r="51.267574"
+       inkscape:export-xdpi="17.549999"
+       inkscape:export-ydpi="17.549999" />
+  </g>
+</svg>

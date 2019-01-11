@@ -103,4 +103,27 @@ body {
 
 }
 
+.loader {
+  margin: 20px auto;
+  border: 3px solid #f3f3f3;  
+  border-radius: 50%;
+  border-top: 3px solid #72b4e8;
+  border-right: 3px solid #72b4e8;
+  width: 2rem;
+  height: 2rem;
+  -webkit-animation: spin 0.7s linear infinite; /* Safari */
+  animation: spin 0.7s linear infinite;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 </style>
