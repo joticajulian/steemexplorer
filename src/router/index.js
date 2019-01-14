@@ -1,17 +1,23 @@
 import Vue from "vue";
 import Router from "vue-router";
+import Home from "@/components/Home";
 import OAMEntryPage from "@/components/OAMEntryPage";
 import SearchPage from "@/components/SearchPage";
 import Map from "@/components/Map";
-import SignTrx from "@/components/SignTrx";
+import Faq from "@/components/Faq";
+import Contact from "@/components/Contact";
 
-//steem.api.setOptions(Config.RPC_NODE);
 Vue.use(Router);
 
 export default new Router({
   routes: [
     {
       path: "/",
+      name: "Home",
+      component: Home
+    },
+    {
+      path: "/oam-portal",
       name: "OAMEntryPage",
       component: OAMEntryPage
     },
@@ -21,14 +27,19 @@ export default new Router({
       component: SearchPage
     },
     {
-      path: "/test",
-      name: "SignTrx",
-      component: SignTrx
+      path: "/faq",
+      name: "Faq",
+      component: Faq
     },
     {
       path: "/map",
       name: "Map",
       component: Map
+    },
+    {
+      path: "/contact",
+      name: "Contact",
+      component: Contact
     }
   ]
 });

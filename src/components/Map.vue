@@ -17,7 +17,7 @@
       <div v-if="lastBlocks.length > 0">
         <div class="last-blocks">
           <!--<h2>Blocks</h2>-->
-          <transition-group name="list-blocks" tag="div" class="block-group">
+          <transition-group name="list-blocks" tag="div">
             <div v-for="(b,key,index) in lastBlocks" :key="b.block_num" class="list-blocks-item">
               <div class="block-left">
                 <a :href="'http://explorer.dev.blkcc.xyz:8082/#/b/'+b.block_num">{{b.block_num}}</a>
@@ -42,6 +42,7 @@
         <div class="loader"></div>
       </div>
     </div>
+    <!--<FooterEFTG></FooterEFTG>-->
   </div>
 </template>
 
@@ -56,6 +57,7 @@ import greenIconUrl from '@/assets/green-circle.png'
 import redIconUrl from '@/assets/red-circle.png'
 import blueIconUrl from '@/assets/blue-circle.png'
 import HeaderEFTG from "@/components/HeaderEFTG";
+import FooterEFTG from "@/components/FooterEFTG";
 
 // Axios import for HTTP requests
 import axios from 'axios';
@@ -89,7 +91,8 @@ export default {
   },
   
   components: {
-    HeaderEFTG
+    HeaderEFTG,
+    FooterEFTG
   },
   
   created() {

@@ -146,7 +146,8 @@
         <div v-if="alert.success" class="alert alert-success" role="alert">{{alertText.success}}</div>
         <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alertText.danger}}</div>
       </form>
-    </div>        
+    </div>
+    <!--<FooterEFTG></FooterEFTG>-->
   </div>
 </template>
 
@@ -159,6 +160,7 @@ import Config from "@/config.js";
 import Utils from "@/js/utils.js";
 import Dictionary from "@/mixins/Dictionary.js";
 import HeaderEFTG from "@/components/HeaderEFTG";
+import FooterEFTG from "@/components/FooterEFTG";
 
 export default {
   name: "OAMEntryPage",
@@ -212,7 +214,8 @@ export default {
   },
   
   components: {
-    HeaderEFTG
+    HeaderEFTG,
+    FooterEFTG
   },
   
   mixins: [

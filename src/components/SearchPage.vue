@@ -100,8 +100,8 @@
       </template>
     </search-vuetable>
     </div>
-  </div>
-  
+    <!--<FooterEFTG></FooterEFTG>-->
+  </div>  
 </template>
 
 <script>
@@ -109,6 +109,7 @@ import Vue from 'vue';
 import Config from "@/config.js";
 import Utils from "@/js/utils.js";
 import HeaderEFTG from "@/components/HeaderEFTG";
+import FooterEFTG from "@/components/FooterEFTG";
 import Multiselect from 'vue-multiselect';
 import SearchVuetable from './SearchVuetable';
 import FieldDefs from './SearchFieldDefs.js';
@@ -221,7 +222,7 @@ export default {
     };
   },
   components: {
-    HeaderEFTG, Multiselect, SearchVuetable, FontAwesomeIcon
+    HeaderEFTG, FooterEFTG, Multiselect, SearchVuetable, FontAwesomeIcon
   },
   mounted() {
     //this.viewPdf('http://www.africau.edu/images/default/sample.pdf');

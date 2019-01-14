@@ -1,19 +1,18 @@
 <template>
-  <div>
-    <!--<div class="full-container" id="header">-->
-      <div class="container">
-        <div class="row">
-          <div class="col d-flex justify-content-start">
-            <div class="d-flex align-items-end">
-              <div id="logo-ec"><img src="../assets/logo2018commissionname.png" /></div>            
-            </div>
-            <div class="d-flex align-items-end">
-              <div id="logo-eftg" class="ml-2"><img src="../assets/logo-eftg.png" /></div>
-            </div>  
+  <div>    
+    <div class="container">
+      <div class="row">
+        <div class="col d-flex justify-content-start">
+          <div class="d-flex align-items-end">
+            <div id="logo-ec"><a href="#/"><img src="../assets/logo2018commissionname.png" /></a></div>            
           </div>
-          <div v-if="showAuth" class="col d-flex justify-content-end">
-            <div class="d-flex align-items-end"> 
-              <div>           
+          <div class="d-flex align-items-end">
+            <div id="logo-eftg" class="ml-2"><a href="#/"><img src="../assets/logo-eftg.png" /></a></div>
+          </div>  
+        </div>
+        <div v-if="showAuth" class="col d-flex justify-content-end">
+          <div class="d-flex align-items-end"> 
+            <div>           
               <div v-if="auth.logged">
                 <div id="image-profile"
                   v-bind:style="{ backgroundImage: 'url(' + auth.imgUrl + ')' }"
@@ -27,27 +26,35 @@
                   <Auth ref="auth" v-on:login="auth = $event;" v-on:close="hideModal"></Auth>
                 </b-modal>
               </div>
-              </div>
             </div>
           </div>
         </div>
       </div>
-      <nav class="navbar navbar-expand">
-        <div class="collapse navbar-collapse">
-        <lu class="navbar-nav">
+    </div>
+    <nav class="navbar navbar-expand">
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav">
           <li class="nav-item">
-            <router-link to="/" class="nav-item nav-link">OAM Portal</router-link>
+            <router-link to="/" class="nav-item nav-link"><font-awesome-icon icon="home" /></router-link>
+          </li>
+          <li class="nav-item">
+            <router-link to="/oam-portal" class="nav-item nav-link">OAM Portal</router-link>
           </li>
           <li class="nav-item">
             <router-link to="/search.html" class="nav-item nav-link">Investor Portal</router-link>
           </li>
           <li class="nav-item">
+            <router-link to="/faq" class="nav-item nav-link">FAQ</router-link>
+          </li>
+          <li class="nav-item">
             <router-link to="/map" class="nav-item nav-link">Map</router-link>
           </li>
-        </lu>
+          <li class="nav-item">
+            <router-link to="/contact" class="nav-item nav-link">Contact</router-link>
+          </li>
+        </ul>
       </div>
-      </nav>
-    <!--</div>-->    
+    </nav>        
   </div>
 </template>
 
@@ -121,7 +128,7 @@ export default {
     }
   },
   components: {
-    Auth
+    Auth    
   }
 };
 </script>

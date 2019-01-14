@@ -1,9 +1,13 @@
 <template>
-  <div id="app"><router-view></router-view></div>
+  <div id="app">
+    <router-view style="min-height:90vh;">
+    </router-view>
+    <FooterEFTG></FooterEFTG>
+  </div>  
 </template>
 
 <script>
-//import HelloWorld from "./components/HelloWorld";
+import FooterEFTG from "@/components/FooterEFTG";
 
 export default {
   name: "App",
@@ -14,13 +18,16 @@ export default {
       "https://unpkg.com/eftg-dsteem@1.0.1/dist/dsteem.js"
     );
     document.head.appendChild(dsteemscript);
+  },
+  components: {
+    FooterEFTG
   }
 };
 </script>
 
 <style>
 body {
-  margin: 0px;
+  margin: 0px;  
 }
 
 #app {
@@ -87,6 +94,22 @@ body {
 
 #app .btn-secondary:not(:disabled):not(.disabled).active {
   background-color:#0f5494; 
+}
+
+#app .bg-primary {
+  background-color: #0F5494;
+}
+
+#app .bg-secondary {
+  background-color:#C3C3C3; 
+}
+
+#app .text-primary {
+  color: #0F5494 !important;
+}
+
+#app .text-secondary {
+  color: #C3C3C3 !important;
 }
 
 @media (min-width: 1200px) {
