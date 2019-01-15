@@ -10,15 +10,15 @@ import 'bootstrap-vue/dist/bootstrap-vue.css';
 
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faHome, faCoffee, faUniversity, faQuestionCircle, faBusinessTime } from '@fortawesome/free-solid-svg-icons'
+import { faHome, faUniversity, faQuestionCircle, faBusinessTime, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from '@fortawesome/vue-fontawesome'
 
 library.add(
   faHome,
-  faCoffee,
   faUniversity,
   faQuestionCircle,
-  faBusinessTime
+  faBusinessTime,
+  faExclamationTriangle,
 )
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)

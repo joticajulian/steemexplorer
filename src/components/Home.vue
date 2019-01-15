@@ -12,9 +12,9 @@
             <div class="col-8">
               <h5 class="card-title">Investor Portal</h5>
               <p class="card-text">For investor that wants to search details and financial data of the European companies.</p>
-              <a href="#/search.html" class="btn btn-primary">Open</a>
+              <a href="#/search.html" class="btn btn-primary">Open</a>              
             </div>
-          </div>          
+          </div>
         </div>
         <div class="card">
           <img class="card-img-top" src="">
@@ -43,6 +43,16 @@
           </div>
         </div>
       </div>
+      <div class="card-deck">
+        <div class="card">
+          <div class="card-body text-center bg-info"><font-awesome-icon icon="exclamation-triangle" size="2x" class="mr-2"/>Under development</div>
+        </div>
+        <div class="card">
+          <div class="card-body text-center bg-info"><font-awesome-icon icon="exclamation-triangle" size="2x" class="mr-2"/>Under development</div>
+        </div>
+        <div class="card" style="border: 1px solid rgba(0, 0, 0, 0)">          
+        </div>
+      </div>
       <p class="mt-4 text-justify">Aim of the EFTG Pilot Project consists in developing a Blockchain platform infrastructure technically enabling citizens and investors by giving them increased accessibility to public regulated information provided by the participating Officially Appointed Mechanisms (OAM). The EFTG Pilot Project also aims to provide search capability among real Member States' data, such as those from the Annual Financial Reports (AFR) in order to contribute to further integrated capital markets. EFTG is based on a new approach to build a distributed and decentralized platform system by interconnecting all the OAMs in Europe into a dedicated platform for sharing data instead of exchanging it, adding also a full traceability and ownership management of the submitted and consumed financial data.</p>      
     </div>            
   </div>
@@ -58,4 +68,4 @@ export default {
     HeaderEFTG
   },
 } 
-</script> 
+</script>

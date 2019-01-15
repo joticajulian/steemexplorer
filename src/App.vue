@@ -104,6 +104,10 @@ body {
   background-color:#C3C3C3; 
 }
 
+#app .bg-info {
+  background-color:#dbc80d !important; 
+}
+
 #app .text-primary {
   color: #0F5494 !important;
 }
