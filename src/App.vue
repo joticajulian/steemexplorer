@@ -65,6 +65,10 @@ body {
   color: #AEAEAE;
 }
 
+#app .card-body{
+  padding: 0.4rem;
+}
+
 #app .btn{
   text-transform: uppercase;
   border: none;
