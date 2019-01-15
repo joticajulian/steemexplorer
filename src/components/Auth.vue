@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <form novalidate>
+    <div novalidate>
       <div class="form-group row">
         <label for="inputUsername" class="col-md-4 col-form-label">USERNAME</label>
         <div class="col-md-8">
@@ -22,7 +22,7 @@
         </div>
       </div>
       <div v-if="error"  class="alert alert-danger" role="alert">{{errorText}}</div>   
-    </form>
+    </div>
   </div>  
 </template>
 

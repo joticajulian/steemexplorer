@@ -1,7 +1,7 @@
 <template>
   <div>
     <HeaderEFTG portal="Investor Portal" ref="headerEFTG"></HeaderEFTG>
-    <form>
+    <div> <!--<form>-->
     <div class="container">
       <h2 class="text-center">European Financial Transparency Gateway</h2>                            
       <h3 class="text-center mb-5">Investor Portal</h3>
@@ -76,7 +76,7 @@
           </div>
         </b-modal>
       </div>
-    </form>
+    </div> <!--</form>-->
     <div>
       <search-vuetable
       api-url="https://cdn.blkcc.xyz/search.json"

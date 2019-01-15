@@ -4,7 +4,7 @@
     <div class="container">
       <h2 class="text-center">European Financial Transparency Gateway</h2>                            
       <h3 class="text-center mb-5">OAM Data Entry Portal</h3>
-      <form id="eftg-form" novalidate>      
+      <div id="eftg-form" novalidate>      
         <div class="row">
           <div class="col-md-6">
             <div class="form-group row">
@@ -145,7 +145,7 @@
         </div>
         <div v-if="alert.success" class="alert alert-success" role="alert">{{alertText.success}}</div>
         <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alertText.danger}}</div>
-      </form>
+      </div>
     </div>
     <!--<FooterEFTG></FooterEFTG>-->
   </div>
