@@ -4,6 +4,7 @@ const SP = "SP";
 const VESTS = "VESTS";
 const RPC_NODE = { url: "https://api.blkcc.xyz" };
 const IMAGE_HOSTER = { url: "https://cdn.blkcc.xyz" };
+const EXPLORER = { url: "http://explorer.blkcc.xyz/#" };
 
 const STEEM_ADDRESS_PREFIX = "EUR";
 const STEEM_100_PERCENT = 10000;
@@ -31,6 +32,7 @@ export default {
   VESTS: VESTS,
   RPC_NODE: RPC_NODE,
   IMAGE_HOSTER: IMAGE_HOSTER,
+  EXPLORER: EXPLORER,
 
   STEEM_ADDRESS_PREFIX: STEEM_ADDRESS_PREFIX,
   STEEM_100_PERCENT: STEEM_100_PERCENT,
