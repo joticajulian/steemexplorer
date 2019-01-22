@@ -6,6 +6,7 @@ import SearchPage from "@/components/SearchPage";
 import Map from "@/components/Map";
 import Faq from "@/components/Faq";
 import Contact from "@/components/Contact";
+import Password from "@/components/Password";
 
 Vue.use(Router);
 
@@ -40,6 +41,11 @@ export default new Router({
       path: "/contact",
       name: "Contact",
       component: Contact
+    },
+    {
+      path: "/password",
+      name: "Password",
+      component: Password
     }
   ]
 });

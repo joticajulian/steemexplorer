@@ -1,5 +1,5 @@
 <template>
-  <div>    
+  <div>
     <div class="container">
       <div class="row">
         <div class="col d-flex justify-content-start">
@@ -13,17 +13,24 @@
         <div v-if="showAuth" class="col d-flex justify-content-end">
           <div class="d-flex align-items-end"> 
             <div>           
-              <div v-if="auth.logged">
-                <div id="image-profile"
-                  v-bind:style="{ backgroundImage: 'url(' + auth.imgUrl + ')' }"
-                >            
-                </div>
+              <div v-if="$store.state.auth.logged">
+                <b-dropdown variant="link" size="lg" no-caret>
+                  <template slot="button-content">
+                    <div id="image-profile" 
+                         v-bind:style="{ backgroundImage: 'url(' + $store.state.auth.imgUrl + ')' }"                  
+                    ></div>
+                  </template>
+                  <b-dropdown-header>{{$store.state.auth.user}}</b-dropdown-header>
+                  <b-dropdown-divider></b-dropdown-divider>
+                  <b-dropdown-item href="#/password"><font-awesome-icon icon="key" class="mr-2"/>Change Password</b-dropdown-item>                  
+                </b-dropdown>  
+  
                 <button class="btn btn-primary" @click="logout">Logout</button>
               </div>
               <div v-else>
                 <button class="btn btn-primary" @click="login">Login</button>
                 <b-modal ref="modalAuth" hide-footer title="Login">
-                  <Auth ref="auth" v-on:login="auth = $event;" v-on:close="hideModal"></Auth>
+                  <AuthComponent ref="auth" v-on:close="hideModal"></AuthComponent>
                 </b-modal>
               </div>
             </div>
@@ -64,7 +71,7 @@
 </template>
 
 <script>
-import Auth from "@/components/Auth";
+import AuthComponent from "@/components/Auth"
 
 export default {
   name: "HeaderEFTG",
@@ -74,23 +81,14 @@ export default {
   },
   data() {
     return {
-      auth: {
-        user: "",
-        logged: false,
-        imgUrl: "",
-        keys: {
-          owner: null,
-          active: null,
-          posting: null,
-          memo: null
-        }
-      },
       showModal: false
     };
   },
+  
   mounted() {
-    this.autologin();
+    this.autologin();    
   },
+  
   methods: {
     async autologin() {
       //todo: where to save username and password? localStorage is not secure
@@ -104,14 +102,14 @@ export default {
         }
       }*/
     },
-
+    
     login() {
-      //this.showModal = true;
       this.$refs.modalAuth.show()
     },
+    
     logout() {
-      console.log("@" + this.auth.user + " logout");
-      this.auth = {
+      console.log("@" + this.$store.state.auth.user + " logout");
+      this.$store.state.auth = {
         user: "",
         logged: false,
         imgUrl: "",
@@ -122,8 +120,7 @@ export default {
           memo: null
         }
       };
-      localStorage.removeItem("username");
-      localStorage.removeItem("password");
+      this.$emit('logout')
     },
     hideModal() {
       this.$refs.modalAuth.hide()
@@ -133,8 +130,11 @@ export default {
     }
   },
   components: {
-    Auth    
-  }
+    AuthComponent   
+  },
+  /*mixins: [
+    Auth
+  ],*/
 };
 </script>
 

@@ -60,6 +60,7 @@ export default {
       async function main() {
         var auth = await self.login(self.username, self.password);
         if (auth.logged) {
+          self.$store.state.auth = auth
           self.$emit("login", auth);
           self.$emit("close");
 

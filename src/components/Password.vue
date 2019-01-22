@@ -1,0 +1,244 @@
+<template>
+  <div>
+    <HeaderEFTG :showAuth="true" ref="headerEFTG"></HeaderEFTG>
+    <div class="container">
+      <h2>Change Password</h2>                            
+      <div id="password-form" novalidate>      
+        <div class="row">
+          <div class="col-12">
+            <ul>
+              <li>The first rule of EFTG is: Do not lose your password.</li>
+              <li>The second rule of EFTG is: Nobody can reset your password.</li>
+              <li>The third rule of EFTG is: Nobody can recover your password.</li>
+              <li>The fourth rule: If you can remember the password, it's not secure.</li>
+              <li>The fifth rule: Use only randomly-generated passwords.</li>
+              <li>The sixth rule: Do not tell anyone your password.</li>
+              <li>The seventh rule: Always back up your password.</li>
+            </ul>
+          </div>
+        </div>
+          <div class="form-group row">
+            <label for="inputUsername" class="col-md-2 col-form-label">USERNAME</label>
+            <div class="col-md-6">
+              <input class="form-control" type="text" id="inputIssuerName" 
+                     v-model="$store.state.auth.user" placeholder="Username" disabled/>              
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="inputCurrentPassword" class="col-md-2 col-form-label">CURRENT PASSWORD</label>
+            <div class="col-md-6">
+              <input class="form-control" type="password" id="inputCurrentPassword" 
+                     v-model="currentPassword" placeholder="Current password"
+                     :class="{'is-invalid': error.currentPassword }"/>
+              <div v-if="error.currentPassword" class="invalid-feedback">{{ errorText.currentPassword }}</div>       
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="inputNewPassword" class="col-md-2 col-form-label">NEW PASSWORD</label>
+            <div class="col-md-6">
+              <input class="form-control" type="password" id="inputNewPassword" 
+                     v-model="newPassword" placeholder="New password"
+                     :class="{'is-invalid': error.newPassword }"/>              
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="inputReNewPassword" class="col-md-2 col-form-label">RE-ENTER NEW PASSWORD</label>
+            <div class="col-md-6">
+              <input class="form-control" type="password" id="inputReNewPassword" 
+                     v-model="reNewPassword" placeholder="New password"
+                     :class="{'is-invalid': error.reNewPassword }"/>
+              <div v-if="error.reNewPassword" class="invalid-feedback">{{ errorText.reNewPassword }}</div>
+            </div>
+          </div>
+          <div class="form-check row">
+            <input type="checkbox" class="form-check-input col-md-12"
+                   id="checkBoxWarning1" v-model="warning1"
+                   :class="{'is-invalid': error.warning1 }">
+            <label class="form-check-label" for="checkBoxWarning1">I understand that lost passwords cannot be recovered</label>            
+          </div>
+          <div class="form-check row">
+            <input type="checkbox" class="form-check-input col-md-12"
+                   id="checkBoxWarning2" v-model="warning2"
+                   :class="{'is-invalid': error.warning2 }">
+            <label class="form-check-label" for="checkBoxWarning2">I have securely saved my new password</label>            
+          </div>
+          <div class="form-group row">
+            <div class="col-12">
+              <button v-on:click="updatePassword" class="btn btn-primary mt-2">Update Password</button>
+            </div>            
+          </div>
+          <div v-if="alert.success" class="alert alert-success" role="alert">{{alertText.success}}</div>
+          <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alertText.danger}}</div>
+        </div>
+      
+    </div>    
+  </div>
+</template>
+
+<script>
+import debounce from "lodash.debounce";
+
+import Config from "@/config.js";
+import Utils from "@/js/utils.js";
+import HeaderEFTG from "@/components/HeaderEFTG";
+
+export default {
+  name: "Password",
+  
+  data() {
+    return {
+      account: null,
+      currentPassword: '',
+      newPassword: '',
+      reNewPassword: '',
+      username: '',
+      warning1: false,
+      warning2: false,
+      error:{
+        currentPassword: false,
+        newPassword: false,
+        reNewPassword: false,
+        warning1: false,
+        warning2: false,
+      },
+      errorText:{
+        currentPassword: 'No error',
+        newPassword: 'No error',
+        reNewPassword: 'No error',
+        warning1: 'No error',
+        warning2: 'No error',
+      },      
+      alert: {
+        success: false,
+        danger: false,
+      },
+      alertText: {
+        success: '',
+        danger: '',
+      },
+    };
+  },
+  
+  components: {
+    HeaderEFTG    
+  },
+  
+  created() {    
+    //validate current password
+    this.debounced_validateCurrentPassword = debounce(this.validateCurrentPassword, 300);
+    this.getUser()  
+  },
+  
+  watch: {
+    currentPassword: function() {
+      this.debounced_validateCurrentPassword();
+    },
+    newPassword: function(newVal) {
+      if(newVal === this.reNewPassword){
+        this.error.newPassword = false
+        this.error.reNewPassword = false
+        this.errorText.newPassword = 'No error'
+        this.errorText.reNewPassword = 'No error'
+      } else {
+        this.error.newPassword = true
+        this.error.reNewPassword = true
+        this.errorText.newPassword = "Password doesn't match"
+        this.errorText.reNewPassword = "Password doesn't match"
+      }
+      
+      // TODO: help the user to put a good password
+      
+    },
+    reNewPassword: function(newVal) {
+      if(newVal === this.newPassword){
+        this.error.newPassword = false
+        this.error.reNewPassword = false
+        this.errorText.newPassword = 'No error'
+        this.errorText.reNewPassword = 'No error'
+      } else {
+        this.error.newPassword = true
+        this.error.reNewPassword = true
+        this.errorText.newPassword = "Password doesn't match"
+        this.errorText.reNewPassword = "Password doesn't match"
+      }
+    },
+    warning1: function(checked) {
+      if(checked){
+        this.error.warning1 = false
+        this.errorText.warning1 = 'No error'
+      } else {
+        this.error.warning1 = true
+        this.errorText.warning1 = 'Check this field'
+      }      
+    },
+    warning2: function(checked) {
+      if(checked){
+        this.error.warning2 = false
+        this.errorText.warning2 = 'No error'
+      } else {
+        this.error.warning2 = true
+        this.errorText.warning2 = 'Check this field'
+      }
+    }
+  },
+  
+  methods: {
+    updatePassword () {
+      let self = this;
+      
+      //TODO: Update Password
+      
+      //Principal function to submit the file and data
+      async function submit_async() {
+      }
+      submit_async().catch(function(error){
+        console.log(error);
+        self.showAlert(false,error.message);        
+      });
+    },
+    
+    showAlert(success, message){
+      if(success) {
+        this.alert.success = true;
+        this.alertText.success = message;
+        
+        this.alert.danger = false;
+        this.alertText.danger = '';
+      }else{
+        this.alert.success = false;
+        this.alertText.success = '';
+        
+        this.alert.danger = true;
+        this.alertText.danger = message;
+      }
+    },
+    
+    async getUser(){
+      var client = new dsteem.Client(Config.RPC_NODE.url)
+      const accounts = await client.database.getAccounts([this.$store.state.auth.user])
+      this.account = accounts[0]      
+    },
+    
+    //validation
+    validateCurrentPassword() {
+      var client = new dsteem.Client(Config.RPC_NODE.url)
+      var privKey = dsteem.PrivateKey.fromLogin(
+          this.$store.state.auth.user,
+          this.currentPassword,
+          'posting'
+        )
+      var pubKey = privKey.createPublic(Config.STEEM_ADDRESS_PREFIX).toString();
+      
+      if(!this.account) return false
+      
+      if(this.account.posting.key_auths[0][0] === pubKey){
+        this.error.currentPassword = false
+        this.errorText.currentPassword = 'No error'
+      } else {
+        this.error.currentPassword = true
+        this.errorText.currentPassword = 'Incorrect password'
+      }
+    },    
+  }
+};
+</script>
