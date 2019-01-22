@@ -105,11 +105,11 @@ body {
 }
 
 #app .bg-primary {
-  background-color: #0F5494;
+  background-color: #0F5494 !important;
 }
 
 #app .bg-secondary {
-  background-color:#C3C3C3; 
+  background-color:#C3C3C3 !important; 
 }
 
 #app .bg-info {
