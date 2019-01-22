@@ -69,6 +69,10 @@ body {
   padding: 0.4rem;
 }
 
+#app .card-text{
+  min-height: 7rem;
+}
+
 #app .btn{
   text-transform: uppercase;
   border: none;
