@@ -1,16 +1,16 @@
 <template>
   <div>
     <HeaderEFTG portal="Investor Portal" ref="headerEFTG"></HeaderEFTG>
-    <div> <!--<form>-->
-    <div class="container">
+    <form>
+    <div class="container p-5 eftg-container">
       <h2 class="text-center">European Financial Transparency Gateway</h2>                            
-      <h3 class="text-center mb-5">Investor Portal</h3>
+      <h3 class="text-center">Investor Portal</h3>
       <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-9">
           <div class="form-row">
             <fieldset class="form-group col-md-6">
               <label class="eftg-label">ISSUER NAME</label>
-              <multiselect v-model="issuerName" class="eftg-multiselect" tag-placeholder="Select" placeholder="Select Issuer Name" label="name" track-by="id" :options="optionsIssuerName" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
+              <multiselect v-model="issuerName" class="eftg-multiselect" tag-placeholder="Select" placeholder="Select Issuer Name" label="name" track-by="name" :options="pulsarApi.issuerNames" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
             </fieldset>
             <fieldset class="form-group col-md-6">
               <label class="eftg-label">HOME MEMBER STATE</label>
@@ -28,7 +28,7 @@
             </fieldset>
             <fieldset class="form-group col-md-6">
               <label class="eftg-label">LEGAL IDENTIFIER</label>
-              <multiselect v-model="legalIdentifier" class="eftg-multiselect" tag-placeholder="Select" placeholder="Select legal identifier" label="name" track-by="id" :options="optionsLegalIdentifier" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
+              <multiselect v-model="legalIdentifier" class="eftg-multiselect" tag-placeholder="Select" placeholder="Select legal identifier" label="identifier_value" track-by="identifier_value" :options="pulsarApi.legalIdentifiers" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
             </fieldset>
           </div>
           <div class="form-row">
@@ -53,30 +53,14 @@
             </fieldset>
           </div>
         </div>
-        <div class="col-md-3" hidden>
-            <div id="pdfPreview_" class="eftg-pdf-preview">
-              <!-- <img src="../assets/pdf-preview.png" style="width: 95%"/>            -->
+        <div class="col-md-3">
+            <div class="eftg-pdf-preview">
+              <img src="../assets/pdf-preview.png" style="width: 95%"/>           
             </div>
         </div>
       </div>
     </div>
-      <div>
-        <!-- Modal Component -->
-        <b-modal id="mdPdfPreview" v-bind:title="docName" size="lg" centered>
-          <div id="pdfPreview" style="min-height: 600px !important; height: 600px !important;"></div>
-          <div slot="modal-footer" class="w-100">                        
-            <div class="text-right">
-              <button size="sm" class="btn ui basic button" @click="hideModal">
-                Close
-              </button>
-              <button size="sm" class="btn ui basic button" @click="onAction('download-item', tempData, tempIndex)">
-                <font-awesome-icon :icon="faDownload" />
-              </button>
-            </div>
-          </div>
-        </b-modal>
-      </div>
-    </div> <!--</form>-->
+    </form>
     <div>
       <search-vuetable
       api-url="https://cdn.blkcc.xyz/search.json"
@@ -90,26 +74,26 @@
         <div class="custom-actions">
           <div class="row">
             <div class="col-md-6">
-              <button class="btn ui basic button" @click="onAction('view-item', props.rowData, props.rowIndex)" v-b-modal.mdPdfPreview><font-awesome-icon :icon="faEye" /></button>
+              <button class="ui basic button" @click="onAction('view-item', props.rowData, props.rowIndex)"><font-awesome-icon :icon="faEye" /></button>
             </div>
             <div class="col-md-6">
-              <button class="btn ui basic button" @click="onAction('download-item', props.rowData, props.rowIndex)"><font-awesome-icon :icon="faDownload" /></button>
+              <button class="ui basic button" @click="onAction('download-item', props.rowData, props.rowIndex)"><font-awesome-icon :icon="faDownload" /></button>
             </div>
           </div>
         </div>
       </template>
     </search-vuetable>
     </div>
-    <!--<FooterEFTG></FooterEFTG>-->
-  </div>  
+  </div>
+  
 </template>
 
 <script>
 import Vue from 'vue';
 import Config from "@/config.js";
 import Utils from "@/js/utils.js";
+import PulsarApi from "@/mixins/PulsarApi.js"
 import HeaderEFTG from "@/components/HeaderEFTG";
-import FooterEFTG from "@/components/FooterEFTG";
 import Multiselect from 'vue-multiselect';
 import SearchVuetable from './SearchVuetable';
 import FieldDefs from './SearchFieldDefs.js';
@@ -117,7 +101,6 @@ import DetailRow from './SearchDetailRow';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import { faEye } from '@fortawesome/free-solid-svg-icons';
-import PDFObject from 'pdfobject';
 
 Vue.component('search-vuetable', SearchVuetable);
 Vue.component('search-detail-row', DetailRow);
@@ -126,12 +109,8 @@ Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 export default {
   name: "SearchPage",
-  data() {    
+  data() {
     return {
-      docName: 'PDF Download',
-      tempData: '',
-      tempIndex: '',
-      showModal: false,
       faDownload: faDownload,
       faEye: faEye,
       fields: FieldDefs,
@@ -143,15 +122,7 @@ export default {
         }
       ],
       moreParams: {},
-      issuerName: [{ id: "1", name: "Google S.A." }],
-      optionsIssuerName: [{
-          id: "1",
-          name: "Google S.A."
-        }, {
-          id: "2",
-          name: "Facebook S.A."
-        }
-      ],
+      issuerName: [],
       disclosureDateFrom: null,
       disclosureDateTo: null,
       homeMemberState: [{id: "RO", name: "Romania"}],
@@ -163,15 +134,7 @@ export default {
           name: "Spain"
         }
       ],
-      legalIdentifier: [{id: "1", name: "4000302021"}],
-      optionsLegalIdentifier: [{
-          id: "1",
-          name: "4000302021"
-        }, {
-          id: "2",
-          name: "815600828773"
-        }
-      ],
+      legalIdentifier: [],
       financialYear : [{id: "2018"}],
       optionsFinancialYear: [{
           id: "2018"
@@ -222,10 +185,13 @@ export default {
     };
   },
   components: {
-    HeaderEFTG, FooterEFTG, Multiselect, SearchVuetable, FontAwesomeIcon
+    HeaderEFTG, Multiselect, SearchVuetable, FontAwesomeIcon
   },
+  mixins: [
+    PulsarApi
+  ],
   mounted() {
-    //this.viewPdf('http://www.africau.edu/images/default/sample.pdf');
+    
   },
   methods: {
     addTag (newTag) {
@@ -244,31 +210,10 @@ export default {
       this.homeMemberState = [];
     },
     onAction (action, data, index) {
-      if (action === 'view-item') {
-        this.docName = data.comment + ' - ' + data.financial_year ;
-        this.tempData = data;
-        this.tempIndex = index;
-        this.viewPdf(data.document_url);
-      } else if(action === "download-item") {
-        this.hideModal();
+      if(action === "download-item") {
         window.open(data.document_url, '_blank'); return false;
       }
-    }, 
-    viewPdf(file){
-      var options = {
-        pdfOpenParams: {
-          pagemode: "thumbs",
-          navpanes: 0,
-          toolbar: 0,
-          statusbar: 0,
-          view: "FitH"
-        }
-      };
-      var myPDF = PDFObject.embed(file, "#pdfPreview", options);
-    },
-    hideModal () {
-      this.$root.$emit('bv::hide::modal','mdPdfPreview')
-    },
+    },    
   }
 };
 </script>
