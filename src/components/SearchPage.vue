@@ -63,6 +63,7 @@
     </form>
     <div>
       <search-vuetable
+      ref='searchvuetable'
       api-url="https://cdn.blkcc.xyz/search.json"
       :fields="fields"
       :sort-order="sortOrder"
@@ -125,7 +126,7 @@ export default {
       issuerName: [],
       disclosureDateFrom: null,
       disclosureDateTo: null,
-      homeMemberState: [{id: "RO", name: "Romania"}],
+      homeMemberState: [],
       optionsHomeMemberState: [{
           id: "RO",
           name: "Romania"
@@ -203,8 +204,10 @@ export default {
       this.optionsHomeMemberState.push(tag)
     },
     submit() {
-        console.log("json_metadata");
-        console.log(json_metadata);
+      console.log("submit");
+      this.$refs.searchvuetable.refresh({
+        legalIdentifier: this.legalIdentifier
+      });
     },
     clear() {
       this.homeMemberState = [];
@@ -213,7 +216,7 @@ export default {
       if(action === "download-item") {
         window.open(data.document_url, '_blank'); return false;
       }
-    },    
+    }
   }
 };
 </script>
