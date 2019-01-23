@@ -8,7 +8,7 @@
         <div class="row">
           <div class="col-md-6">
             <div class="form-group row">
-              <label for="inputIssuerName" class="col-md-5 col-form-label">ISSUER NAME*</label>
+              <label for="inputIssuerName" class="col-md-5 col-form-label">ISSUER NAME</label>
               <div class="col-md-7">
                 <input class="form-control" type="text" id="inputIssuerName" 
                        v-model="issuer_name" placeholder="Company" :class="{'is-invalid': error.issuer_name }"/>
@@ -16,7 +16,7 @@
               </div>
             </div>
             <div class="form-group row">
-              <label for="inputHomeMemberState" class="col-md-5 col-form-label">ISSUER's HOME MEMBER STATE (HMS)*</label>
+              <label for="inputHomeMemberState" class="col-md-5 col-form-label">ISSUER's HOME MEMBER STATE (HMS)</label>
               <div class="col-md-7">
                 <select class="form-control" id="inputHomeMemberState" v-model="home_member_state" :class="{'is-invalid': error.home_member_state }">
                   <option disabled value="">Please select one</option>
@@ -25,7 +25,7 @@
                     v-bind:key="option.code"
                     v-bind:value="option.code"
                   >
-                    {{ option.country }}
+                    {{ option.code }} - {{ option.country }}
                   </option>
                 </select>
                 <div v-if="error.home_member_state" class="invalid-feedback">{{ errorText.home_member_state }}</div>
@@ -33,7 +33,7 @@
             </div>
             <div class="form-group row">
               <!-- TODO: Take identifiers from dictionary -->
-              <label for="inputLegalIdentifier" class="col-md-5 col-form-label">LEGAL IDENTIFIER*</label>
+              <label for="inputLegalIdentifier" class="col-md-5 col-form-label">LEGAL IDENTIFIER</label>
               <div class="col-md-7">
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
                   <label class="btn btn-secondary" :class="{active: identifier_id==='1'}">
@@ -58,18 +58,10 @@
               </div>
             </div>
             <div class="form-group row" id="formClass">
-              <label for="inputClass" class="col-md-5 col-form-label">DOCUMENT CLASS AND SUBCLASS*</label>
+              <label for="inputClass" class="col-md-5 col-form-label">DOCUMENT CLASS AND SUBCLASS</label>
               <div class="col-md-7">
                 <select class="form-control" id="inputClass" v-model="subclass" :class="{'is-invalid': error.subclass }">
-                  <option disabled value=""></option>
-                  <!--<option disabled value="">a</option>
-                  <option
-                    v-for="option in dictionary.docClasses[1].subclass"
-                    v-bind:key="option.id"
-                    v-bind:value="option.id"
-                  >
-                    {{ option.number + ' ' + option.name }}
-                  </option>-->            
+                  <option disabled value="">Please select one</option>
                   <option
                     v-for="option in dictionary.docClassSubclass"
                     v-bind:key="option.id"
@@ -81,11 +73,11 @@
                 </select>
                 <div v-if="error.subclass" class="invalid-feedback">{{ errorText.subclass }}</div>
               </div>
-            </div>
+            </div>            
           </div>
           <div class="col-md-6">
             <div class="form-group row">
-              <label for="inputDocumentDisclosureDate" class="col-md-5 col-form-label">DOCUMENT DISCLOSURE DATE</label>
+              <label for="inputDocumentDisclosureDate" class="col-md-5 col-form-label">DOCUMENT DISCLOSURE DATE*</label>
               <div class="col-md-7">
                 <input type="text" id="inputDocumentDisclosureDate" 
                    v-model="disclosure_date" placeholder="dd/mm/yyyy"
@@ -96,10 +88,21 @@
               </div>
             </div>
             <div class="form-group row">
+              <label for="inputDocumentSubmissionDate" class="col-md-5 col-form-label">DOCUMENT SUBMISSION DATE**</label>
+              <div class="col-md-7">
+                <input type="text" id="inputDocumentSubmissionDate" 
+                   v-model="submission_date" placeholder="dd/mm/yyyy"
+                   class="form-control" 
+                   :class="{'is-invalid': error.submission_date }"
+                />    
+                <div v-if="error.submission_date" class="invalid-feedback">{{ errorText.submission_date }}</div>
+              </div>
+            </div>
+            <div class="form-group row">
               <label for="inputDocumentLanguage" class="col-md-5 col-form-label">DOCUMENT LANGUAGE</label>
               <div class="col-md-7">
                 <select class="form-control" id="inputDocumentLanguage" v-model="document_language" :class="{'is-invalid': error.document_language }">
-                  <option value=""></option>
+                  <option disabled value="">Please select one</option>
                   <option
                     v-for="(option, code) in dictionary.languages"
                     v-bind:key="code"
@@ -114,12 +117,12 @@
             <div class="form-group row">
               <label for="inputComment" class="col-md-5 col-form-label">DOCUMENT TITLE</label>
               <div class="col-md-7">
-                <input type="text" id="inputComment" v-model="comment" placeholder="" class="form-control" :class="{'is-invalid': error.comment }"/>    
+                <input type="text" id="inputComment" v-model="comment" placeholder="Please add a document title" class="form-control" :class="{'is-invalid': error.comment }"/>    
                 <div v-if="error.comment" class="invalid-feedback">{{ errorText.comment }}</div>
               </div>
             </div>            
             <div v-if="showFinancialYear" class="form-group row">
-              <label for="inputFinancialYear" class="col-md-5 col-form-label">DOCUMENT FINANCIAL YEAR*</label>
+              <label for="inputFinancialYear" class="col-md-5 col-form-label">DOCUMENT FINANCIAL YEAR</label>
               <div class="col-md-7">
                 <input type="text" id="inputFinancialYear" v-model="financial_year" placeholder="" class="form-control" :class="{'is-invalid': error.financial_year }"/>
                 <div v-if="error.financial_year" class="invalid-feedback">{{ errorText.financial_year }}</div>
@@ -128,6 +131,18 @@
           </div>            
         </div>
         <div class="row">
+          <div class="form-group col-md-6" id="formTypeSubmission">
+            <label class="radio-inline form-check-label mr-4">
+              <input type="radio" value="first" v-model="type_submission" class="mr-1" checked
+              >First submission
+            </label>
+            <label class="radio-inline form-check-label">
+              <input type="radio" value="revised" v-model="type_submission" class="mr-1">
+              Revised submission
+            </label>
+          </div>          
+        </div>
+        <div class="row">          
           <div class="col-md-6">
           <div class="custom-file">            
             <input type="file" class="custom-file-input" id="inputFile" @change="validateFile" :class="{'is-invalid': error.file }">
@@ -140,8 +155,11 @@
           <div class="form-group col-md-6 align-bottom" style="padding-top: 8px;">
             <button v-on:click="submit" class="btn btn-primary btn-large">Submit</button>
             <button v-on:click="clear"  class="btn btn-secondary btn-large">Clear</button>
-          </div>
-          <label class="col-md-6 text-right col-form-label">*Indicates required field</label>
+          </div>            
+        </div>
+        <div class="row">
+          <label class="col-form-label col-12">*The disclosure date corresponds to the official date of document release as set by the Issuer.</label>
+          <label class="col-form-label col-12">**The submission date corresponds to the date at which the issuer gives the information to the OAM.</label>
         </div>
         <div v-if="alert.success" class="alert alert-success" role="alert">{{alertText.success}}</div>
         <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alertText.danger}}</div>
@@ -174,10 +192,12 @@ export default {
       subclass: "",
       subclassTag: "",
       disclosure_date: "",
+      submission_date: "",
       document_language: "",
       comment: "",
       financial_year: "",
-      showFinancialYear: false,
+      type_submission: 'first',
+      showFinancialYear: false,      
       error: {
         issuer_name: false,
         home_member_state: false,
@@ -185,6 +205,7 @@ export default {
         identifier_value: false,
         subclass: false,
         disclosure_date: false,
+        submission_date: false,
         document_language: false,
         comment: false,
         financial_year: false,
@@ -197,6 +218,7 @@ export default {
         identifier_value: "No error",
         subclass: "No error",
         disclosure_date: "No error",
+        submission_date: "No error",
         document_language: "No error",
         comment: "No error",
         financial_year: "No error",
@@ -225,33 +247,16 @@ export default {
   created() {
     
     //validate fields while typing
-    this.debounced_validateIssuerName = debounce(this.validateIssuerName, 300);
-    this.debounced_validateHomeMemberState = debounce(
-      this.validateHomeMemberState,
-      300
-    );
-    this.debounced_validateIdentifierId = debounce(
-      this.validateIdentifierId,
-      300
-    );
-    this.debounced_validateIdentifierValue = debounce(
-      this.validateIdentifierValue,
-      300
-    );
-    this.debounced_validateSubclass = debounce(this.validateSubclass, 300);
-    this.debounced_validateDisclosureDate = debounce(
-      this.validateDisclosureDate,
-      300
-    );
-    this.debounced_validateDocumentLanguage = debounce(
-      this.validateDocumentLanguage,
-      300
-    );
-    this.debounced_validateComment = debounce(this.validateComment, 300);
-    this.debounced_validateFinancialYear = debounce(
-      this.validateFinancialYear,
-      300
-    );  
+    this.debounced_validateIssuerName       = debounce(this.validateIssuerName      , 300);
+    this.debounced_validateHomeMemberState  = debounce(this.validateHomeMemberState , 300);
+    this.debounced_validateIdentifierId     = debounce(this.validateIdentifierId    , 300);
+    this.debounced_validateIdentifierValue  = debounce(this.validateIdentifierValue , 300);
+    this.debounced_validateSubclass         = debounce(this.validateSubclass        , 300);
+    this.debounced_validateDisclosureDate   = debounce(this.validateDisclosureDate  , 300);
+    this.debounced_validateSubmissionDate   = debounce(this.validateSubmissionDate  , 300);
+    this.debounced_validateDocumentLanguage = debounce(this.validateDocumentLanguage, 300);
+    this.debounced_validateComment          = debounce(this.validateComment         , 300);
+    this.debounced_validateFinancialYear    = debounce(this.validateFinancialYear   , 300);  
   },
   mounted() {
     this.startEventListenerFile();
@@ -280,6 +285,9 @@ export default {
     disclosure_date: function() {
       this.debounced_validateDisclosureDate();
     },
+    submission_date: function() {
+      this.debounced_validateSubmissionDate();
+    },
     document_language: function() {
       this.debounced_validateDocumentLanguage();
     },
@@ -304,6 +312,8 @@ export default {
         valid = self.validateIdentifierValue(true) && valid;
         valid = self.validateSubclass(true) && valid;
         valid = self.validateDisclosureDate(true) && valid;
+        valid = self.validateSubmissionDate(true) && valid;
+        valid = self.validateDocumentLanguage(true) && valid;
         valid = self.validateComment(true) && valid;        
         valid = self.validateFile(true) && valid;
         
@@ -361,12 +371,21 @@ export default {
 
         // Creation of the new post in the blockchain
         var discDate = "";
+        var submDate = ''
         try {
           discDate = Utils.dateToString(
             Utils.ddmmyyyytoDate(self.disclosure_date)
           );
         } catch (e) {
           discDate = "";
+        }
+        
+        try {
+          submDate = Utils.dateToString(
+            Utils.ddmmyyyytoDate(self.submission_date)
+          );
+        } catch (e) {
+          submDate = '';
         }
 
         // create a permlink taking into account the existing posts
@@ -392,16 +411,18 @@ export default {
           identifier_value: self.identifier_value,
           subclass: self.subclass,
           disclosure_date: discDate,
+          submission_date: submDate,
           document_language: self.document_language,
           comment: self.comment,
           financial_year: self.financial_year,
+          type_submission: self.type_submission,
           tags: [
             self.subclassTag,
             self.issuer_name,
             self.home_member_state,
             self.identifier_value
           ],
-          submission_date: Utils.dateToString(new Date()),
+          storage_date: Utils.dateToString(new Date()),
           permlink: permlink,
           app:Config.APP_VERSION
         };
@@ -461,11 +482,10 @@ export default {
       this.identifier_value = "";
       this.subclass = "";
       this.disclosure_date = "";
+      this.submission_date = "";
       this.document_language = "";
       this.comment = "";
-      this.financial_year = "";
-      
-      console.log(this.dictionary.docClassSubclass)
+      this.financial_year = "";            
     },
 
     startEventListenerFile() {
@@ -636,11 +656,10 @@ export default {
     },
 
     validateDisclosureDate(submit) {
-      //this is an optional field
       if (this.disclosure_date === "") {
-        this.error.disclosure_date = false;
-        this.errorText.disclosure_date = "No error";                                 
-        document.getElementById('inputDocumentDisclosureDate').setCustomValidity("");
+        this.error.disclosure_date = true;
+        this.errorText.disclosure_date = "Please enter the disclosure date";                                 
+        document.getElementById('inputDocumentDisclosureDate').setCustomValidity("invalid");
         return true;
       }
 
@@ -657,10 +676,36 @@ export default {
       document.getElementById('inputDocumentDisclosureDate').setCustomValidity("");
       return true;
     },
+    
+    validateSubmissionDate(submit) {
+      if (this.submission_date === "") {
+        this.error.submission_date = true;
+        this.errorText.submission_date = "Please enter the submission date";                                 
+        document.getElementById('inputDocumentSubmissionDate').setCustomValidity("invalid");
+        return true;
+      }
+
+      try {
+        Utils.ddmmyyyytoDate(this.submission_date);
+      } catch (e) {
+        this.error.submission_date = true;
+        this.errorText.submission_date = "Invalid date format, use dd/mm/yyyy";                                 
+        document.getElementById('inputDocumentSubmissionDate').setCustomValidity("invalid");
+        return false;
+      }
+      this.error.submission_date = false;
+      this.errorText.submission_date = "No error";
+      document.getElementById('inputDocumentSubmissionDate').setCustomValidity("");
+      return true;
+    },
 
     validateDocumentLanguage(submit) {
-      //this is an optional field
-      //nothing to check
+      if (submit && this.document_language === "") {
+        this.error.document_language = true;
+        this.errorText.document_language = "Please select a document language";
+        document.getElementById('inputDocumentLanguage').setCustomValidity("invalid");
+        return false;
+      }
       this.error.document_language = false;
       this.errorText.document_language = "No error";
       document.getElementById('inputDocumentLanguage').setCustomValidity("");
@@ -668,8 +713,13 @@ export default {
     },
 
     validateComment(submit) {
-      //this is an optional field
-      //nothing to check
+      if (submit && this.comment === "") {
+        this.error.comment = true
+        this.errorText.comment = 'Please define a title'
+        document.getElementById('inputComment').setCustomValidity("invalid");
+        return false
+      }      
+      
       this.error.comment = false;
       this.errorText.comment = "No error";
       document.getElementById('inputComment').setCustomValidity("");
