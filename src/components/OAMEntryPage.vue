@@ -16,7 +16,7 @@
               </div>
             </div>
             <div class="form-group row">
-              <label for="inputHomeMemberState" class="col-md-5 col-form-label">HOME MEMBER STATE*</label>
+              <label for="inputHomeMemberState" class="col-md-5 col-form-label">ISSUER's HOME MEMBER STATE (HMS)*</label>
               <div class="col-md-7">
                 <select class="form-control" id="inputHomeMemberState" v-model="home_member_state" :class="{'is-invalid': error.home_member_state }">
                   <option disabled value="">Please select one</option>
@@ -62,21 +62,21 @@
               <div class="col-md-7">
                 <select class="form-control" id="inputClass" v-model="subclass" :class="{'is-invalid': error.subclass }">
                   <option disabled value=""></option>
-                  <option disabled value="">{{ dictionary.docClasses[0].name }}</option>
-                  <option
-                    v-for="option in dictionary.docClasses[0].subclass"
-                    v-bind:key="option.id"
-                    v-bind:value="option.id"
-                  >
-                    {{ option.name }}
-                  </option>
-                  <option disabled value="">{{ dictionary.docClasses[1].name }}</option>
+                  <!--<option disabled value="">a</option>
                   <option
                     v-for="option in dictionary.docClasses[1].subclass"
                     v-bind:key="option.id"
                     v-bind:value="option.id"
                   >
-                    {{ option.name }}
+                    {{ option.number + ' ' + option.name }}
+                  </option>-->            
+                  <option
+                    v-for="option in dictionary.docClassSubclass"
+                    v-bind:key="option.id"
+                    v-bind:value="option.id"
+                    v-bind:disabled="option.type === 'class'"
+                  >
+                    {{ option.number + ' ' + option.name }}
                   </option>
                 </select>
                 <div v-if="error.subclass" class="invalid-feedback">{{ errorText.subclass }}</div>
@@ -326,13 +326,13 @@ export default {
         }
 
         // User credentials
-        if (!self.$refs.headerEFTG.auth.logged) {
+        if (!self.$store.state.auth.logged) {
           self.$refs.headerEFTG.login();
           //todo: make that after login it submits the post automatically
           return;
         }
-        var username = self.$refs.headerEFTG.auth.user;
-        var privKey = self.$refs.headerEFTG.auth.keys.posting;
+        var username = self.$store.state.auth.user;
+        var privKey = self.$store.state.auth.keys.posting;
 
         // read file, calculation of the hash, and signature with privkey
         // (format used in ImageHoster for uploading)
@@ -369,6 +369,20 @@ export default {
           discDate = "";
         }
 
+        // create a permlink taking into account the existing posts
+        var client = new dsteem.Client(Config.RPC_NODE.url);
+        
+        // TODO: addRandom starts false and we check if the post exists using dsteem 
+        var addRandom = true;
+        while (true) {
+          var permlink = Utils.createPermLink(self.comment, addRandom);
+          var urlPost = "oam/@" + username + "/" + permlink;
+          var post = await client.database.getState(urlPost);
+          console.log(post);
+          //TODO: fix dsteem response problem... if the post exists, then addRandom=true and continue the while loop, else break
+          break;
+        }
+        
         var body = "[[pdf link]](" + pdfUrl + ")";
 
         var json_metadata = {
@@ -388,22 +402,9 @@ export default {
             self.identifier_value
           ],
           submission_date: Utils.dateToString(new Date()),
+          permlink: permlink,
           app:Config.APP_VERSION
         };
-
-        // create a permlink taking into account the existing posts
-        var client = new dsteem.Client(Config.RPC_NODE.url);
-        
-        // TODO: addRandom starts false and we check if the post exists using dsteem 
-        var addRandom = true;
-        while (true) {
-          var permlink = Utils.createPermLink(self.comment, addRandom);
-          var urlPost = "oam/@" + username + "/" + permlink;
-          var post = await client.database.getState(urlPost);
-          console.log(post);
-          //TODO: fix dsteem response problem... if the post exists, then addRandom=true and continue the while loop, else break
-          break;
-        }
 
         var post = {
           author: username,
@@ -463,6 +464,8 @@ export default {
       this.document_language = "";
       this.comment = "";
       this.financial_year = "";
+      
+      console.log(this.dictionary.docClassSubclass)
     },
 
     startEventListenerFile() {

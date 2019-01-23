@@ -16,6 +16,7 @@ export default {
 	          "subclass": []
           }
         ],
+        docClassSubclass: [],
         docClassTags: {},
         languages: [],
         identifiers: {},
@@ -63,12 +64,24 @@ export default {
     axios.get('https://cdn.blkcc.xyz/class_subclass_tree.json').then(function(result){
       self.dictionary.docClasses = result.data;
       
-      // saving tags in docClassTags
+      // saving tags in docClassTags and docClassSubclass
+      var k=0;
       for(var i=0; i<self.dictionary.docClasses.length; i++){
+        var c = self.dictionary.docClasses[i]
+        c.number = (i+1) + '.'
+        c.type = 'class'        
+        self.$set(self.dictionary.docClassSubclass, k, c)
+        k++          
+        
         for(var j=0; j<self.dictionary.docClasses[i].subclass.length; j++){
           var subc = self.dictionary.docClasses[i].subclass[j];
-          self.dictionary.docClassTags[subc.id+""] = subc.tag;
-       }
+          subc.number = (i+1) + '.' + (j+1) + '.'
+          subc.type = 'subclass'
+          self.$set(self.dictionary.docClassSubclass, k, subc)
+          k++
+          
+          self.dictionary.docClassTags[subc.id+""] = subc.tag; 
+        }
       }
     }).catch(function(error){
       self.dictionary.error.docClasses = error;        
