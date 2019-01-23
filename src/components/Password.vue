@@ -80,6 +80,8 @@ import debounce from "lodash.debounce";
 
 import Config from "@/config.js";
 import Utils from "@/js/utils.js";
+import dsteemExtra from "@/js/dsteem-extra.js";
+
 import HeaderEFTG from "@/components/HeaderEFTG";
 
 export default {
@@ -134,64 +136,81 @@ export default {
       this.debounced_validateCurrentPassword();
     },
     newPassword: function(newVal) {
-      if(newVal === this.reNewPassword){
-        this.error.newPassword = false
-        this.error.reNewPassword = false
-        this.errorText.newPassword = 'No error'
-        this.errorText.reNewPassword = 'No error'
-      } else {
-        this.error.newPassword = true
-        this.error.reNewPassword = true
-        this.errorText.newPassword = "Password doesn't match"
-        this.errorText.reNewPassword = "Password doesn't match"
-      }
       
+      this.validateNewPassword()
       // TODO: help the user to put a good password
       
     },
     reNewPassword: function(newVal) {
-      if(newVal === this.newPassword){
-        this.error.newPassword = false
-        this.error.reNewPassword = false
-        this.errorText.newPassword = 'No error'
-        this.errorText.reNewPassword = 'No error'
-      } else {
-        this.error.newPassword = true
-        this.error.reNewPassword = true
-        this.errorText.newPassword = "Password doesn't match"
-        this.errorText.reNewPassword = "Password doesn't match"
-      }
+      this.validateNewPassword()
     },
     warning1: function(checked) {
-      if(checked){
-        this.error.warning1 = false
-        this.errorText.warning1 = 'No error'
-      } else {
-        this.error.warning1 = true
-        this.errorText.warning1 = 'Check this field'
-      }      
+      this.validateWarning1()   
     },
     warning2: function(checked) {
-      if(checked){
-        this.error.warning2 = false
-        this.errorText.warning2 = 'No error'
-      } else {
-        this.error.warning2 = true
-        this.errorText.warning2 = 'Check this field'
-      }
+      this.validateWarning2()
     }
   },
   
   methods: {
     updatePassword () {
-      let self = this;
+      var valid = true;
+      valid = this.validateCurrentPassword() && valid;
+      valid = this.validateNewPassword() && valid;
+      valid = this.validateWarning1() && valid;
+      valid = this.validateWarning2() && valid;
       
-      //TODO: Update Password
-      
-      //Principal function to submit the file and data
-      async function submit_async() {
+      if (!valid) {
+        console.log("Error validating fields!");          
+        this.showAlert(false,"Error validating fields!");          
+        return false;
       }
-      submit_async().catch(function(error){
+      
+      var roles = {'owner':{},'active':{},'posting':{},'memo':{}}
+      var key_auths = {}
+      for(var role in roles) {
+        var privKey = dsteem.PrivateKey.fromLogin(
+          this.$store.state.auth.user,
+          this.newPassword,
+          role
+        )
+        var pubKey = privKey.createPublic(Config.STEEM_ADDRESS_PREFIX).toString();
+        roles[role] = {
+          key_auths: [ [pubKey , 1] ],
+          account_auths: [],
+          weight_threshold: 1
+        }   
+      }
+      
+      var operation = ['account_update',{
+        account: this.account.name,
+        memo_key: roles.memo.key_auths[0][0],
+        json_metadata: this.account.json_metadata,
+        owner: roles.owner,
+        active: roles.active,
+        posting: roles.posting
+      }]
+      
+      var privKey = dsteem.PrivateKey.fromLogin(
+        this.$store.state.auth.user,
+        this.currentPassword,
+        'owner'
+      )  
+      
+      let self = this
+      async function updatePassword_async() {
+        var trx = await dsteemExtra.newTransaction()
+        trx.operations.push(operation)
+        
+        var client = new dsteem.Client(Config.RPC_NODE.url);
+        var sgnTrx = await client.broadcast.sign(trx, privKey)
+        console.log('signed transaction')
+        console.log(sgnTrx)
+        var response = await client.broadcast.send(sgnTrx)
+        self.showAlert(true, 'Password updated!')
+      }
+      
+      updatePassword_async().catch(function(error){
         console.log(error);
         self.showAlert(false,error.message);        
       });
@@ -225,20 +244,62 @@ export default {
       var privKey = dsteem.PrivateKey.fromLogin(
           this.$store.state.auth.user,
           this.currentPassword,
-          'posting'
+          'owner'
         )
       var pubKey = privKey.createPublic(Config.STEEM_ADDRESS_PREFIX).toString();
       
       if(!this.account) return false
       
-      if(this.account.posting.key_auths[0][0] === pubKey){
+      if(this.account.owner.key_auths[0][0] === pubKey){
         this.error.currentPassword = false
         this.errorText.currentPassword = 'No error'
+        return true
       } else {
         this.error.currentPassword = true
-        this.errorText.currentPassword = 'Incorrect password'
+        this.errorText.currentPassword = 'Incorrect password.'
+        return false
       }
-    },    
+    },
+    
+    validateNewPassword() {
+      if(this.newPassword === this.reNewPassword){
+        this.error.newPassword = false
+        this.error.reNewPassword = false
+        this.errorText.newPassword = 'No error'
+        this.errorText.reNewPassword = 'No error'
+        return true
+      } else {
+        this.error.newPassword = true
+        this.error.reNewPassword = true
+        this.errorText.newPassword = "Password doesn't match"
+        this.errorText.reNewPassword = "Password doesn't match"
+        return false
+      }
+    },
+    
+    validateWarning1() {
+      if(this.warning1){
+        this.error.warning1 = false
+        this.errorText.warning1 = 'No error'
+        return true
+      } else {
+        this.error.warning1 = true
+        this.errorText.warning1 = 'Check this field'
+        return false
+      } 
+    },
+    
+    validateWarning2() {
+      if(this.warning2){
+        this.error.warning2 = false
+        this.errorText.warning2 = 'No error'
+        return true
+      } else {
+        this.error.warning2 = true
+        this.errorText.warning2 = 'Check this field'
+        return false
+      }
+    }   
   }
 };
 </script>
