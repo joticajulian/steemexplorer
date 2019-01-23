@@ -15,13 +15,14 @@ export default {
   },
   
   created() {
+    const issuerNames = [];
+    const ignoreList = ['Bogdan', 'Bogdan1'];
+    const appVersions = ['pulsar/0.0.1', 'sendjs/0.0.1'];
     const self = this;      
     const url ='https://api.blkcc.xyz/pulsar/?q=identifier_value:*';
     axios.get(url).then(function(result){
-      const issuerNames = [];
-      const ignoreList = ['Bogdan', 'Bogdan1'];
       result.data.hits.hits.forEach((item) => {
-        if(item._source.app === 'pulsar/0.0.1' && ignoreList.indexOf(item._source.issuer_name) === -1) {
+        if(appVersions.indexOf(item._source.app) !== -1 && ignoreList.indexOf(item._source.issuer_name) === -1) {
           issuerNames.push({
             name: item._source.issuer_name
           });
@@ -43,7 +44,7 @@ export default {
       distinct = [];
       const identifiers = [];
       result.data.hits.hits.forEach((item) => {
-        if(item._source.app === 'pulsar/0.0.1' && ignoreList.indexOf(item._source.issuer_name) === -1) {
+        if(appVersions.indexOf(item._source.app) !== -1 && ignoreList.indexOf(item._source.issuer_name) === -1) {
           identifiers.push({
             identifier_id: item._source.identifier_id,
             identifier_value: item._source.identifier_value

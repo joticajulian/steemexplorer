@@ -1,4 +1,5 @@
 <script>
+import axios from "axios";
 import accounting from 'accounting';
 import moment from 'moment';
 import Vue from 'vue';
@@ -45,7 +46,9 @@ export default {
     }
   },
   data () {
-    return {}
+    return {
+      vuetableData: null
+    }
   },
   mounted () {
     this.$events.$on('filter-set', eventData => this.onFilterSet(eventData))
@@ -84,6 +87,7 @@ export default {
           on: {
             'vuetable:cell-clicked': this.onCellClicked,
             'vuetable:pagination-data': this.onPaginationData,
+            'vuetable:load-success': this.onLoadSuccess
           },
           scopedSlots: this.$vnode.data.scopedSlots
         }
@@ -115,6 +119,64 @@ export default {
       return (value == null)
         ? ''
         : moment(value, 'YYYY-MM-DD').format(fmt)
+    },
+    refresh(searchInputData) {
+      const vuetableDataData = [];
+      if(searchInputData['legalIdentifier'].length > 0) {
+        for (var i = 0; i < this.vuetableData.data.length; i++) {
+          if (this.vuetableData.data[i].identifier_value === searchInputData['legalIdentifier'][0].identifier_value) {
+            vuetableDataData.push(this.vuetableData.data[i]);
+          }
+        }
+      }
+      const vuetableData = JSON.parse(JSON.stringify(this.vuetableData));
+      vuetableData.data = vuetableDataData;
+      this.$refs.vuetable.setData(vuetableData);
+    },
+    onLoadSuccess(data, searchInputData = null) {
+      const ignoreList = ['Bogdan', 'Bogdan1'];
+      const appVersions = ['pulsar/0.0.1', 'sendjs/0.0.1'];
+      const self = this;
+      const distinct = [];
+      const searchResultData = [];
+      const vuetableData = {
+        links: {
+          pagination: {
+            total: 0,
+            per_page: 15,
+            current_page: 1,
+            last_page: 1,
+            next_page_url: "https:\/\/cdn.blkcc.xyz\/search.json\/?page=2",
+            prev_page_url: null,
+            from: 1,
+            to: 1,
+          }
+        },
+        data: []
+      };
+      const url ='https://api.blkcc.xyz/pulsar/?q=identifier_value:*';
+      axios.get(url).then(function(result) {
+        result.data.hits.hits.forEach((item) => {
+          if(appVersions.indexOf(item._source.app) !== -1 && ignoreList.indexOf(item._source.issuer_name) === -1) {
+            const itemData = item._source;
+            itemData.issuer_name_identifier = item._source.issuer_name + '<br/>' + item._source.identifier_value;
+            searchResultData.push(itemData);
+          }
+        });
+        
+        for (var i = 0; i < searchResultData.length; i++) {
+          if (distinct.indexOf(searchResultData[i].identifier_value) === -1) {
+            distinct.push(searchResultData[i].identifier_value);
+            vuetableData.data.push(searchResultData[i]);
+          }
+        }
+        vuetableData.links.pagination.total = searchResultData.length;
+        vuetableData.links.pagination.to = searchResultData.length;
+        self.$refs.vuetable.setData(vuetableData);
+        self.vuetableData = vuetableData;
+      }).catch(function(error){
+        console.log(error);
+      });
     },
     onPaginationData (paginationData) {
       this.$refs.pagination.setPaginationData(paginationData)
