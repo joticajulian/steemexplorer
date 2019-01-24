@@ -249,6 +249,7 @@ export default {
             itemData.document_url = '#';
             if(typeof item._source.link !== 'undefined') {
               itemData.document_url = item._source.link;
+              itemData.revised = item._source.type_submission === 'revised' ? true : false;
               if(itemData.document_url.length > 0) {
                 itemData.document_url = itemData.document_url.replace('[[pdf link]](', '');
                 itemData.document_url = itemData.document_url.replace(')', '');
