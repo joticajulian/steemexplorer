@@ -20,11 +20,11 @@
           <div class="form-row">
             <fieldset class="form-group col-md-3">
               <label class="eftg-label">DISCLOSURE DATE FROM</label>
-              <input disabled v-model="disclosureDateFrom" type="date" class="form-control" placeholder="dd/mm/yyyy">
+              <input v-model="disclosureDateFrom" type="date" class="form-control" placeholder="dd/mm/yyyy">
             </fieldset>
             <fieldset class="form-group col-md-3">
               <label class="eftg-label">DISCLOSURE DATE TO</label>
-              <input disabled v-model="disclosureDateTo" type="date" class="form-control" placeholder="dd/mm/yyyy">
+              <input v-model="disclosureDateTo" type="date" class="form-control" placeholder="dd/mm/yyyy">
             </fieldset>
             <fieldset class="form-group col-md-6">
               <label class="eftg-label">LEGAL IDENTIFIER</label>
@@ -34,7 +34,7 @@
           <div class="form-row">
             <fieldset class="form-group col-md-9">
               <label class="eftg-label">DOCUMENT CLASS AND SUBCLASS</label>
-              <multiselect v-model="docClass" class="eftg-multiselect" tag-placeholder="Select" placeholder="Search or choose" label="name" track-by="id" :options="optionsDocClass" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
+              <multiselect v-model="subclass" class="eftg-multiselect" tag-placeholder="Select" placeholder="Search or choose" label="name" track-by="id" :options="optionsSubclass" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
             </fieldset>
             <fieldset class="form-group col-md-3">
               <label class="eftg-label">FINANCIAL YEAR</label>
@@ -164,39 +164,38 @@ export default {
           id: "2015"
         }
       ],
-      docClass: [],
-      optionsDocClass: [
+      subclass: [],
+      optionsSubclass: [
         {
-          id: "1",
+          id: 1,
           name: "1. Periodic Regulated Information",
-          subclass: [
-            {
-              id: 3,
-              name: "1.1 Annual Financial Report"
-            },
-            {
-              id: 4,
-              name: "1.2 Half-Year Financial Report"
-            },
-            {
-              id: 5,
-              name: "1.3 Interim Management Statement"
-            }
-          ]
+          disabled: true,
         },
+        {
+          id: 3,
+          name: " 1.1 Annual Financial Report"
+        },
+        {
+          id: 4,
+          name: " 1.2 Half-Year Financial Report"
+        },
+        {
+          id: 5,
+          name: " 1.3 Interim Management Statement"
+        }
+        ,
         {
           id: 2,
           name: "2. Ongoing Regulated Information",
-          subclass: [
-            {
-              id: 6,
-              name: "2.1 Home Member State"
-            },
-            {
-              id: 7,
-              name: "2.2 Inside Information"
-            }
-          ]
+          disabled: true,
+        },
+        {
+          id: 6,
+          name: " 2.1 Home Member State"
+        },
+        {
+          id: 7,
+          name: " 2.2 Inside Information"
         }
       ],
       title: ""
@@ -224,11 +223,19 @@ export default {
       this.$refs.searchvuetable.refresh({
         legalIdentifier: this.legalIdentifier,
         issuerName: this.issuerName,
-        homeMemberState: this.homeMemberState
+        homeMemberState: this.homeMemberState,
+        subclass: this.subclass,
+        financialYear: this.financialYear
       });
     },
     clear() {
+      this.legalIdentifier = [];
+      this.issuerName = [];
       this.homeMemberState = [];
+      this.subclass = [];
+      this.financialYear = [];
+
+      this.$refs.searchvuetable.onLoadSuccess();
     },
     onAction (action, data, index) {
       if (action === 'view-item') {

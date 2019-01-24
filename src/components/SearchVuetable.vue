@@ -177,12 +177,49 @@ export default {
           });
         }
         initialData = finalData;
+        distinct = [];
+      }
+
+      if(searchInputData['subclass'].length > 0) {
+        finalData = [];
+        for (var i = 0; i < initialData.length; i++) {
+          const identifierValue = initialData[i].identifier_value;
+          const value = initialData[i].subclass;
+          searchInputData['subclass'].forEach(inputValue => {
+            if (value === inputValue.id) {
+              if (distinct.indexOf(identifierValue) === -1) {
+                distinct.push(identifierValue);
+                finalData.push(initialData[i]);
+              }
+            }
+          });
+        }
+        initialData = finalData;
+        distinct = [];
+      }
+
+      if(searchInputData['financialYear'].length > 0) {
+        finalData = [];
+        for (var i = 0; i < initialData.length; i++) {
+          const identifierValue = initialData[i].identifier_value;
+          const value = initialData[i].financial_year;
+          searchInputData['financialYear'].forEach(inputValue => {
+            if (value === inputValue.id) {
+              if (distinct.indexOf(identifierValue) === -1) {
+                distinct.push(identifierValue);
+                finalData.push(initialData[i]);
+              }
+            }
+          });
+        }
+        initialData = finalData;
+        distinct = [];
       }
       
       vuetableData.data = finalData;
       this.$refs.vuetable.setData(vuetableData);
     },
-    onLoadSuccess(data, searchInputData = null) {
+    onLoadSuccess(data = null) {
       const ignoreList = ['Bogdan', 'Bogdan1'];
       const appVersions = ['pulsar/0.0.1', 'sendjs/0.0.1'];
       const self = this;
@@ -231,6 +268,8 @@ export default {
         vuetableData.links.pagination.total = searchResultData.length;
         vuetableData.links.pagination.to = searchResultData.length;
         self.$refs.vuetable.setData(vuetableData);
+        self.$refs.pagination.setPaginationData(vuetableData.links.pagination);
+        self.$refs.paginationInfo.setPaginationData(vuetableData.links.pagination);
         self.vuetableData = vuetableData;
       }).catch(function(error){
         console.log(error);
