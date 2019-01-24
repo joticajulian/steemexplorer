@@ -14,17 +14,17 @@
             </fieldset>
             <fieldset class="form-group col-md-6">
               <label class="eftg-label">HOME MEMBER STATE</label>
-              <multiselect v-model="homeMemberState" class="eftg-multiselect" tag-placeholder="Select" placeholder="Select Home Member State" label="name" track-by="id" :options="optionsHomeMemberState" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
+              <multiselect v-model="homeMemberState" class="eftg-multiselect" tag-placeholder="Select" placeholder="Select Home Member State" label="country" track-by="code" :options="dictionary.homeMemberStates" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
             </fieldset>
           </div>
           <div class="form-row">
             <fieldset class="form-group col-md-3">
               <label class="eftg-label">DISCLOSURE DATE FROM</label>
-              <input v-model="disclosureDateFrom" type="date" class="form-control" placeholder="dd/mm/yyyy">
+              <input disabled v-model="disclosureDateFrom" type="date" class="form-control" placeholder="dd/mm/yyyy">
             </fieldset>
             <fieldset class="form-group col-md-3">
               <label class="eftg-label">DISCLOSURE DATE TO</label>
-              <input v-model="disclosureDateTo" type="date" class="form-control" placeholder="dd/mm/yyyy">
+              <input disabled v-model="disclosureDateTo" type="date" class="form-control" placeholder="dd/mm/yyyy">
             </fieldset>
             <fieldset class="form-group col-md-6">
               <label class="eftg-label">LEGAL IDENTIFIER</label>
@@ -76,7 +76,10 @@
         </div>
       </b-modal>
     </div>
-    </div> <!--</form>-->
+    </div>
+    <div class="container">
+      <h3>Search results</h3>
+    </div>
     <div>
       <search-vuetable
       ref='searchvuetable'
@@ -109,7 +112,8 @@
 import Vue from 'vue';
 import Config from "@/config.js";
 import Utils from "@/js/utils.js";
-import PulsarApi from "@/mixins/PulsarApi.js"
+import PulsarApi from "@/mixins/PulsarApi.js";
+import Dictionary from "@/mixins/Dictionary.js";
 import HeaderEFTG from "@/components/HeaderEFTG";
 import Multiselect from 'vue-multiselect';
 import SearchVuetable from './SearchVuetable';
@@ -148,16 +152,8 @@ export default {
       disclosureDateFrom: null,
       disclosureDateTo: null,
       homeMemberState: [],
-      optionsHomeMemberState: [{
-          id: "RO",
-          name: "Romania"
-        }, {
-          id: "SP",
-          name: "Spain"
-        }
-      ],
       legalIdentifier: [],
-      financialYear : [{id: "2018"}],
+      financialYear : [],
       optionsFinancialYear: [{
           id: "2018"
         }, {
@@ -168,37 +164,37 @@ export default {
           id: "2015"
         }
       ],
-      docClass: [{id: "1", name: "Periodic Regulated Information"}],
+      docClass: [],
       optionsDocClass: [
         {
           id: "1",
-          name: "Periodic Regulated Information",
+          name: "1. Periodic Regulated Information",
           subclass: [
             {
               id: 3,
-              name: "Annual Financial Report"
+              name: "1.1 Annual Financial Report"
             },
             {
               id: 4,
-              name: "Half-Year Financial Report"
+              name: "1.2 Half-Year Financial Report"
             },
             {
               id: 5,
-              name: "Interim Management Statement"
+              name: "1.3 Interim Management Statement"
             }
           ]
         },
         {
           id: 2,
-          name: "Ongoing Regulated Information",
+          name: "2. Ongoing Regulated Information",
           subclass: [
             {
               id: 6,
-              name: "Home Member State"
+              name: "2.1 Home Member State"
             },
             {
               id: 7,
-              name: "Inside Information"
+              name: "2.2 Inside Information"
             }
           ]
         }
@@ -210,7 +206,7 @@ export default {
     HeaderEFTG, Multiselect, SearchVuetable, FontAwesomeIcon
   },
   mixins: [
-    PulsarApi
+    PulsarApi, Dictionary
   ],
   mounted() {
     
@@ -222,12 +218,13 @@ export default {
         name: newTag,
         id: newTag.substring(0, 2) + Math.floor((Math.random() * 10000000))
       }
-      this.optionsHomeMemberState.push(tag)
     },
     submit() {
       console.log("submit");
       this.$refs.searchvuetable.refresh({
-        legalIdentifier: this.legalIdentifier
+        legalIdentifier: this.legalIdentifier,
+        issuerName: this.issuerName,
+        homeMemberState: this.homeMemberState
       });
     },
     clear() {

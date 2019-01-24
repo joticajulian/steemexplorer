@@ -115,22 +115,71 @@ export default {
     formatNumber (value) {
       return accounting.formatNumber(value, 2)
     },
+    formatBoolean (value) {
+      return value ? 'Yes' : 'No';
+    },
     formatDate (value, fmt = 'DD/MM/YYYY') {
       return (value == null)
         ? ''
         : moment(value, 'YYYY-MM-DD').format(fmt)
     },
     refresh(searchInputData) {
-      const vuetableDataData = [];
-      if(searchInputData['legalIdentifier'].length > 0) {
-        for (var i = 0; i < this.vuetableData.data.length; i++) {
-          if (this.vuetableData.data[i].identifier_value === searchInputData['legalIdentifier'][0].identifier_value) {
-            vuetableDataData.push(this.vuetableData.data[i]);
-          }
-        }
-      }
       const vuetableData = JSON.parse(JSON.stringify(this.vuetableData));
-      vuetableData.data = vuetableDataData;
+      let initialData = this.vuetableData.data;
+      let finalData = [];
+      let distinct = [];
+      if(searchInputData['legalIdentifier'].length > 0) {
+        for (var i = 0; i < initialData.length; i++) {
+          const identifierValue = initialData[i].identifier_value;
+          searchInputData['legalIdentifier'].forEach(legalIndetifier => {
+            if (legalIndetifier.identifier_value === identifierValue) {
+              if (distinct.indexOf(identifierValue) === -1) {
+                distinct.push(identifierValue);
+                finalData.push(initialData[i]);
+              }
+            }
+          });
+        }
+        initialData = finalData;
+        distinct = [];
+      }
+      
+      if(searchInputData['issuerName'].length > 0) {
+        finalData = [];
+        for (var i = 0; i < initialData.length; i++) {
+          const identifierValue = initialData[i].identifier_value;
+          const issuerName = initialData[i].issuer_name;
+          searchInputData['issuerName'].forEach(inputIssuerName => {
+            if (issuerName === inputIssuerName.name) {
+              if (distinct.indexOf(identifierValue) === -1) {
+                distinct.push(identifierValue);
+                finalData.push(initialData[i]);
+              }
+            }
+          });
+        }
+        initialData = finalData;
+        distinct = [];
+      }
+
+      if(searchInputData['homeMemberState'].length > 0) {
+        finalData = [];
+        for (var i = 0; i < initialData.length; i++) {
+          const identifierValue = initialData[i].identifier_value;
+          const value = initialData[i].home_member_state;
+          searchInputData['homeMemberState'].forEach(inputValue => {
+            if (value === inputValue.code) {
+              if (distinct.indexOf(identifierValue) === -1) {
+                distinct.push(identifierValue);
+                finalData.push(initialData[i]);
+              }
+            }
+          });
+        }
+        initialData = finalData;
+      }
+      
+      vuetableData.data = finalData;
       this.$refs.vuetable.setData(vuetableData);
     },
     onLoadSuccess(data, searchInputData = null) {
@@ -160,6 +209,15 @@ export default {
           if(appVersions.indexOf(item._source.app) !== -1 && ignoreList.indexOf(item._source.issuer_name) === -1) {
             const itemData = item._source;
             itemData.issuer_name_identifier = item._source.issuer_name + '<br/>' + item._source.identifier_value;
+            itemData.document_url = '#';
+            if(typeof item._source.link !== 'undefined') {
+              itemData.document_url = item._source.link;
+              if(itemData.document_url.length > 0) {
+                itemData.document_url = itemData.document_url.replace('[[pdf link]](', '');
+                itemData.document_url = itemData.document_url.replace(')', '');
+              }
+            }
+            
             searchResultData.push(itemData);
           }
         });

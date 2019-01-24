@@ -20,30 +20,42 @@ export default [
     sortField: 'issuer_name',
   }, 
   {
-    name: 'home_member_state_name',
+    name: 'home_member_state',
     title: 'HMS',
     sortField: 'home_member_state'
   }, 
   {
-    name: 'document_language_name',
+    name: 'document_language',
     title: 'Language',
     sortField: 'document_language'
   },
   {
     name: 'disclosure_date',
-    title: 'Disclosure date',
+    title: 'Disclosure<br/>date',
     sortField: 'disclosure_date',
     callback: 'formatDate|DD/MM/YYYY'
   },
   {
+    name: 'submission_date',
+    title: 'Submission<br/>date',
+    sortField: 'submission_date',
+    callback: 'formatDate|DD/MM/YYYY'
+  },
+  {
     name: 'financial_year',
-    title: 'Financial year',
+    title: 'Financial<br/>year',
     sortField: 'financial_year',
   },
   {
     name: 'comment',
     title: 'Document Title',
     sortField: 'title',
+  },
+  {
+    name: 'revised',
+    title: 'Revised',
+    callback: 'formatBoolean'
+    
   },
   {
     name: '__slot:actions',
