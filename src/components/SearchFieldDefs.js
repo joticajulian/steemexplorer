@@ -10,9 +10,9 @@ export default [
     dataClass: 'center aligned'
   },
   {
-    name: 'oam_name',
+    name: 'author',
     title: 'OAM Name',
-    sortField: 'oam_name',
+    sortField: 'author',
   }, 
   {
     name: 'issuer_name_identifier',
