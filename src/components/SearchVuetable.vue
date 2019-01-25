@@ -9,6 +9,7 @@ import VuetablePagination from 'vuetable-2/src/components/VuetablePagination';
 import VuetablePaginationInfo from 'vuetable-2/src/components/VuetablePaginationInfo';
 import CustomActions from './SearchCustomActions';
 import FilterBar from './SearchFilterBar';
+import Dictionary from "@/mixins/Dictionary.js";
 
 Vue.use(VueEvents);
 Vue.component('custom-actions', CustomActions);
@@ -20,6 +21,9 @@ export default {
     VuetablePagination,
     VuetablePaginationInfo
   },
+  mixins: [
+    Dictionary
+  ],
   props: {
     apiUrl: {
       type: String,
@@ -240,6 +244,7 @@ export default {
         },
         data: []
       };
+      const dictionary = this.dictionary;
       const url ='https://api.blkcc.xyz/pulsar/?pretty=true&size=100&q=*:*';
       axios.get(url).then(function(result) {
         result.data.hits.hits.forEach((item) => {
@@ -255,7 +260,10 @@ export default {
                 itemData.document_url = itemData.document_url.replace(')', '');
               }
             }
-            
+            itemData.subclass_label = itemData.subclass;
+            if(typeof dictionary.docClassLabels[itemData.subclass + ""] !== 'undefined') {
+              itemData.subclass_label = dictionary.docClassLabels[itemData.subclass + ""];
+            }
             searchResultData.push(itemData);
           }
         });
@@ -266,6 +274,13 @@ export default {
             vuetableData.data.push(searchResultData[i]);
           }
         }
+
+        searchResultData.sort((a, b) => {
+          if(a.storage_date < b.storage_date) return -1;
+          else if(a.storage_date > b.storage_date) return 1;
+          else return 0;
+        });
+
         vuetableData.links.pagination.total = searchResultData.length;
         vuetableData.links.pagination.to = searchResultData.length;
         self.$refs.vuetable.setData(vuetableData);
