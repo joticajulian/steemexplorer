@@ -13,8 +13,8 @@
               <multiselect v-model="issuerName" class="eftg-multiselect" tag-placeholder="Select" placeholder="Select Issuer Name" label="name" track-by="name" :options="pulsarApi.issuerNames" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
             </fieldset>
             <fieldset class="form-group col-md-6">
-              <label class="eftg-label">HOME MEMBER STATE</label>
-              <multiselect v-model="homeMemberState" class="eftg-multiselect" tag-placeholder="Select" placeholder="Select Home Member State" label="country" track-by="code" :options="dictionary.homeMemberStates" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
+              <label class="eftg-label">ISSUER's HOME MEMBER STATE (HMS)</label>
+              <multiselect v-model="homeMemberState" class="eftg-multiselect" tag-placeholder="Select" placeholder="Select Home Member State" label="label" track-by="code" :options="dictionary.homeMemberStates" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
             </fieldset>
           </div>
           <div class="form-row">
@@ -34,7 +34,7 @@
           <div class="form-row">
             <fieldset class="form-group col-md-9">
               <label class="eftg-label">DOCUMENT CLASS AND SUBCLASS</label>
-              <multiselect v-model="subclass" class="eftg-multiselect" tag-placeholder="Select" placeholder="Search or choose" label="name" track-by="id" :options="optionsSubclass" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
+              <multiselect v-model="subclass" class="eftg-multiselect" tag-placeholder="Select" placeholder="Search or choose" label="label" track-by="id" :options="dictionary.docClassSubclass" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
             </fieldset>
             <fieldset class="form-group col-md-3">
               <label class="eftg-label">FINANCIAL YEAR</label>
@@ -102,7 +102,17 @@
           </div>
         </div>
       </template>
-    </search-vuetable>
+      </search-vuetable>
+    </div>
+    <div class="container">
+      <div class="eftg-footnotes">
+        <b>Definitions:</b>
+        <ul>
+          <li>-Definition of ***Financial year is the year that the financial document is referring to (only valid for Periodic Regulated Information).</li>
+          <li>-Definition of "Disclosure Date" (found in results sections)  *The disclosure date corresponds to the official date of document release as set by the Issuer.</li>
+          <li>-Definition of "Submission Date" (found in results sections) **The submission date corresponds to the date at which the issuer gives the information to the OAM.</li>
+        </ul>
+      </div>
     </div>
   </div>
   
@@ -165,39 +175,6 @@ export default {
         }
       ],
       subclass: [],
-      optionsSubclass: [
-        {
-          id: 1,
-          name: "1. Periodic Regulated Information",
-          disabled: true,
-        },
-        {
-          id: 3,
-          name: " 1.1 Annual Financial Report"
-        },
-        {
-          id: 4,
-          name: " 1.2 Half-Year Financial Report"
-        },
-        {
-          id: 5,
-          name: " 1.3 Interim Management Statement"
-        }
-        ,
-        {
-          id: 2,
-          name: "2. Ongoing Regulated Information",
-          disabled: true,
-        },
-        {
-          id: 6,
-          name: " 2.1 Home Member State"
-        },
-        {
-          id: 7,
-          name: " 2.2 Inside Information"
-        }
-      ],
       title: ""
     };
   },

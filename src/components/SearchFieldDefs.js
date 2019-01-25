@@ -6,6 +6,7 @@ export default [
   },
   {
     name: '__checkbox',
+    title: 'Select<br/>Document<br/>',
     titleClass: 'center aligned',
     dataClass: 'center aligned'
   },
@@ -26,7 +27,7 @@ export default [
   }, 
   {
     name: 'document_language',
-    title: 'Language',
+    title: 'Document<br/>language',
     sortField: 'document_language'
   },
   {
@@ -49,17 +50,20 @@ export default [
   {
     name: 'comment',
     title: 'Document Title',
-    sortField: 'title',
+  },
+  {
+    name: 'subclass_label',
+    title: 'Document<br>Subclass',
   },
   {
     name: 'revised',
-    title: 'Revised',
+    title: 'Revised<br/>Document?',
     callback: 'formatBoolean'
     
   },
   {
     name: '__slot:actions',
-    title: 'Actions',
+    title: 'Actions:<br/>View/Download',
     titleClass: 'center aligned',
     dataClass: 'center aligned',
   }
