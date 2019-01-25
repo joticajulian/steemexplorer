@@ -150,6 +150,14 @@ body {
   animation: spin 0.7s linear infinite;
 }
 
+.mini {
+  width: 1rem !important;
+  height: 1rem !important;
+  display: inline-block;
+  margin: 0 5px 0 0;
+  vertical-align: text-bottom;
+}
+
 /* Safari */
 @-webkit-keyframes spin {
   0% { -webkit-transform: rotate(0deg); }

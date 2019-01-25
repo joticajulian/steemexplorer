@@ -27,6 +27,9 @@ export default {
           languages: null,
           identifiers: null
         }
+      },
+      serverConfig: {
+        maximum_file_size: 10*1024*1024
       }
     }
   },
@@ -85,6 +88,14 @@ export default {
       }
     }).catch(function(error){
       self.dictionary.error.docClasses = error;        
+    });
+    
+    // JSON Server config
+    axios.get('https://cdn.blkcc.xyz/server_config.json').then(function(result){
+      self.serverConfig = result.data;      
+    }).catch(function(error){
+      console.log('error getting server config')
+      console.log(error)              
     });    
   }
 }

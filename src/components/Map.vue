@@ -42,7 +42,14 @@
         <div class="loader"></div>
       </div>
     </div>
-    <!--<FooterEFTG></FooterEFTG>-->
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <h2>What is a witness</h2>
+          <p>A witness is a person who operates a server to produce and seal 'blocks' and add them to the blockchain. These blocks contain information about the documents, reports, and user data. They are selected by approval voting by the community.</p>
+        </div>
+      </div>
+    </div>    
   </div>
 </template>
 

@@ -73,7 +73,14 @@
                 </select>
                 <div v-if="error.subclass" class="invalid-feedback">{{ errorText.subclass }}</div>
               </div>
-            </div>            
+            </div>
+            <div v-if="showFinancialYear" class="form-group row">
+              <label for="inputFinancialYear" class="col-md-5 col-form-label">DOCUMENT FINANCIAL YEAR</label>
+              <div class="col-md-7">
+                <input type="text" id="inputFinancialYear" v-model="financial_year" placeholder="" class="form-control" :class="{'is-invalid': error.financial_year }"/>
+                <div v-if="error.financial_year" class="invalid-feedback">{{ errorText.financial_year }}</div>
+              </div>
+            </div>                        
           </div>
           <div class="col-md-6">
             <div class="form-group row">
@@ -85,17 +92,6 @@
                    :class="{'is-invalid': error.disclosure_date }"
                 />    
                 <div v-if="error.disclosure_date" class="invalid-feedback">{{ errorText.disclosure_date }}</div>
-              </div>
-            </div>
-            <div class="form-group row">
-              <label for="inputDocumentSubmissionDate" class="col-md-5 col-form-label">DOCUMENT SUBMISSION DATE**</label>
-              <div class="col-md-7">
-                <input type="text" id="inputDocumentSubmissionDate" 
-                   v-model="submission_date" placeholder="dd/mm/yyyy"
-                   class="form-control" 
-                   :class="{'is-invalid': error.submission_date }"
-                />    
-                <div v-if="error.submission_date" class="invalid-feedback">{{ errorText.submission_date }}</div>
               </div>
             </div>
             <div class="form-group row">
@@ -121,17 +117,42 @@
                 <div v-if="error.comment" class="invalid-feedback">{{ errorText.comment }}</div>
               </div>
             </div>            
-            <div v-if="showFinancialYear" class="form-group row">
-              <label for="inputFinancialYear" class="col-md-5 col-form-label">DOCUMENT FINANCIAL YEAR</label>
+            <div class="form-group row">
+              <label for="inputDocumentSubmissionDate" class="col-md-5 col-form-label">DOCUMENT SUBMISSION DATE**</label>
               <div class="col-md-7">
-                <input type="text" id="inputFinancialYear" v-model="financial_year" placeholder="" class="form-control" :class="{'is-invalid': error.financial_year }"/>
-                <div v-if="error.financial_year" class="invalid-feedback">{{ errorText.financial_year }}</div>
+                <input type="text" id="inputDocumentSubmissionDate" 
+                   v-model="submission_date" placeholder="dd/mm/yyyy"
+                   class="form-control" 
+                   :class="{'is-invalid': error.submission_date }"
+                />    
+                <div v-if="error.submission_date" class="invalid-feedback">{{ errorText.submission_date }}</div>
               </div>
-            </div>            
+            </div>
+            <div class="form-group row">
+              <label for="inputDocumentStatus" class="col-md-5 col-form-label">DOCUMENT STATUS</label>
+              <div class="col-md-7">
+                <label class="radio-inline form-check-label mr-4">
+                  <input type="radio" value="first" v-model="type_submission" class="mr-1" checked
+                  >First submission
+                </label>
+                <label class="radio-inline form-check-label">
+                  <input type="radio" value="revised" v-model="type_submission" class="mr-1">
+                  Revised submission
+                </label>
+              </div>
+            </div>
+            <div class="row">
+              <label class="col-form-label col-12"
+                >*The disclosure date corresponds to the official date of document release as set by the Issuer.
+              </label>
+              <label class="col-form-label col-12"
+                >**The submission date corresponds to the date at which the issuer gives the information to the OAM.
+              </label>
+            </div>                              
           </div>            
         </div>
         <div class="row">
-          <div class="form-group col-md-6" id="formTypeSubmission">
+          <!--<div class="form-group col-md-6" id="formTypeSubmission">
             <label class="radio-inline form-check-label mr-4">
               <input type="radio" value="first" v-model="type_submission" class="mr-1" checked
               >First submission
@@ -140,7 +161,7 @@
               <input type="radio" value="revised" v-model="type_submission" class="mr-1">
               Revised submission
             </label>
-          </div>          
+          </div>-->          
         </div>
         <div class="row">          
           <div class="col-md-6">
@@ -153,14 +174,11 @@
         </div>
         <div class="row">
           <div class="form-group col-md-6 align-bottom" style="padding-top: 8px;">
-            <button v-on:click="submit" class="btn btn-primary btn-large">Submit</button>
+            <button v-on:click="submit" class="btn btn-primary btn-large" :disabled="sending"><div v-if="sending" class="mini loader"></div>Submit</button>
             <button v-on:click="clear"  class="btn btn-secondary btn-large">Clear</button>
           </div>            
         </div>
-        <div class="row">
-          <label class="col-form-label col-12">*The disclosure date corresponds to the official date of document release as set by the Issuer.</label>
-          <label class="col-form-label col-12">**The submission date corresponds to the date at which the issuer gives the information to the OAM.</label>
-        </div>
+        <div v-if="alert.info" class="alert alert-info" role="alert">{{alertText.info}}</div>
         <div v-if="alert.success" class="alert alert-success" role="alert">{{alertText.success}}</div>
         <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alertText.danger}}</div>
       </div>
@@ -197,7 +215,9 @@ export default {
       comment: "",
       financial_year: "",
       type_submission: 'first',
-      showFinancialYear: false,      
+      showFinancialYear: false,
+      
+      sending: false,      
       error: {
         issuer_name: false,
         home_member_state: false,
@@ -227,10 +247,12 @@ export default {
       alert: {
         success: false,
         danger: false,
+        info: false,
       },
       alertText: {
         success: '',
         danger: '',
+        info: ''
       },
     };
   },
@@ -277,7 +299,7 @@ export default {
     },
     subclass: function(newVal) {
       this.debounced_validateSubclass();
-      if(newVal == 3 || newVal == 4) this.showFinancialYear = true;
+      if(newVal == 101 || newVal == 102) this.showFinancialYear = true;
       else this.showFinancialYear = false;
       
       this.subclassTag = this.dictionary.docClassTags[newVal+""];               
@@ -300,6 +322,10 @@ export default {
   },
   methods: {
     submit() {
+      this.sending = true
+      this.hideSuccess()
+      this.hideDanger()
+      
       let self = this;
       
       //Principal function to submit the file and data
@@ -318,7 +344,7 @@ export default {
         valid = self.validateFile(true) && valid;
         
         // Validate year in case subclass Annual or half-year Financial Report 
-        if(self.subclass == 3 || self.subclass == 4){         
+        if(self.subclass == 101 || self.subclass == 102){         
           valid = self.validateFinancialYear(true) && valid;
         }else{
           self.financial_year = '';
@@ -346,8 +372,15 @@ export default {
 
         // read file, calculation of the hash, and signature with privkey
         // (format used in ImageHoster for uploading)
+        self.showInfo('Reading file...')
         var localFile = document.getElementById("inputFile").files[0];
-        var fileData = await self.readFileAsBuffer(localFile);
+        var fileData = await self.readFileAsBuffer(localFile,{
+          onProgress: function(progressEvent){
+            var loaded = progressEvent.loaded
+            var total = progressEvent.total
+            self.showInfo('Reading file '+Math.floor(loaded*100/total)+'%')            
+          }
+        });
         const imageHash = Crypto.createHash("sha256")
           .update("ImageSigningChallenge")
           .update(fileData)
@@ -363,11 +396,23 @@ export default {
           Config.IMAGE_HOSTER.url + "/" + username + "/" + signature;
 
         // TODO: try - catch to check if the file size is too long and there is an error
-        var response = await axios.post(urlWithSignature, formFile);
+        
+        
+        //var response = await axios.post(urlWithSignature, formFile);
+        var response = await axios({
+          method: 'post',
+          url: urlWithSignature,
+          data: formFile,
+          responseType: 'json',
+          responseEncoding: 'utf8',
+          onUploadProgress: function (progressEvent) {
+            var loaded = progressEvent.loaded
+            var total = progressEvent.total
+            self.showInfo('Uploading file '+Math.floor(loaded*100/total)+'%')                        
+          },          
+        })        
+        
         var pdfUrl = response.data.url;
-
-        console.log("response from image hoster");
-        console.log(response);
 
         // Creation of the new post in the blockchain
         var discDate = "";
@@ -440,9 +485,6 @@ export default {
         console.log("post");
         console.log(post);
         
-        
-
-        
         // new Date(Date.now() + expireTime).toISOString().slice(0, -5),
         var head_block_number = 2854535; 
         var head_block_id = "002b8e87b878c726a2f4c21a799d35cd576e890c"     
@@ -461,6 +503,8 @@ export default {
         
         var params = [signed_transaction]; 
         
+        self.showInfo('Sending to the blockchain...')
+        
         //var result = await client.broadcast.call("broadcast_transaction_synchronous", params);                              
         //var result = await client.broadcast.send(signed_transaction);
         var result = await client.broadcast.comment(post, privKey);
@@ -469,9 +513,17 @@ export default {
         console.log("document publised!");
         console.log(result);
       }
-      submit_async().catch(function(error){
+      
+      submit_async()
+      .then(function(){
+        self.sending = false
+        self.hideInfo()
+      })      
+      .catch(function(error, response){      
         console.log(error);
-        self.showAlert(false,error.message);        
+        self.showAlert(false,error.message);
+        self.sending = false
+        self.hideInfo()      
       });
     },
     
@@ -485,7 +537,10 @@ export default {
       this.submission_date = "";
       this.document_language = "";
       this.comment = "";
-      this.financial_year = "";            
+      this.financial_year = "";
+      document.getElementById("inputFile").labels[0].childNodes[0].data = 'Choose file...'
+      document.getElementById('inputFile').setAttribute('type','')
+      document.getElementById('inputFile').setAttribute('type','file')      
     },
 
     startEventListenerFile() {
@@ -502,7 +557,7 @@ export default {
 
     //Definition of the function to read a file using Promises (better for using await)
     //More info: https://blog.shovonhasan.com/using-promises-with-filereader/
-    async readFileAsBuffer(inputFile) {
+    async readFileAsBuffer(inputFile, config) {
       const reader = new FileReader();
 
       return new Promise((resolve, reject) => {
@@ -512,6 +567,8 @@ export default {
         };
 
         reader.onload = () => {
+          if(config.onLoad) config.onLoad()
+        
           //the result is an ArrayBuffer, we change it to Buffer.
           //this is important because the hash using 'crypto' is different in the 2 cases
 
@@ -520,6 +577,13 @@ export default {
           var dataBuffer = new Buffer(dataArrayBuffer);
           resolve(dataBuffer);
         };
+        
+        if(config.onProgress)  reader.onprogress  = config.onProgress
+        if(config.onAbort)     reader.onabort     = config.onAbort
+        if(config.onError)     reader.onerror     = config.onError
+        if(config.onLoadStart) reader.onloadstart = config.onLoadStart
+        if(config.onLoadEnd)   reader.onloadend   = config.onLoadEnd 
+        
         reader.readAsArrayBuffer(inputFile);
       });
     },
@@ -754,10 +818,57 @@ export default {
         document.getElementById('inputFile').setCustomValidity("invalid");
         return false;
       }
+      
+      var f = document.getElementById("inputFile").files[0]
+      /*
+       * f.lastModified: 1540809732971
+       * f.lastModifiedDate: Mon Oct 29 2018 11:42:12 GMT+0100 (Central European Standard Time) {}
+       * f.name: "2017-Annual Report Groep N.V..pdf"
+       * f.size: 9981843
+       * f.type: "application/pdf"
+       * f.webkitRelativePath: ""
+       */
+      
+      if(f.size > this.serverConfig.maximum_file_size) {
+        this.error.file = true;
+        this.errorText.file = 'Maximum upload file size: '+Utils.prettyFileSize(this.serverConfig.maximum_file_size);
+        document.getElementById('inputFile').setCustomValidity("invalid");        
+        return false;        
+      }
       this.error.file = false;
       this.errorText.file = "No error";
       document.getElementById('inputFile').setCustomValidity("");
       return true;
+    },
+    
+    showInfo(msg){
+      this.alert.info = true
+      this.alertText.info = msg
+    },
+    
+    hideInfo(){
+      this.alert.info = false
+      this.alertText.info = ''
+    },
+    
+    showSuccess(msg) {
+      this.alert.success = true
+      this.alertText.success = msg
+    },
+    
+    hideSuccess() {
+      this.alert.success = false
+      this.alertText.success = ''
+    },
+    
+    showDanger(msg) {
+      this.alert.danger = true
+      this.alertText.danger = msg
+    },
+    
+    hideDanger() {
+      this.alert.danger = false
+      this.alertText.danger = ''
     }
   }
 };

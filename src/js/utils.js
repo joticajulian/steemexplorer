@@ -158,5 +158,13 @@ export default {
       .toLowerCase()
       .replace(/\s+/g, "-")
       .replace(/[^0-9a-z-]/gi, "");
+  },
+  
+  prettyFileSize: function(size) {
+    if(size < 1024) return size+'Bytes'
+    if(size < 1024 * 1024) return Math.round(size/1024)+'KB'
+    if(size < 1024 * 1024 * 1024) return Math.round(size/1024/1024)+'MB'
+    if(size < 1024 * 1024 * 1024 * 1024) return Math.round(size/1024/1024/1024)+'GB'
+    if(size < 1024 * 1024 * 1024 * 1024 * 1024) return Math.round(size/1024/1024/1024)+'TB'
   }
 };
