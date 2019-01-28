@@ -50,7 +50,7 @@
                   </label>
                 </div>
                 <input type="text" id="inputLegalIdentifier" 
-                       v-model="identifier_value" placeholder="" 
+                       v-model="identifier_value" placeholder="Please enter a valid value" 
                        class="form-control"
                        :class="{'is-invalid': error.identifier_value }"
                 />
@@ -267,6 +267,9 @@ export default {
   ],
   
   created() {
+    var d = new Date()
+    this.disclosure_date = Utils.datetoddmmyyyy(d)
+    this.financial_year = d.getFullYear() + ''
     
     //validate fields while typing
     this.debounced_validateIssuerName       = debounce(this.validateIssuerName      , 300);
@@ -540,7 +543,11 @@ export default {
       this.financial_year = "";
       document.getElementById("inputFile").labels[0].childNodes[0].data = 'Choose file...'
       document.getElementById('inputFile').setAttribute('type','')
-      document.getElementById('inputFile').setAttribute('type','file')      
+      document.getElementById('inputFile').setAttribute('type','file')
+      
+      this.hideSuccess()
+      this.hideDanger()
+      this.hideInfo()     
     },
 
     startEventListenerFile() {
@@ -720,7 +727,7 @@ export default {
     },
 
     validateDisclosureDate(submit) {
-      if (this.disclosure_date === "") {
+      if (submit && this.disclosure_date === "") {
         this.error.disclosure_date = true;
         this.errorText.disclosure_date = "Please enter the disclosure date";                                 
         document.getElementById('inputDocumentDisclosureDate').setCustomValidity("invalid");
@@ -729,12 +736,28 @@ export default {
 
       try {
         Utils.ddmmyyyytoDate(this.disclosure_date);
+        var date = new Date(this.disclosure_date)
       } catch (e) {
         this.error.disclosure_date = true;
         this.errorText.disclosure_date = "Invalid date format, use dd/mm/yyyy";                                 
         document.getElementById('inputDocumentDisclosureDate').setCustomValidity("invalid");
         return false;
       }
+      
+      if(date > new Date()){ //prevent future dates
+        this.error.disclosure_date = true;
+        this.errorText.disclosure_date = "Disclosure date should be today or earlier";                                 
+        document.getElementById('inputDocumentDisclosureDate').setCustomValidity("invalid");
+        return false;
+      }
+      
+      if( !this.crossValidationDisclosureDateFinancialYear() ){
+        this.error.disclosure_date = true;
+        this.errorText.disclosure_date = "Please check financial year and disclosure date";                                 
+        document.getElementById('inputDocumentDisclosureDate').setCustomValidity("invalid");
+        return false;
+      }
+      
       this.error.disclosure_date = false;
       this.errorText.disclosure_date = "No error";
       document.getElementById('inputDocumentDisclosureDate').setCustomValidity("");
@@ -805,6 +828,21 @@ export default {
         document.getElementById('inputFinancialYear').setCustomValidity("invalid");
         return false;
       }
+      
+      if(parseInt(number,10) > (new Date()).getFullYear()){ //prevent future dates
+        this.error.financial_year = true;
+        this.errorText.financial_year = "Financial year should be current year or earlier";                                 
+        document.getElementById('inputFinancialYear').setCustomValidity("invalid");
+        return false;
+      }
+      
+      if( !crossValidationDisclosureDateFinancialYear() ){
+        this.error.financial_year = true;
+        this.errorText.financial_year = "Please check financial year and disclosure date";                                 
+        document.getElementById('inputFinancialYear').setCustomValidity("invalid");
+        return false;
+      }      
+      
       this.error.financial_year = false;
       this.errorText.financial_year = "No error";
       document.getElementById('inputFinancialYear').setCustomValidity("");
@@ -839,6 +877,17 @@ export default {
       this.errorText.file = "No error";
       document.getElementById('inputFile').setCustomValidity("");
       return true;
+    },
+    
+    crossValidationDisclosureDateFinancialYear() {
+      try{
+        var yearDisc = (new Date(this.disclosure_date)).getFullYear()
+        var year = parseInt(this.financial_year)        
+      }catch(error){
+        return false
+      }
+      
+      return (year == yearDisc - 1 || year == yearDisc)
     },
     
     showInfo(msg){

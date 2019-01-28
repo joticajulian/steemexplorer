@@ -133,6 +133,16 @@ export default {
     }
     return date;
   },
+  
+  datetoddmmyyyy(date) {
+    return (
+      this.pad0(date.getDate()) +
+      "/" +
+      this.pad0(date.getMonth() + 1) +
+      "/" +
+      this.pad0(date.getFullYear(), 4)      
+    );
+  },
 
   isUpLetter: function(c) {
     var A = "A".charCodeAt(0);
