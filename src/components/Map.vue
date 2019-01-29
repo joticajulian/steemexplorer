@@ -46,7 +46,7 @@
       <div class="row">
         <div class="col-12">
           <h2>What is a witness</h2>
-          <p>A witness is a person who operates a server to produce and seal 'blocks' and add them to the blockchain. These blocks contain information about the documents, reports, and user data. They are selected by approval voting by the community.</p>
+          <p>A witness is a node in the network (a server) that produces and seals 'blocks' and add them to the blockchain. These blocks contain information about the documents, reports, and user data. The witnesses are selected by approval voting.</p>
         </div>
       </div>
     </div>    

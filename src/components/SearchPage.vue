@@ -108,9 +108,9 @@
       <div class="eftg-footnotes">
         <b>Definitions:</b>
         <ul>
-          <li>-Definition of ***Financial year is the year that the financial document is referring to (only valid for Periodic Regulated Information).</li>
-          <li>-Definition of "Disclosure Date" (found in results sections)  *The disclosure date corresponds to the official date of document release as set by the Issuer.</li>
-          <li>-Definition of "Submission Date" (found in results sections) **The submission date corresponds to the date at which the issuer gives the information to the OAM.</li>
+          <li>*The disclosure date corresponds to the official date of document release as set by the Issuer.</li>
+          <li>**The submission date corresponds to the date at which the issuer gives the information to the OAM.</li>
+          <li>***Financial year is the year that the financial document is referring to (only valid for Periodic Regulated Information).</li>
         </ul>
       </div>
     </div>
