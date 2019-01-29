@@ -267,10 +267,6 @@ export default {
   ],
   
   created() {
-    var d = new Date()
-    this.disclosure_date = Utils.datetoddmmyyyy(d)
-    this.financial_year = d.getFullYear() + ''
-    
     //validate fields while typing
     this.debounced_validateIssuerName       = debounce(this.validateIssuerName      , 300);
     this.debounced_validateHomeMemberState  = debounce(this.validateHomeMemberState , 300);
@@ -285,6 +281,10 @@ export default {
   },
   mounted() {
     this.startEventListenerFile();
+    
+    var d = new Date()
+    this.disclosure_date = Utils.datetoddmmyyyy(d)
+    this.financial_year = d.getFullYear() + ''
   },
   watch: {
     issuer_name: function() {
@@ -836,7 +836,7 @@ export default {
         return false;
       }
       
-      if( !crossValidationDisclosureDateFinancialYear() ){
+      if( !this.crossValidationDisclosureDateFinancialYear() ){
         this.error.financial_year = true;
         this.errorText.financial_year = "Please check financial year and disclosure date";                                 
         document.getElementById('inputFinancialYear').setCustomValidity("invalid");
@@ -880,10 +880,12 @@ export default {
     },
     
     crossValidationDisclosureDateFinancialYear() {
+      if(!this.showFinancialYear) return true
       try{
-        var yearDisc = (new Date(this.disclosure_date)).getFullYear()
-        var year = parseInt(this.financial_year)        
+        var yearDisc = Utils.ddmmyyyytoDate(this.disclosure_date).getFullYear()
+        var year = parseInt(this.financial_year)                        
       }catch(error){
+        console.log(error)
         return false
       }
       
