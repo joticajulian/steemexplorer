@@ -78,8 +78,10 @@ export default {
         
       this.block = result;
       var index = this.block.transaction_ids.indexOf(this.$route.params.tx);        
-      if(index >= 0) this.tx = this.block.transactions[index];
-      else {
+      if(index >= 0){
+        this.tx = this.block.transactions[index]
+        this.tx.block_num = blocknum
+      } else {
         this.tx = {};          
       }
       this.exists = true;      
