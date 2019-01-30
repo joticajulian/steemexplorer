@@ -8,6 +8,7 @@
           </div>
           <div class="d-flex align-items-end">
             <div id="logo-eftg" class="ml-2"><a href="#/"><img src="../assets/logo-eftg.png" /></a></div>
+            <span class="badge badge-danger">v0.19.12</span>
           </div>  
         </div>
         <div v-if="showAuth" class="col d-flex justify-content-end">
