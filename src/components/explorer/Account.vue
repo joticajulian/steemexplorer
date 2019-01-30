@@ -193,7 +193,7 @@ export default {
         steem_power: this.vests2sp(this.account.vesting_shares) + ' (' + (delegated>0?'+':'') + this.vests2sp(delegated) + ')',
       }
       
-      var result = await this.client.database.call('get_account_history',[name,-1,0])
+      var result = await this.client.database.call('get_account_history',[name,-1,1])
         
       var last_tx = result[0][0];
       var from = -1;

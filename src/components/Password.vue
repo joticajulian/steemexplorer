@@ -80,7 +80,8 @@ import debounce from "lodash.debounce";
 
 import Config from "@/config.js";
 import Utils from "@/js/utils.js";
-import dsteemExtra from "@/js/dsteem-extra.js";
+import { Client, PrivateKey } from 'eftg-dsteem'
+//import dsteemExtra from "@/js/dsteem-extra.js";
 
 import HeaderEFTG from "@/components/HeaderEFTG";
 
@@ -89,6 +90,8 @@ export default {
   
   data() {
     return {
+      client: null,
+      
       account: null,
       currentPassword: '',
       newPassword: '',
@@ -125,7 +128,9 @@ export default {
     HeaderEFTG    
   },
   
-  created() {    
+  created() {
+    this.client = new Client(Config.RPC_NODE.url);
+   
     //validate current password
     this.debounced_validateCurrentPassword = debounce(this.validateCurrentPassword, 300);
     this.getUser()  
@@ -169,7 +174,7 @@ export default {
       var roles = {'owner':{},'active':{},'posting':{},'memo':{}}
       var key_auths = {}
       for(var role in roles) {
-        var privKey = dsteem.PrivateKey.fromLogin(
+        var privKey = PrivateKey.fromLogin(
           this.$store.state.auth.user,
           this.newPassword,
           role
@@ -191,13 +196,22 @@ export default {
         posting: roles.posting
       }]
       
-      var privKey = dsteem.PrivateKey.fromLogin(
+      var privKey = PrivateKey.fromLogin(
         this.$store.state.auth.user,
         this.currentPassword,
         'owner'
-      )  
+      )
       
       let self = this
+      this.client.broadcast.sendOperations([operation],privKey)
+      .then(function(response){
+        self.showAlert(true, 'Password updated!')
+      })
+      .catch(function(error){
+        self.showAlert(false,error.message);
+      })
+      
+      /*let self = this
       async function updatePassword_async() {
         var trx = await dsteemExtra.newTransaction()
         trx.operations.push(operation)
@@ -207,13 +221,13 @@ export default {
         console.log('signed transaction')
         console.log(sgnTrx)
         var response = await client.broadcast.send(sgnTrx)
-        self.showAlert(true, 'Password updated!')
-      }
+        self.showAlert(true, 'Password updated!')        
+      }      
       
       updatePassword_async().catch(function(error){
         console.log(error);
         self.showAlert(false,error.message);        
-      });
+      });*/
     },
     
     showAlert(success, message){
@@ -233,15 +247,13 @@ export default {
     },
     
     async getUser(){
-      var client = new dsteem.Client(Config.RPC_NODE.url)
-      const accounts = await client.database.getAccounts([this.$store.state.auth.user])
+      const accounts = await this.client.database.getAccounts([this.$store.state.auth.user])
       this.account = accounts[0]      
     },
     
     //validation
     validateCurrentPassword() {
-      var client = new dsteem.Client(Config.RPC_NODE.url)
-      var privKey = dsteem.PrivateKey.fromLogin(
+      var privKey = PrivateKey.fromLogin(
           this.$store.state.auth.user,
           this.currentPassword,
           'owner'

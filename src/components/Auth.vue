@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import { Client, PrivateKey } from 'eftg-dsteem'
 import Config from "@/config.js";
 import Utils from "@/js/utils.js";
 
@@ -96,7 +97,7 @@ export default {
       }
       
       // Check if the user exists      
-      var client = new dsteem.Client(Config.RPC_NODE.url);
+      var client = new Client(Config.RPC_NODE.url);
       const accounts = await client.database.getAccounts([_username]);
       if (accounts.length === 0){        
         var e = new Error("User @" + _username + " does not exists");
@@ -119,7 +120,7 @@ export default {
       };
 
       for (var role in keysFromWIF) {
-        keysFromWIF[role].private = dsteem.PrivateKey.fromLogin(
+        keysFromWIF[role].private = PrivateKey.fromLogin(
           _username,
           _password,
           role
@@ -133,7 +134,7 @@ export default {
       var keyRole = { public: "", private: "" };
       
       try{
-        keyRole.private = dsteem.PrivateKey.fromString(_password);
+        keyRole.private = PrivateKey.fromString(_password);
         keyRole.public = keyRole.private
           .createPublic(Config.STEEM_ADDRESS_PREFIX)
           .toString();
