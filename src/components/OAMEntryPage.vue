@@ -190,6 +190,7 @@
 import debounce from "lodash.debounce";
 import axios from "axios";
 import Crypto from "crypto";
+import { Client } from 'eftg-dsteem'
 
 import Config from "@/config.js";
 import Utils from "@/js/utils.js";
@@ -202,6 +203,8 @@ export default {
   
   data() {
     return {
+      client: null,
+    
       issuer_name: "",
       home_member_state: "",
       identifier_id: "1",
@@ -266,6 +269,8 @@ export default {
   ],
   
   created() {
+    this.client = new Client(Config.RPC_NODE.url);
+  
     //validate fields while typing
     this.debounced_validateIssuerName       = debounce(this.validateIssuerName      , 300);
     this.debounced_validateHomeMemberState  = debounce(this.validateHomeMemberState , 300);
@@ -435,15 +440,13 @@ export default {
           submDate = '';
         }
 
-        // create a permlink taking into account the existing posts
-        var client = new dsteem.Client(Config.RPC_NODE.url);
-        
         // TODO: addRandom starts false and we check if the post exists using dsteem 
         var addRandom = true;
+        
         while (true) {
           var permlink = Utils.createPermLink(self.comment, addRandom);
           var urlPost = "oam/@" + username + "/" + permlink;
-          var post = await client.database.getState(urlPost);
+          var post = await self.client.database.getState(urlPost);
           console.log(post);
           //TODO: fix dsteem response problem... if the post exists, then addRandom=true and continue the while loop, else break
           break;
@@ -488,7 +491,7 @@ export default {
         console.log(post);
         
         // new Date(Date.now() + expireTime).toISOString().slice(0, -5),
-        var head_block_number = 2854535; 
+        /*var head_block_number = 2854535; 
         var head_block_id = "002b8e87b878c726a2f4c21a799d35cd576e890c"     
         var prefix = Buffer.from(head_block_id, 'hex')
         var prefix2 = prefix.readUInt32LE(4);
@@ -501,15 +504,15 @@ export default {
             "extensions": []            
           };
           
-        var signed_transaction = client.broadcast.sign(op , privKey);
+        var signed_transaction = self.client.broadcast.sign(op , privKey);
         
-        var params = [signed_transaction]; 
+        var params = [signed_transaction];*/ 
         
         self.showInfo('Sending to the blockchain...')
         
-        //var result = await client.broadcast.call("broadcast_transaction_synchronous", params);                              
-        //var result = await client.broadcast.send(signed_transaction);
-        var result = await client.broadcast.comment(post, privKey);
+        //var result = await self.client.broadcast.call("broadcast_transaction_synchronous", params);                              
+        //var result = await self.client.broadcast.send(signed_transaction);
+        var result = await self.client.broadcast.comment(post, privKey);
         
         self.showAlert(true,'Document published! <a href="/#/explorer/@'+username+'/'+permlink+'" class="alert-link" target="_blank">@'+username+'/'+permlink+'</a>');        
         console.log("document publised!");

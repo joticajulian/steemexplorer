@@ -11,14 +11,6 @@ import FooterEFTG from "@/components/FooterEFTG";
 
 export default {
   name: "App",
-  mounted() {
-    let dsteemscript = document.createElement("script");
-    dsteemscript.setAttribute(
-      "src",
-      "https://unpkg.com/eftg-dsteem@1.0.1/dist/dsteem.js"
-    );
-    document.head.appendChild(dsteemscript);
-  },
   components: {
     FooterEFTG
   }
