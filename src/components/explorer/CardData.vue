@@ -1,9 +1,9 @@
 <template>
   <div class="account">
     <div class="title" v-if="title!=''">{{title}}</div>
-    <div class="row line"></div>
+    <div class="roww line"></div>
     <div class="data" v-for="(item,key,index) in data">
-      <div class="row">
+      <div class="roww">
         <div :class="{
           key: true,
           keyO: (typeof data === 'object' && typeCard==''),
@@ -81,7 +81,7 @@ export default {
   overflow: hidden;
 }
 
-.row{
+.roww{
   display: block;
   width: 100%;
   border: solid 1px #dcdcdc;

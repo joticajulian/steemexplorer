@@ -1,34 +1,48 @@
 <template>
   <div class="block">
+    <HeaderEFTG ref="headerEFTG"></HeaderEFTG>     
+    <div class="container">
     <div v-if="this.exists">
-      <div class="info0">
-        <h1>Block {{$route.params.id}}</h1>
+      <div class="row">
+        <div class="col-md-12">
+          <h1>Block {{$route.params.id}}</h1>
+        </div>
       </div>
-      <div class="info1">
-        <h2>Block info</h2>
-        <card-data :data="this.blockGenerals"></card-data>
-      </div
-      ><div class="info2">
-        <h2>{{block.transactions.length}} Transactions</h2>
-        <div v-for="(tx,key,index) in block.transactions">
-          <trx :tx="tx"></trx>
+      <div class="row">
+        <div class="col-md-3">
+          <h2>Block info</h2>
+          <card-data :data="this.blockGenerals"></card-data>
+        </div
+        ><div class="col-md-9">
+          <h2>{{block.transactions.length}} Transactions</h2>
+          <div v-for="(tx,key,index) in block.transactions">
+            <trx :tx="tx"></trx>
+          </div>
         </div>
       </div>
     </div>
     <div v-else>
       <div class="loader"></div>
+    </div>
     </div>        
   </div>
 </template>
 
 <script>
-import CardData from '@/components/CardData'
-import Trx from '@/components/Trx'
+import { Client } from 'eftg-dsteem'
+import Config from '@/config.js'
+
+import CardData from '@/components/explorer/CardData'
+import Trx from '@/components/explorer/Trx'
+
+import HeaderEFTG from '@/components/HeaderEFTG'
+import ChainProperties from '@/mixins/ChainProperties.js'
 
 export default {
   name: 'Block',
   data () {
     return {
+      client: null,
       block: {
       },
       blockGenerals:{
@@ -38,11 +52,17 @@ export default {
   },
   
   components: {
+    HeaderEFTG,
     CardData,
     Trx
   },
   
+  mixins: [
+    ChainProperties
+  ], 
+  
   created() {
+    this.client = new Client(Config.RPC_NODE.url);
     this.fetchData()
   },
 
@@ -52,41 +72,35 @@ export default {
 
   methods: {
     
-    fetchData() {
+    async fetchData() {
       var blocknum = this.$route.params.id;
             
       console.log('Fetching data for block '+blocknum);
-      var self = this;
-      steem.api.getBlock(blocknum, function (err, result) {      
-        if (err || !result) {
-          console.log(err, result);
-          //Update UI
-          return;
-        }
+      
+      var result = await this.client.database.getBlock(blocknum)
         
-        for(var i=0;i<result.transactions.length;i++){
-          if(!result.transactions[i].transaction_id){
-            result.transactions[i].transaction_id = result.transaction_ids[i];            
-          }
+      for(var i=0;i<result.transactions.length;i++){
+        if(!result.transactions[i].transaction_id){
+          result.transactions[i].transaction_id = result.transaction_ids[i];            
+        }
           
-          if(!result.transactions[i].block_num){
-            result.transactions[i].block_num = blocknum;
-          }
+        if(!result.transactions[i].block_num){
+          result.transactions[i].block_num = blocknum;
         }
+      }
         
-        self.block = result;
+      this.block = result;
         
-        var no_keys = ['extensions','transaction_ids','transactions'];
+      var no_keys = ['extensions','transaction_ids','transactions'];
         
-        var blk = {};
-        for(var key in self.block){
-          if(no_keys.indexOf(key) >= 0) continue;
-          blk[key] = self.block[key];
-        }
+      var blk = {};
+      for(var key in this.block){
+        if(no_keys.indexOf(key) >= 0) continue;
+        blk[key] = this.block[key];
+      }
         
-        self.blockGenerals = blk;
-        self.exists = true;       
-      });
+      this.blockGenerals = blk;
+      this.exists = true;      
     },
   }
 }

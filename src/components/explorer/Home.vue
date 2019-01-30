@@ -1,10 +1,10 @@
 <template>
   <div class="home">
     <HeaderEFTG ref="headerEFTG"></HeaderEFTG>     
-    <div class="info0">
-      <h1>EFTG Explorer</h1>
-    </div>
-    <div class="info1">
+    <div class="container">
+    <h1>EFTG Explorer</h1>
+    <div class="row">
+    <div class="col-md-3">
       <div v-if="this.exists.globals">
         <div class="card">
           <div class="title">Current supply</div><br
@@ -49,21 +49,21 @@
           >for next 15 days<br
           ><hr
           >{{this.chainprops.reward_balance_day}} per day<br
-          >vote of €{{this.vote_value_1000_sp.toFixed(3)}} per 1000 {{this.SP_SYMBOL}}
+          >vote of {{this.vote_value_1000_sp.toFixed(3)}} per 1000 {{this.SP_SYMBOL}}
         </div>
       </div>
       <div v-else>
         <div class="loader"></div>
       </div>      
     </div
-    ><div class="info2">
+    ><div class="col-md-9">
       <div v-if="lastBlocks.length > 0">
         <div class="last-blocks">
           <h2>Last Blocks</h2>      
           <transition-group name="list-blocks" tag="div" class="block-group">
             <div v-for="(b,key,index) in lastBlocks" :key="b.block_num" class="list-blocks-item">
               <div class="block-left">
-                <a :href="'#/b/'+b.block_num">{{b.block_num}}</a>
+                <a :href="'#/explorer/b/'+b.block_num">{{b.block_num}}</a>
                 <span v-if="b.loaded">
                   - {{b.size_txs}} transactions
                   <span v-if="b.size_posts>0">
@@ -75,7 +75,7 @@
                 </span>
               </div
               ><div class="block-right">
-                <span class="small">witness</span><br><a :href="'#/@'+b.witness">{{b.witness}}</a>
+                <span class="small">witness</span><br><a :href="'#/explorer/@'+b.witness">{{b.witness}}</a>
               </div>
             </div>
           </transition-group>
@@ -84,21 +84,27 @@
       <div v-else>
         <div class="loader"></div>
       </div>
-    </div>    
+    </div>
+    </div>
+    </div>
   </div>
 </template>
 
 <script>
+import { Client, PrivateKey } from 'eftg-dsteem'
+
 import Config from '@/config.js'
 import Utils from '@/js/utils.js'
-import CardData from '@/components/CardData'
-import Trx from '@/components/Trx'
-import HeaderEFTG from "@/components/HeaderEFTG";
+import CardData from '@/components/explorer/CardData'
+import Trx from '@/components/explorer/Trx'
+import HeaderEFTG from "@/components/HeaderEFTG"
+import ChainProperties from '@/mixins/ChainProperties.js'
 
 export default {
   name: 'Home',
   data () {
     return {
+      client: null,
       chainprops: {
         current_sbd_supply: '0.000',
         virtual_supply: '0.001',
@@ -133,7 +139,14 @@ export default {
     HeaderEFTG
   },
   
+  mixins: [
+    ChainProperties
+  ],
+  
   created() {
+    let self = this     
+    this.client = new Client(Config.RPC_NODE.url);
+    
     this.getDynamicGlobalProperties();
     this.ints.globalprops = setInterval(this.getDynamicGlobalProperties, 12000);
     this.ints.blocks = setInterval(this.fetchBlocks, 3000);
@@ -161,50 +174,42 @@ export default {
 
   methods: {
   
-    getDynamicGlobalProperties() {
+    async getDynamicGlobalProperties() {
       var self = this;
-      steem.api.getRewardFund('post', function (err, result) {      
-        if (err || !result) {
-          console.log(err, result);
-          return;
-        }
-        self.chainprops.reward_balance = result.reward_balance;
-        self.chainprops.recent_claims = result.recent_claims;
-        self.chainprops.reward_balance_day = (parseFloat(self.chainprops.reward_balance)/15).toFixed(3) + ' ' + Config.STEEM;        
-        self.chainprops.steem_per_rshare = parseFloat(self.chainprops.reward_balance) / parseInt(self.chainprops.recent_claims);
-        
-        self.exists.reward = true;
-      });
+      var result = await this.client.database.call('get_reward_fund',['post'])
       
-      steem.api.getState('',function(err,result){
-        if (err || !result) {
-          console.log(err, result);
-          return;
-        }
+      this.chainprops.reward_balance = result.reward_balance;
+      this.chainprops.recent_claims = result.recent_claims;
+      this.chainprops.reward_balance_day = (parseFloat(this.chainprops.reward_balance)/15).toFixed(3) + ' ' + Config.STEEM;        
+      this.chainprops.steem_per_rshare = parseFloat(this.chainprops.reward_balance) / parseInt(this.chainprops.recent_claims);
         
-        //DYNAMIC GLOBAL PROPERTIES
-        var keys = ['current_supply', 'current_sbd_supply', 'virtual_supply', 'total_vesting_fund_steem', 'total_vesting_shares', 'pending_rewarded_vesting_shares', 'pending_rewarded_vesting_steem', 'sbd_interest_rate', 'sbd_print_rate', 'maximum_block_size'];
+      this.exists.reward = true;
+      
+      var result = await this.client.database.getState('')
+      
+      //DYNAMIC GLOBAL PROPERTIES
+      var keys = ['current_supply', 'current_sbd_supply', 'virtual_supply', 'total_vesting_fund_steem', 'total_vesting_shares', 'pending_rewarded_vesting_shares', 'pending_rewarded_vesting_steem', 'sbd_interest_rate', 'sbd_print_rate', 'maximum_block_size'];
         
-        for(var key in result.props){
-          if(keys.indexOf(key) < 0) continue;
-          self.chainprops[key] = result.props[key];
-        }
-        self.chainprops.steem_per_mvests = parseFloat(self.chainprops.total_vesting_fund_steem)*1000000/parseFloat(self.chainprops.total_vesting_shares);
+      for(var key in result.props){
+        if(keys.indexOf(key) < 0) continue;
+        this.chainprops[key] = result.props[key];
+      }
+      this.chainprops.steem_per_mvests = parseFloat(this.chainprops.total_vesting_fund_steem)*1000000/parseFloat(this.chainprops.total_vesting_shares);
         
-        var current_inflation_rate = Utils.getInflationRate(result.props.head_block_number)
-        self.chainprops.current_inflation_rate = current_inflation_rate/100 + '%'
-        self.chainprops.new_steem_per_day = (Config.STEEM_BLOCKS_PER_DAY * parseFloat(self.chainprops.virtual_supply) * (current_inflation_rate / 10000) / Config.STEEM_BLOCKS_PER_YEAR ).toFixed(3) + ' ' + Config.STEEM;
-        self.chainprops.sp_percent = parseFloat(self.chainprops.total_vesting_fund_steem) * 100 / parseFloat(self.chainprops.virtual_supply);    
-        self.chainprops.feed_price = parseFloat(result.feed_price.base)/parseFloat(result.feed_price.quote);
+      var current_inflation_rate = Utils.getInflationRate(result.props.head_block_number)
+      this.chainprops.current_inflation_rate = current_inflation_rate/100 + '%'
+      this.chainprops.new_steem_per_day = (Config.STEEM_BLOCKS_PER_DAY * parseFloat(this.chainprops.virtual_supply) * (current_inflation_rate / 10000) / Config.STEEM_BLOCKS_PER_YEAR ).toFixed(3) + ' ' + Config.STEEM;
+      this.chainprops.sp_percent = parseFloat(this.chainprops.total_vesting_fund_steem) * 100 / parseFloat(this.chainprops.virtual_supply);    
+      this.chainprops.feed_price = parseFloat(result.feed_price.base)/parseFloat(result.feed_price.quote);
          
-        self.exists.globals = true;
+      this.exists.globals = true;
         
-        if(self.first_time) self.last_block_num = result.props.head_block_number;
-        self.first_time = false; 
+      if(this.first_time) this.last_block_num = result.props.head_block_number;
+      this.first_time = false; 
         
         
-        // SCHEDULE
-        /*if(self.schedule.length == 0){
+      // SCHEDULE
+      /*if(self.schedule.length == 0){
           self.schedule = result.witness_schedule.current_shuffled_witnesses;
           return;
         }
@@ -220,7 +225,7 @@ export default {
           self.$set(self.schedule, round.length-id-1+i, round[i]);
         }
         self.$set(self.schedule, round.length-1, round[id]);*/
-      });
+      
     },
   
     fetchBlocks() {
@@ -259,11 +264,7 @@ export default {
         self.lastBlocks.unshift(b);
         if(self.lastBlocks.length > SIZE_BLOCKS) self.lastBlocks.pop();
           
-        steem.api.getBlock(num, function (err, resultBlock) {      
-          if (err || !resultBlock) {
-            console.log(err, resultBlock);             
-            return;
-          }
+        self.client.database.getBlock(num).then(function(resultBlock){
           b.size_txs = resultBlock.transactions.length;
           b.size_posts = resultBlock.transactions.filter(function(tx){
             return tx.operations[0][0]=='comment' && tx.operations[0][1].parent_author=='';

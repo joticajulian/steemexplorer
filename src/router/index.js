@@ -8,6 +8,13 @@ import Faq from "@/components/Faq";
 import Contact from "@/components/Contact";
 import Password from "@/components/Password";
 
+// Explorer
+import HomeExplorer from '@/components/explorer/Home'
+import AccountExplorer from '@/components/explorer/Account'
+import PostExplorer from '@/components/explorer/Post'
+import BlockExplorer from '@/components/explorer/Block'
+import TransactionExplorer from '@/components/explorer/Transaction'
+
 Vue.use(Router);
 
 export default new Router({
@@ -46,6 +53,28 @@ export default new Router({
       path: "/password",
       name: "Password",
       component: Password
+    },
+    {
+      path: "/explorer",
+      name: "Explorer",
+      component: HomeExplorer
+    },
+    {
+      path: '/explorer/@:account',
+      name: 'Account',
+      component: AccountExplorer
+    },{
+      path: '/explorer/@:account/:permlink',
+      name: 'Post',
+      component: PostExplorer
+    },{
+      path: '/explorer/b/:id',
+      name: 'Block',
+      component: BlockExplorer
+    },{
+      path: '/explorer/b/:id/:tx',
+      name: 'Transaction',
+      component: TransactionExplorer
     }
   ]
 });

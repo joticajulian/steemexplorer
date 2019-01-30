@@ -1,5 +1,6 @@
 <template>
   <div class="account">
+    <HeaderEFTG ref="headerEFTG"></HeaderEFTG>     
     <div v-if="this.exists.account">
       <div class="profile" :style="this.account.cover_image==''?'background-color: black;':'background-image: url('+this.account.cover_image+');'">
         <div>
@@ -7,7 +8,9 @@
           <div class="name"><h1><strong>@{{this.account.name}}</strong> ({{account.rep_log}})</h1></div>
         </div>
       </div>
-      <div class="info1">
+      <div class="container">
+      <div class="row">
+      <div class="col-md-3">      
         <h2>Generals</h2>
         <card-data :data="this.accountGenerals"></card-data>
         <div v-if="this.exists.voting_manabar">
@@ -40,7 +43,7 @@
         <h3>Memo Auth</h3>
         <card-data :data="this.authorities.memo"></card-data>        
       </div
-      ><div class="info2">
+      ><div class="col-md-9">
         <div v-if="this.exists.json_metadata">
           <h2>JSON metadata</h2>
           <card-data :data="this.account.json_metadata"></card-data>
@@ -62,7 +65,9 @@
             ><span v-else>{{p.text}}</span          
           ></div>
         </div>
-      </div>  
+      </div>
+      </div>
+      </div>
     </div>
     <div v-else>
       <div class="loader"></div>
@@ -71,14 +76,20 @@
 </template>
 
 <script>
+import { Client } from 'eftg-dsteem'
+
 import Utils from '@/js/utils.js'
-import CardData from '@/components/CardData'
-import Trx from '@/components/Trx'
+import Config from '@/config.js'
+import CardData from '@/components/explorer/CardData'
+import Trx from '@/components/explorer/Trx'
+import ChainProperties from '@/mixins/ChainProperties.js'
+import HeaderEFTG from '@/components/HeaderEFTG'
 
 export default {
   name: 'Account',
   data () {
     return {
+      client: null,
       account: {
       },
       witness: {
@@ -107,12 +118,18 @@ export default {
   },
   
   components: {
+    HeaderEFTG,
     CardData,
-    Trx
+    Trx    
   },
   
+  mixins: [
+    ChainProperties
+  ],
+  
   created() {
-    this.fetchData()
+    this.client = new Client(Config.RPC_NODE.url);
+    this.fetchData()    
   },
 
   watch: {
@@ -121,7 +138,7 @@ export default {
 
   methods: {
     
-    fetchData() {
+    async fetchData() {
       var name = this.$route.params.account;
             
       console.log('Fetching data for '+name);
@@ -129,145 +146,125 @@ export default {
       this.exists.transactions = false;
       this.exists.witness = false;
       var self = this;
-      steem.api.getAccounts([name], function (err, result) {      
-        if (err || !result || result.length == 0) {
-          console.log(err, result);
-          //Update UI
-          return;
-        }
-        self.exists.account = true;
-        
-        if(result[0].json_metadata.length > 0) self.exists.json_metadata = true;
-        else self.exists.json_metadata = false;
-        
-        if(result[0].voting_manabar) self.exists.voting_manabar = true;
-        else self.exists.voting_manabar = false;
-        
-        try{
-          result[0].json_metadata = JSON.parse(result[0].json_metadata)
-        }catch(exception){ }
-        
-        result[0].rep_log = Utils.getReputation(result[0].reputation);
-        result[0].profile_image = Utils.extractUrlProfileImage(result[0].json_metadata);
-        result[0].cover_image = Utils.extractUrlCoverImage(result[0].json_metadata);
-        for(var i=0;i<result[0].witness_votes.length;i++){
-          result[0].witness_votes[i] = {link:'#/@'+result[0].witness_votes[i] , text:result[0].witness_votes[i]};
-        }
-        
-        self.account = result[0];
-        
-        var no_keys = ['owner','active','posting','memo_key','json_metadata','voting_manabar','proxied_vsf_votes','transfer_history','market_history','post_history','vote_history','other_history','witness_votes','tags_usage','guest_bloggers','rep_log','profile_image','cover_image',
-        'balance','sbd_balance','savings_balance'];
-        
-        var acc = {};
-        for(var key in self.account){
-          if(no_keys.indexOf(key) >= 0) continue;
-          acc[key] = self.account[key];
-        }
-        
-        self.accountGenerals2 = acc;
-        self.authorities.owner   = self.arrayAuthorities(self.account.owner);
-        self.authorities.active  = self.arrayAuthorities(self.account.active);
-        self.authorities.posting = self.arrayAuthorities(self.account.posting);
-        self.authorities.memo    = [self.account.memo_key];
-        
-        var delegated = parseFloat(self.account.received_vesting_shares) - parseFloat(self.account.delegated_vesting_shares);
-        self.accountGenerals = {
-          voting_power: Utils.getVotingPower(self.account)/100 + '%',
-          balance: self.account.balance,
-          sbd_balance: self.account.sbd_balance,
-          savings_balance: self.account.savings_balance,
-          steem_power: self.vests2sp(self.account.vesting_shares) + ' (' + (delegated>0?'+':'') + self.vests2sp(delegated) + ')',
-        }
-      });
+      var result = await this.client.database.getAccounts([name])
       
-      steem.api.getAccountHistory(name,-1,0, function(err, result) {
-        if (err || !result || result.length == 0) {
-          console.log(err, result);
-          //Update UI
-          return;
-        }
+      this.exists.account = true;
         
-        var last_tx = result[0][0];        
-        var from = -1;
-        var limit = self.limit;
-        var total_pages = Math.ceil(last_tx / limit);
-        var page = 1;
+      if(result[0].json_metadata.length > 0) this.exists.json_metadata = true;
+      else this.exists.json_metadata = false;
         
-        if(self.$route.query && self.$route.query.page){
-          page = parseInt(self.$route.query.page);
-          from = last_tx - limit*( page - 1 );          
-        }else{
-          from = last_tx;          
-        }
-        if(from < 0) from = 0;
-        if(from < limit) limit = from;
+      if(result[0].voting_manabar) this.exists.voting_manabar = true;
+      else this.exists.voting_manabar = false;
         
-        self.pages = [];
-        var NUMBER_PAGES_DISPLAYED = 10;
-        var ini = page-NUMBER_PAGES_DISPLAYED/2;
-        var end = page+NUMBER_PAGES_DISPLAYED/2-1;
-        if(ini < 1){
-          end += 1-ini;
-          ini = 1;          
-        }
+      try{
+        result[0].json_metadata = JSON.parse(result[0].json_metadata)
+      }catch(exception){ }
         
-        if(end > total_pages){
-          ini -= end-total_pages;
-          if(ini < 1) ini = 1;
-          end = total_pages;
-        }       
+      result[0].rep_log = Utils.getReputation(result[0].reputation);
+      result[0].profile_image = Utils.extractUrlProfileImage(result[0].json_metadata);
+      result[0].cover_image = Utils.extractUrlCoverImage(result[0].json_metadata);
+      for(var i=0;i<result[0].witness_votes.length;i++){
+        result[0].witness_votes[i] = {link:'#/explorer/@'+result[0].witness_votes[i] , text:result[0].witness_votes[i]};
+      }
         
-        if(ini > 1){
-          self.pages.push({text:'1',link:'#/@'+name+'?page=1'});
-          self.pages.push({text:'...'});
-        }
+      this.account = result[0];
         
-        for(var i=ini ; i<=end ; i++){
-          self.pages.push({text:i+'',link:'#/@'+name+'?page='+i});
-        }
+      var no_keys = ['owner','active','posting','memo_key','json_metadata','voting_manabar','proxied_vsf_votes','transfer_history','market_history','post_history','vote_history','other_history','witness_votes','tags_usage','guest_bloggers','rep_log','profile_image','cover_image',
+      'balance','sbd_balance','savings_balance'];
         
-        if(end < total_pages){
-          self.pages.push({text:'...'});
-          self.pages.push({text:total_pages+'',link:'#/@'+name+'?page='+total_pages});          
-        }
+      var acc = {};
+      for(var key in self.account){
+        if(no_keys.indexOf(key) >= 0) continue;
+        acc[key] = this.account[key];
+      }
+        
+      this.accountGenerals2 = acc;
+      this.authorities.owner   = this.arrayAuthorities(this.account.owner);
+      this.authorities.active  = this.arrayAuthorities(this.account.active);
+      this.authorities.posting = this.arrayAuthorities(this.account.posting);
+      this.authorities.memo    = [this.account.memo_key];
+        
+      var delegated = parseFloat(this.account.received_vesting_shares) - parseFloat(this.account.delegated_vesting_shares);
+      this.accountGenerals = {
+        voting_power: Utils.getVotingPower(this.account)/100 + '%',
+        balance: this.account.balance,
+        sbd_balance: this.account.sbd_balance,
+        savings_balance: this.account.savings_balance,
+        steem_power: this.vests2sp(this.account.vesting_shares) + ' (' + (delegated>0?'+':'') + this.vests2sp(delegated) + ')',
+      }
+      
+      var result = await this.client.database.call('get_account_history',[name,-1,0])
+        
+      var last_tx = result[0][0];
+      var from = -1;
+      var limit = self.limit;
+      var total_pages = Math.ceil(last_tx / limit);
+      var page = 1;
+        
+      if(this.$route.query && this.$route.query.page){
+        page = parseInt(this.$route.query.page);
+        from = last_tx - limit*( page - 1 );          
+      }else{
+        from = last_tx;          
+      }
+      if(from < 0) from = 0;
+      if(from < limit) limit = from;
+        
+      this.pages = [];
+      var NUMBER_PAGES_DISPLAYED = 10;
+      var ini = page-NUMBER_PAGES_DISPLAYED/2;
+      var end = page+NUMBER_PAGES_DISPLAYED/2-1;
+      if(ini < 1){
+        end += 1-ini;
+        ini = 1;          
+      }
+        
+      if(end > total_pages){
+        ini -= end-total_pages;
+        if(ini < 1) ini = 1;
+        end = total_pages;
+      }       
+        
+      if(ini > 1){
+        this.pages.push({text:'1',link:'#/explorer/@'+name+'?page=1'});
+        this.pages.push({text:'...'});
+      }
+        
+      for(var i=ini ; i<=end ; i++){
+        this.pages.push({text:i+'',link:'#/explorer/@'+name+'?page='+i});
+      }
+        
+      if(end < total_pages){
+        this.pages.push({text:'...'});
+        this.pages.push({text:total_pages+'',link:'#/explorer/@'+name+'?page='+total_pages});          
+      }
     
-        steem.api.getAccountHistory(name,from,limit, function(err, result) {
-          if (err || !result || result.length == 0) {
-            console.log(err, result);
-            //Update UI
-            return;
-          }        
-          self.transactions = result.reverse();
-          self.exists.transactions = true;
-        });
-      });
+      var result = await this.client.database.call('get_account_history',[name,from,limit])
+      this.transactions = result.reverse();
+      this.exists.transactions = true;
       
-      steem.api.getWitnessByAccount(name, function(err, result){
-        if (err || !result) {
-          //not a witness
-          return;
-        }
-        self.witness = result;
+      var result = await this.client.database.call('get_witness_by_account',[name])
+      if(result == null) return; 
+      
+      this.witness = result;
         
-        var no_keys = ['signing_key','props','sbd_exchange_rate'];
+      var no_keys = ['signing_key','props','sbd_exchange_rate'];
         
-        var wit = {};
-        for(var key in self.witness){
-          if(no_keys.indexOf(key) >= 0) continue;
-          wit[key] = self.witness[key];
-        }
+      var wit = {};
+      for(var key in this.witness){
+        if(no_keys.indexOf(key) >= 0) continue;
+        wit[key] = this.witness[key];
+      }
         
-        self.witnessGenerals = wit;
-        self.authorities.signing  = [self.witness.signing_key];
-        self.exists.witness = true;
-      });
+      this.witnessGenerals = wit;
+      this.authorities.signing  = [this.witness.signing_key];
+      this.exists.witness = true;      
     },
     
     arrayAuthorities: function(auth){
       var array = [];
       for(var i=0;i<auth.key_auths.length;i++) array.push( auth.key_auths[i][0] );
-      for(var i=0;i<auth.account_auths.length;i++) array.push( {link:'#/@'+auth.account_auths[i][0] , text:auth.account_auths[i][0]} );
+      for(var i=0;i<auth.account_auths.length;i++) array.push( {link:'#/explorer/@'+auth.account_auths[i][0] , text:auth.account_auths[i][0]} );
       return array;
     }
   }

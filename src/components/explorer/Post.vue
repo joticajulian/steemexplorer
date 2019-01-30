@@ -1,7 +1,10 @@
 <template>
   <div class="post">
-    <div v-if="this.exists">
-      <div class="info1">
+    <HeaderEFTG ref="headerEFTG"></HeaderEFTG>
+    <div v-if="this.exists">     
+    <div class="container">
+    <div class="row">
+      <div class="col-md-3">      
         <h3 class="right">Payout: {{payout.total}}</h3>
         <card-data :data="this.payout.card"></card-data>
         <div v-if="post.depth==0">
@@ -12,17 +15,17 @@
         </div>
         <card-data :data="this.postGenerals"></card-data>  
       </div
-      ><div class="info2">
-        <h2><a :href="'#/@'+post.author">@{{post.author}}</a> ({{this.getReputation(post.author_reputation)}})</h2>
+      ><div class="col-md-9">
+        <h2><a :href="'#/explorer/@'+post.author">@{{post.author}}</a> ({{this.getReputation(post.author_reputation)}})</h2>
         <div v-if="post.depth==0">
           <h1>{{post.title}}</h1>
         </div>
         <div v-else>
           <h1>Comment</h1>
           <div v-if="post.depth > 1">
-            <a :href="'#/@'+post.parent_author+'/'+post.parent_permlink">Parent Comment</a>
+            <a :href="'#/explorer/@'+post.parent_author+'/'+post.parent_permlink">Parent Comment</a>
           </div>
-          <a :href="'#/@'+post.root_author+'/'+post.root_permlink">Root Post</a>
+          <a :href="'#/explorer/@'+post.root_author+'/'+post.root_permlink">Root Post</a>
         </div>
         <div class="body break-word">{{post.body}}</div>
         <h2>JSON metadata</h2>
@@ -34,7 +37,9 @@
           <beneficiaries :data="this.post.beneficiaries" :payout="payout"></beneficiaries>
         </div>        
       </div>
-    </div>  
+    </div>
+    </div>
+    </div>
     <div v-else>
       <div class="loader"></div>
     </div>
@@ -42,29 +47,40 @@
 </template>
 
 <script>
+import { Client } from 'eftg-dsteem'
+
 import Config from '@/config.js'
 import Utils from '@/js/utils.js'
-import CardData from '@/components/CardData'
-import Votes from '@/components/Votes'
-import Beneficiaries from '@/components/Beneficiaries'
+import HeaderEFTG from '@/components/HeaderEFTG'
+import CardData from '@/components/explorer/CardData'
+import Votes from '@/components/explorer/Votes'
+import Beneficiaries from '@/components/explorer/Beneficiaries'
+import ChainProperties from '@/mixins/ChainProperties.js'
 
 export default {
   name: 'post',
   data () {
     return {
+      client: null,
       post:{},
       payout:{total:'',card:{}},
-      exists: false,      
+      exists: false,     
     }
   },
   
   components: {
+    HeaderEFTG,
     CardData,
     Votes,
-    Beneficiaries,
+    Beneficiaries
   },
   
+  mixins: [
+    ChainProperties
+  ],
+  
   created() {
+    this.client = new Client(Config.RPC_NODE.url);
     this.fetchData()
   },
 
@@ -75,45 +91,39 @@ export default {
   methods: {
     getReputation: Utils.getReputation,
     
-    fetchData() {
+    async fetchData() {
       var author = this.$route.params.account;
       var permlink = this.$route.params.permlink;
       console.log('Fetching data for '+author+'/'+permlink);
       var self = this;
-      steem.api.getContent(author,permlink, function (err, result) {      
-        if (err || !result) {
-          console.log(err, result);
-          //Update UI
-          return;
-        }
-        result.json_metadata = JSON.parse(result.json_metadata);
-        self.post = result;
+      var result = await this.client.database.call('get_content',[author,permlink])
+      
+      result.json_metadata = JSON.parse(result.json_metadata);
+      this.post = result;
         
-        var no_keys = ['body','json_metadata','beneficiaries','active_votes','replies','body_length','reblogged_by'];
+      var no_keys = ['body','json_metadata','beneficiaries','active_votes','replies','body_length','reblogged_by'];
         
-        var pst = {};
-        for(var key in self.post){
-          if(no_keys.indexOf(key) >= 0) continue;
-          pst[key] = self.post[key];
-        }        
-        self.postGenerals = pst;
+      var pst = {};
+      for(var key in this.post){
+        if(no_keys.indexOf(key) >= 0) continue;
+        pst[key] = this.post[key];
+      }        
+      this.postGenerals = pst;
                 
-        self.payout.old_post = (new Date()) - (new Date(result.cashout_time+'Z')) > 0;
-        if(self.payout.old_post){
-          self.payout.total = (parseFloat(result.total_payout_value) + parseFloat(result.curator_payout_value)).toFixed(3) +' '+ Config.SBD;
-          self.payout.author = result.total_payout_value;
-          self.payout.curator = result.curator_payout_value;
-        }else{
-          self.payout.total = result.pending_payout_value;
-          self.payout.total_vote_weight = result.total_vote_weight;
-        }
-        self.payoutCard();
-        self.exists = true;
-                
-      });      
+      this.payout.old_post = (new Date()) - (new Date(result.cashout_time+'Z')) > 0;
+      if(this.payout.old_post){
+        this.payout.total = (parseFloat(result.total_payout_value) + parseFloat(result.curator_payout_value)).toFixed(3) +' '+ Config.SBD;
+        this.payout.author = result.total_payout_value;
+        this.payout.curator = result.curator_payout_value;
+      }else{
+        this.payout.total = result.pending_payout_value;
+        this.payout.total_vote_weight = result.total_vote_weight;
+      }
+      this.payoutCard();
+      this.exists = true;            
     },
     
-    payoutCard: function(){
+    payoutCard(){
       var total_payout_sbd = parseFloat(this.payout.total);
       var total_payout_author_sbd = 0;
       var total_payout_curator_sbd = 0;

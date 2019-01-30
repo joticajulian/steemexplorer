@@ -43,7 +43,7 @@ const store = new Vuex.Store({
           posting: null,
           memo: null
         }
-      }
+      }    
   },
   mutations: {
     increment (state) {
