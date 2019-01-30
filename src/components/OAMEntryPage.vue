@@ -179,11 +179,10 @@
           </div>            
         </div>
         <div v-if="alert.info" class="alert alert-info" role="alert">{{alertText.info}}</div>
-        <div v-if="alert.success" class="alert alert-success" role="alert">{{alertText.success}}</div>
+        <div v-if="alert.success" class="alert alert-success" role="alert" v-html="alertText.success"></div>
         <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alertText.danger}}</div>
       </div>
-    </div>
-    <!--<FooterEFTG></FooterEFTG>-->
+    </div>    
   </div>
 </template>
 
@@ -512,7 +511,7 @@ export default {
         //var result = await client.broadcast.send(signed_transaction);
         var result = await client.broadcast.comment(post, privKey);
         
-        self.showAlert(true,'Document published! https://explorer.blkcc.xyz/#/@'+username+'/'+permlink);        
+        self.showAlert(true,'Document published! <a href="/#/explorer/@'+username+'/'+permlink+'" class="alert-link" target="_blank">@'+username+'/'+permlink+'</a>');        
         console.log("document publised!");
         console.log(result);
       }
