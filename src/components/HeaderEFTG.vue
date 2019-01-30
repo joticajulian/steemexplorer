@@ -58,6 +58,9 @@
             <router-link to="/map" class="nav-item nav-link">Map</router-link>
           </li>
           <li class="nav-item">
+            <router-link to="/explorer" class="nav-item nav-link">Explorer</router-link>
+          </li>
+          <li class="nav-item">
             <router-link to="/contact" class="nav-item nav-link">Contact</router-link>
           </li>
         </ul>
