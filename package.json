@@ -20,7 +20,7 @@
     "axios": "0.18.0",
     "bootstrap-vue": "^2.0.0-rc.11",
     "crypto": "1.0.1",
-    "eftg-dsteem": "^1.0.1",
+    "eftg-dsteem": "2.0.1",
     "leaflet.icon.glyph": "^0.2.0",
     "lodash.debounce": "4.0.8",
     "moment": "^2.22.2",
