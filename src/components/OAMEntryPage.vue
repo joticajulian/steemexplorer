@@ -8,7 +8,7 @@
         <div class="row">
           <div class="col-md-6">
             <div class="form-group row">
-              <label for="inputIssuerName" class="col-md-5 col-form-label">ISSUER NAME</label>
+              <label for="inputIssuerName" class="col-md-5 col-form-label">ISSUER NAMEss</label>
               <div class="col-md-7">
                 <input class="form-control" type="text" id="inputIssuerName" 
                        v-model="issuer_name" placeholder="Company" :class="{'is-invalid': error.issuer_name }"/>
@@ -288,6 +288,7 @@ export default {
     
     var d = new Date()
     this.disclosure_date = Utils.datetoddmmyyyy(d)
+    this.submission_date = Utils.datetoddmmyyyy(d)
     this.financial_year = d.getFullYear() + ''
   },
   watch: {
@@ -306,16 +307,27 @@ export default {
     },
     subclass: function(newVal) {
       this.debounced_validateSubclass();
-      if(newVal == 101 || newVal == 102) this.showFinancialYear = true;
-      else this.showFinancialYear = false;
+      if(newVal == 101 || newVal == 102){
+        this.showFinancialYear = true;        
+      } else {
+        this.showFinancialYear = false;
+      }
       
-      this.subclassTag = this.dictionary.docClassTags[newVal+""];               
+      this.subclassTag = this.dictionary.docClassTags[newVal+""];
+      
+      this.debounced_validateFinancialYear()
+      this.debounced_validateDisclosureDate()
+      this.debounced_validateSubmissionDate()               
     },
     disclosure_date: function() {
-      this.debounced_validateDisclosureDate();
+      this.debounced_validateFinancialYear()
+      this.debounced_validateDisclosureDate()
+      this.debounced_validateSubmissionDate()
     },
     submission_date: function() {
-      this.debounced_validateSubmissionDate();
+      this.debounced_validateFinancialYear()
+      this.debounced_validateDisclosureDate()
+      this.debounced_validateSubmissionDate()
     },
     document_language: function() {
       this.debounced_validateDocumentLanguage();
@@ -324,7 +336,9 @@ export default {
       this.debounced_validateComment();
     },
     financial_year: function() {
-      this.debounced_validateFinancialYear();
+      this.debounced_validateFinancialYear()
+      this.debounced_validateDisclosureDate()
+      this.debounced_validateSubmissionDate()
     }
   },
   methods: {
@@ -533,19 +547,26 @@ export default {
     },
     
     clear() {
+      var d = new Date()
+      this.disclosure_date = Utils.datetoddmmyyyy(d)
+      this.submission_date = Utils.datetoddmmyyyy(d)
+      this.financial_year = d.getFullYear() + ''
+    
       this.issuer_name = "";
       this.home_member_state = "";
       this.identifier_id = "1";
       this.identifier_value = "";
       this.subclass = "";
-      this.disclosure_date = "";
-      this.submission_date = "";
+      //this.disclosure_date = "";
+      //this.submission_date = "";
       this.document_language = "";
       this.comment = "";
-      this.financial_year = "";
+      //this.financial_year = "";
       document.getElementById("inputFile").labels[0].childNodes[0].data = 'Choose file...'
       document.getElementById('inputFile').setAttribute('type','')
       document.getElementById('inputFile').setAttribute('type','file')
+      
+      document.getElementById('eftg-form').classList.remove('was-validated');
       
       this.hideSuccess()
       this.hideDanger()
@@ -672,6 +693,13 @@ export default {
         document.getElementById('inputLegalIdentifier').setCustomValidity("invalid");
         return false;
       }
+      
+      if (this.identifier_value === "") {
+        this.error.identifier_value = false;
+        this.errorText.identifier_value = "No error";
+        document.getElementById('inputLegalIdentifier').setCustomValidity("");
+        return true;
+      }
 
       if (this.identifier_value.length < 3) {
         this.error.identifier_value = true;
@@ -735,17 +763,14 @@ export default {
         document.getElementById('inputDocumentDisclosureDate').setCustomValidity("invalid");
         return true;
       }
-
       try {
-        Utils.ddmmyyyytoDate(this.disclosure_date);
-        var date = new Date(this.disclosure_date)
+        var date = Utils.ddmmyyyytoDate(this.disclosure_date)
       } catch (e) {
         this.error.disclosure_date = true;
         this.errorText.disclosure_date = "Invalid date format, use dd/mm/yyyy";                                 
         document.getElementById('inputDocumentDisclosureDate').setCustomValidity("invalid");
         return false;
       }
-      
       if(date > new Date()){ //prevent future dates
         this.error.disclosure_date = true;
         this.errorText.disclosure_date = "Disclosure date should be today or earlier";                                 
@@ -753,9 +778,18 @@ export default {
         return false;
       }
       
-      if( !this.crossValidationDisclosureDateFinancialYear() ){
-        this.error.disclosure_date = true;
-        this.errorText.disclosure_date = "Please check financial year and disclosure date";                                 
+      var validation = this.crossValidationDisclosureDateFinancialYear('disclosure_date')
+      if(!validation.valid){
+        this.error.disclosure_date = true
+        this.errorText.disclosure_date = validation.message                                 
+        document.getElementById('inputDocumentDisclosureDate').setCustomValidity("invalid");
+        return false;
+      }
+      
+      var validation = this.crossValidationDisclosureDateSubmissionDate('disclosure_date')
+      if(!validation.valid){
+        this.error.disclosure_date = true
+        this.errorText.disclosure_date = validation.message                                 
         document.getElementById('inputDocumentDisclosureDate').setCustomValidity("invalid");
         return false;
       }
@@ -775,13 +809,29 @@ export default {
       }
 
       try {
-        Utils.ddmmyyyytoDate(this.submission_date);
+        var date = Utils.ddmmyyyytoDate(this.submission_date);
       } catch (e) {
         this.error.submission_date = true;
         this.errorText.submission_date = "Invalid date format, use dd/mm/yyyy";                                 
         document.getElementById('inputDocumentSubmissionDate').setCustomValidity("invalid");
         return false;
       }
+      
+      if(date > new Date()){ //prevent future dates
+        this.error.submission_date = true;
+        this.errorText.submission_date = "Submission should be today or earlier";                                 
+        document.getElementById('inputDocumentSubmissionDate').setCustomValidity("invalid");
+        return false;
+      }
+      
+      var validation = this.crossValidationDisclosureDateSubmissionDate('submission_date')
+      if(!validation.valid){
+        this.error.submission_date = true
+        this.errorText.submission_date = validation.message                                 
+        document.getElementById('inputDocumentSubmissionDate').setCustomValidity("invalid");
+        return false;
+      }
+      
       this.error.submission_date = false;
       this.errorText.submission_date = "No error";
       document.getElementById('inputDocumentSubmissionDate').setCustomValidity("");
@@ -816,6 +866,8 @@ export default {
     },
 
     validateFinancialYear(submit) {
+      if(!this.showFinancialYear) return true;
+    
       if (submit && this.financial_year === "") {
         this.error.financial_year = true;
         this.errorText.financial_year = "Insert the financial year";
@@ -838,12 +890,15 @@ export default {
         return false;
       }
       
-      if( !this.crossValidationDisclosureDateFinancialYear() ){
-        this.error.financial_year = true;
-        this.errorText.financial_year = "Please check financial year and disclosure date";                                 
-        document.getElementById('inputFinancialYear').setCustomValidity("invalid");
+      var validation = this.crossValidationDisclosureDateFinancialYear('financial_year')
+      if(!validation.valid){
+        this.error.financial_year = true
+        this.errorText.financial_year = validation.message
+        this.$nextTick(function () {
+          document.getElementById('inputFinancialYear').setCustomValidity("invalid");
+        })        
         return false;
-      }      
+      }     
       
       this.error.financial_year = false;
       this.errorText.financial_year = "No error";
@@ -881,17 +936,58 @@ export default {
       return true;
     },
     
-    crossValidationDisclosureDateFinancialYear() {
-      if(!this.showFinancialYear) return true
-      try{
-        var yearDisc = Utils.ddmmyyyytoDate(this.disclosure_date).getFullYear()
-        var year = parseInt(this.financial_year)                        
-      }catch(error){
-        console.log(error)
-        return false
+    crossValidationDisclosureDateFinancialYear(who){
+      if(!this.showFinancialYear){
+        return { valid: true, message: 'No error'}
       }
       
-      return (year == yearDisc - 1 || year == yearDisc)
+      try{
+        var discDate = Utils.ddmmyyyytoDate(this.disclosure_date)
+        var yearDisc = discDate.getFullYear()
+      }catch(error){
+        if(who == 'disclosure_date') return { valid: false, message: 'Invalid date format, use dd/mm/yyyy' }
+        if(who == 'financial_year') return { valid: true, message: 'No error' }
+      }
+      
+      var year = parseInt(this.financial_year, 10)
+      if (this.financial_year !== String(year)){
+        if(who == 'disclosure_date') return { valid: true, message: 'No error' }
+        if(who == 'financial_year') return { valid: false, message: 'Incorrect year' }
+      }
+      
+      if(year != yearDisc - 1 && year != yearDisc) {
+        return {
+          valid: false,
+          message: 'Please check financial year and disclosure date'
+        }        
+      }
+      
+      return { valid: true, message: 'No error'}      
+    },
+    
+    crossValidationDisclosureDateSubmissionDate(who){
+      try{
+        var discDate = Utils.ddmmyyyytoDate(this.disclosure_date)
+      }catch(error){
+        if(who == 'disclosure_date') return { valid: false, message: 'Invalid date format, use dd/mm/yyyy' }
+        if(who == 'submission_date') return { valid: true, message: 'No error' }
+      }
+      
+      try{
+        var submDate = Utils.ddmmyyyytoDate(this.submission_date)
+      }catch(error){
+        if(who == 'disclosure_date') return { valid: true, message: 'No error' }
+        if(who == 'submission_date') return { valid: false, message: 'Invalid date format, use dd/mm/yyyy' }
+      }
+        
+      if(discDate > submDate) {
+        return {
+          valid: false,
+          message: 'Submission date should be after disclosure date'
+        }          
+      }
+        
+      return {valid: true, message: 'No error'}
     },
     
     showInfo(msg){
