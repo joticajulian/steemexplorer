@@ -480,6 +480,7 @@ export default {
 .info-block{
   display: block;
   margin: 15px 50px;
+  height: 400px;
 }
 
 .map{
