@@ -8,7 +8,7 @@
         <div class="row">
           <div class="col-md-6">
             <div class="form-group row">
-              <label for="inputIssuerName" class="col-md-5 col-form-label">ISSUER NAMEss</label>
+              <label for="inputIssuerName" class="col-md-5 col-form-label">ISSUER NAME</label>
               <div class="col-md-7">
                 <input class="form-control" type="text" id="inputIssuerName" 
                        v-model="issuer_name" placeholder="Company" :class="{'is-invalid': error.issuer_name }"/>

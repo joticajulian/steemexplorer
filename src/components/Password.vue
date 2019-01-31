@@ -64,9 +64,12 @@
           </div>
           <div class="form-group row">
             <div class="col-12">
-              <button v-on:click="updatePassword" class="btn btn-primary mt-2">Update Password</button>
+              <button v-on:click="updatePassword" class="btn btn-primary mt-2" :disabled="sending"
+                ><div v-if="sending" class="mini loader"></div>Update Password
+              </button>
             </div>            
           </div>
+          <div v-if="alert.info" class="alert alert-info" role="alert">{{alertText.info}}</div>
           <div v-if="alert.success" class="alert alert-success" role="alert">{{alertText.success}}</div>
           <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alertText.danger}}</div>
         </div>
@@ -91,6 +94,7 @@ export default {
   data() {
     return {
       client: null,
+      sending: false,
       
       account: null,
       currentPassword: '',
@@ -116,10 +120,12 @@ export default {
       alert: {
         success: false,
         danger: false,
+        info: false,
       },
       alertText: {
         success: '',
         danger: '',
+        info: '',
       },
     };
   },
@@ -167,7 +173,7 @@ export default {
       
       if (!valid) {
         console.log("Error validating fields!");          
-        this.showAlert(false,"Error validating fields!");          
+        this.showDanger('Error validating fields!');          
         return false;
       }
       
@@ -202,13 +208,24 @@ export default {
         'owner'
       )
       
+      this.sending = true
+      this.hideSuccess()
+      this.hideDanger()      
+      this.showInfo('Updating password...')
+      
       let self = this
       this.client.broadcast.sendOperations([operation],privKey)
       .then(function(response){
-        self.showAlert(true, 'Password updated!')
+        self.showSuccess('Password updated!')
+        self.hideInfo()
+        self.sending = false
+        console.log(response)
       })
       .catch(function(error){
-        self.showAlert(false,error.message);
+        self.showDanger(error.message)
+        self.hideInfo()
+        self.sending = false
+        console.log(error)
       })
       
       /*let self = this
@@ -221,34 +238,48 @@ export default {
         console.log('signed transaction')
         console.log(sgnTrx)
         var response = await client.broadcast.send(sgnTrx)
-        self.showAlert(true, 'Password updated!')        
+        self.showSuccess('Password updated!')        
       }      
       
       updatePassword_async().catch(function(error){
         console.log(error);
-        self.showAlert(false,error.message);        
+        self.showDanger(error.message);        
       });*/
     },
     
-    showAlert(success, message){
-      if(success) {
-        this.alert.success = true;
-        this.alertText.success = message;
-        
-        this.alert.danger = false;
-        this.alertText.danger = '';
-      }else{
-        this.alert.success = false;
-        this.alertText.success = '';
-        
-        this.alert.danger = true;
-        this.alertText.danger = message;
-      }
+    showInfo(msg){
+      this.alert.info = true
+      this.alertText.info = msg
+    },
+    
+    hideInfo(){
+      this.alert.info = false
+      this.alertText.info = ''
+    },
+    
+    showSuccess(msg) {
+      this.alert.success = true
+      this.alertText.success = msg
+    },
+    
+    hideSuccess() {
+      this.alert.success = false
+      this.alertText.success = ''
+    },
+    
+    showDanger(msg) {
+      this.alert.danger = true
+      this.alertText.danger = msg
+    },
+    
+    hideDanger() {
+      this.alert.danger = false
+      this.alertText.danger = ''
     },
     
     async getUser(){
       const accounts = await this.client.database.getAccounts([this.$store.state.auth.user])
-      this.account = accounts[0]      
+      this.account = accounts[0] 
     },
     
     //validation
