@@ -9,12 +9,12 @@
         <div class="col-md-12">
           <div class="form-row">
             <fieldset class="form-group col-md-6">
-              <label class="eftg-label">ISSUER NAME</label>
-              <multiselect v-model="issuerName" class="eftg-multiselect" tag-placeholder="Select" placeholder="Select Issuer Name" label="name" track-by="name" :options="pulsarApi.issuerNames" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
+              <label class="eftg-label">COMPANY NAME</label>
+              <multiselect v-model="issuerName" class="eftg-multiselect" tag-placeholder="Select" placeholder="Select Company Name" label="name" track-by="name" :options="pulsarApi.issuerNames" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
             </fieldset>
             <fieldset class="form-group col-md-6">
-              <label class="eftg-label">ISSUER's HOME MEMBER STATE (HMS)</label>
-              <multiselect v-model="homeMemberState" class="eftg-multiselect" tag-placeholder="Select" placeholder="Select Home Member State" label="label" track-by="code" :options="dictionary.homeMemberStates" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
+              <label class="eftg-label">COMPANY'S HOME COUNTRY</label>
+              <multiselect v-model="homeMemberState" class="eftg-multiselect" tag-placeholder="Select" placeholder="Select Company's Home Country" label="label" track-by="code" :options="dictionary.homeMemberStates" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
             </fieldset>
           </div>
           <div class="form-row">
@@ -33,7 +33,7 @@
           </div>
           <div class="form-row">
             <fieldset class="form-group col-md-9">
-              <label class="eftg-label">DOCUMENT CLASS AND SUBCLASS</label>
+              <label class="eftg-label">DOCUMENT TYPE</label>
               <multiselect v-model="subclass" class="eftg-multiselect" tag-placeholder="Select" placeholder="Search or choose" label="label" track-by="id" :options="dictionary.docClassSubclass" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
             </fieldset>
             <fieldset class="form-group col-md-3">

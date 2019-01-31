@@ -17,12 +17,12 @@ export default [
   }, 
   {
     name: 'issuer_name_identifier',
-    title: 'Issuer Name',
+    title: 'Company Name',
     sortField: 'issuer_name',
   }, 
   {
     name: 'home_member_state',
-    title: 'HMS',
+    title: 'Country',
     sortField: 'home_member_state'
   }, 
   {
