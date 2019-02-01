@@ -24,7 +24,7 @@ const MAP = {
   INI_ZOOM : 4 ,
 }
 
-const APP_VERSION = "pulsar/0.0.1";
+const APP_VERSION = "pulsar/0.0.2";
 
 export default {
   SBD: SBD,

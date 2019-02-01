@@ -8,15 +8,22 @@
         <div class="col-12 col-md-8 text-justify">
           <small>Materials listed on this portal are provided "as is", without warranty of any kind.</small>          
         </div>
-        <div class="col-12 col-md-4 text-right"><small>PULSAR version 0.0.2</small></div>
+        <div class="col-12 col-md-4 text-right"><small>PULSAR version {{version}}</small></div>
       </div>
     </div>
   </footer>
 </template>
 
 <script>
+import Config from '@/config.js'
+
 export default {
-  name: "FooterEFTG"
+  name: 'FooterEFTG',
+  data() {
+    return {
+      version: Config.APP_VERSION.substring(7)
+    }
+  }
 } 
 </script>
 
