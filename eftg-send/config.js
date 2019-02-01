@@ -1,13 +1,16 @@
 // Authentication
-const username = 'jga'
-const password = '5JdSe2N4WCqekS7cZHRMok8NqdzM1kegx8sSTAwba49dnPNV7um' // Posting key
+const username = 'your username'
+const password = 'your posting key' // Posting key
 
 const IMAGE_HOSTER = 'https://cdn.blkcc.xyz'
 const RPC_NODE = 'https://api.blkcc.xyz'
+
+const APP_VERSION = 'sendjs/0.0.2'
 
 module.exports = {
   username,
   password,
   IMAGE_HOSTER,
-  RPC_NODE
+  RPC_NODE,
+  APP_VERSION
 }
