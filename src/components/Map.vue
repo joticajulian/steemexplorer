@@ -9,7 +9,7 @@
       <div id="map"></div>
       <div class="last-witness">
         <div v-if="lastBlocks.length > 0"
-        >Current Witness: <a :href="URL_EXPLORER+'/@'+current_witness.witness">{{current_witness.visible_name}}</a> {{current_location}}
+        >Current Witness: <a :href="'/#/explorer/@'+current_witness.witness">{{current_witness.visible_name}}</a> {{current_location}}
         </div>
       </div>
     </div
@@ -20,7 +20,7 @@
           <transition-group name="list-blocks" tag="div">
             <div v-for="(b,key,index) in lastBlocks" :key="b.block_num" class="list-blocks-item">
               <div class="block-left">
-                <a :href="URL_EXPLORER+'/b/'+b.block_num">{{b.block_num}}</a>
+                <a :href="'/#/explorer/b/'+b.block_num">{{b.block_num}}</a>
                 <span v-if="b.loaded">
                   - {{b.size_txs}} transactions
                   <span v-if="b.size_posts>0">
@@ -32,7 +32,7 @@
                 </span>
               </div
               ><div class="block-right">
-                <span class="small">witness</span><br><a :href="URL_EXPLORER+'/@'+b.witness">{{b.witness_visible_name}}</a>
+                <span class="small">witness</span><br><a :href="'/#/explorer/@'+b.witness">{{b.witness_visible_name}}</a>
               </div>
             </div>
           </transition-group>
@@ -93,8 +93,7 @@ export default {
         visible_name: ''
       },    
       first_time: true,
-      client: null,
-      URL_EXPLORER: Config.EXPLORER.url,
+      client: null
     }
   },
   
