@@ -105,7 +105,7 @@ body {
 }
 
 #app .bg-info {
-  background-color:#dbc80d !important; 
+  background-color:#ffe800 !important; 
 }
 
 #app .text-primary {

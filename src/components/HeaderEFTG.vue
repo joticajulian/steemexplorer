@@ -1,5 +1,15 @@
 <template>
   <div>
+    <div class="container-fluid bg-info">
+      <div class="row pt-2 pb-2">
+        <div class="col-12">
+          EFTG is a pilot project to explore and test the capabilities of the Blockchain technology for sharing financial data in Europe.     
+        </div>
+        <div class="col-12">
+          Materials listed on this portal are provided "as is", without warranty of any kind.
+        </div>        
+      </div>
+    </div>
     <div class="container">
       <div class="row">
         <div class="col d-flex justify-content-start">

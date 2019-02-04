@@ -165,7 +165,7 @@ export default {
   
   methods: {
     updatePassword () {
-      var valid = true;
+      var valid = true
       valid = this.validateCurrentPassword() && valid;
       valid = this.validateNewPassword() && valid;
       valid = this.validateWarning1() && valid;
