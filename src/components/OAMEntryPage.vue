@@ -289,7 +289,8 @@ export default {
     var d = new Date()
     this.disclosure_date = Utils.datetoddmmyyyy(d)
     this.submission_date = Utils.datetoddmmyyyy(d)
-    this.financial_year = d.getFullYear() + ''
+    this.financial_year = (d.getFullYear()-1) + ''
+    this.document_language = 'en'
   },
   watch: {
     issuer_name: function() {
@@ -550,7 +551,8 @@ export default {
       var d = new Date()
       this.disclosure_date = Utils.datetoddmmyyyy(d)
       this.submission_date = Utils.datetoddmmyyyy(d)
-      this.financial_year = d.getFullYear() + ''
+      this.financial_year = (d.getFullYear()-1) + ''
+      this.document_language = 'en'
     
       this.issuer_name = "";
       this.home_member_state = "";
@@ -559,7 +561,7 @@ export default {
       this.subclass = "";
       //this.disclosure_date = "";
       //this.submission_date = "";
-      this.document_language = "";
+      //this.document_language = "";
       this.comment = "";
       //this.financial_year = "";
       document.getElementById("inputFile").labels[0].childNodes[0].data = 'Choose file...'
