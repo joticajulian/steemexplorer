@@ -14,17 +14,17 @@ export default [
     name: 'author',
     title: 'OAM Name',
     sortField: 'author',
-  }, 
+  },
   {
     name: 'issuer_name_identifier',
     title: 'Company Name',
     sortField: 'issuer_name',
-  }, 
+  },
   {
     name: 'home_member_state',
     title: 'Country',
     sortField: 'home_member_state'
-  }, 
+  },
   {
     name: 'document_language',
     title: 'Document<br/>language',
@@ -59,7 +59,7 @@ export default [
     name: 'revised',
     title: 'Revised<br/>Document?',
     callback: 'formatBoolean'
-    
+
   },
   {
     name: '__slot:actions',

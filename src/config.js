@@ -25,6 +25,7 @@ const MAP = {
 }
 
 const APP_VERSION = "pulsar/0.0.2";
+const APP_VERSIONS = ['pulsar/0.0.1', 'pulsar/0.0.2', 'sendjs/0.0.1'];
 
 export default {
   SBD: SBD,
@@ -46,8 +47,8 @@ export default {
   STEEM_BLOCKS_PER_DAY: STEEM_BLOCKS_PER_DAY,
   STEEM_SBD_START_PERCENT: STEEM_SBD_START_PERCENT,
   STEEM_SBD_STOP_PERCENT: STEEM_SBD_STOP_PERCENT,
-  
+
   MAP:MAP,
-  
+
   APP_VERSION: APP_VERSION,
 };
