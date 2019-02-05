@@ -225,7 +225,7 @@ export default {
     },
     onLoadSuccess(data = null) {
       const ignoreList = ['Bogdan', 'Bogdan1'];
-      const appVersions = ['pulsar', 'sendjs'];
+      const appVersions = ['pulsar/0.0.1', 'pulsar/0.0.2', 'sendjs/0.0.1'];
       const self = this;
       const distinct = [];
       const searchResultData = [];
