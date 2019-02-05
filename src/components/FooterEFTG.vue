@@ -2,7 +2,7 @@
   <footer class="footer bg-primary text-light">
     <div class="container-fluid">
       <div class="row pt-2 pb-2">
-        <div class="col-12 text-right"><small>PULSAR version {{version}}</small></div>
+        <div class="col-12 text-right"><small>EFTG version {{version}}</small></div>
       </div>
     </div>
   </footer>
