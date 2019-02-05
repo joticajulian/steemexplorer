@@ -13,12 +13,12 @@ export default {
       }
     }
   },
-  
+
   created() {
     const issuerNames = [];
     const ignoreList = ['Bogdan', 'Bogdan1'];
-    const appVersions = ['pulsar/0.0.1', 'sendjs/0.0.1'];
-    const self = this;      
+    const appVersions = ['pulsar/0.0.1', 'pulsar/0.0.2', 'sendjs/0.0.1'];
+    const self = this;
     const url ='https://api.blkcc.xyz/pulsar/?q=identifier_value:*';
     axios.get(url).then(function(result){
       result.data.hits.hits.forEach((item) => {
@@ -51,7 +51,7 @@ export default {
           });
         }
       });
-      
+
       for (var i = 0; i < identifiers.length; i++) {
         if (distinct.indexOf(identifiers[i].identifier_value) === -1) {
           distinct.push(identifiers[i].identifier_value);
