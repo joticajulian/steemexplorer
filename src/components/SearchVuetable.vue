@@ -129,6 +129,7 @@ export default {
     },
     refresh(searchInputData) {
       const vuetableData = JSON.parse(JSON.stringify(this.vuetableData));
+      const dictionary = this.dictionary;
       let initialData = this.vuetableData.data;
       let finalData = [];
       let distinct = [];
@@ -186,11 +187,23 @@ export default {
       }
 
       if(searchInputData['subclass'].length > 0) {
+        const subclasses = [];
+        searchInputData['subclass'].forEach(inputValue => {
+          subclasses.push(inputValue);
+          for(var ii=0; ii < dictionary.docClasses.length; ii++){
+            var c = dictionary.docClasses[ii];
+            if(c.id === inputValue.id) {
+              for(var jj=0; jj < c.subclass.length; jj++){
+                subclasses.push(c.subclass[jj]);
+              }
+            }
+          }
+        });
         finalData = [];
         for (var i = 0; i < initialData.length; i++) {
           const id = initialData[i]._id;
           const value = initialData[i].subclass;
-          searchInputData['subclass'].forEach(inputValue => {
+          subclasses.forEach(inputValue => {
             if (value === inputValue.id) {
               if (distinct.indexOf(id) === -1) {
                 distinct.push(id);
