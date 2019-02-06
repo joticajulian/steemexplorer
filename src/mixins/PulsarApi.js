@@ -19,7 +19,7 @@ export default {
     const ignoreList = ['Bogdan', 'Bogdan1'];
     const appVersions = ['pulsar/0.0.1', 'pulsar/0.0.2', 'sendjs/0.0.1'];
     const self = this;
-    const url ='https://api.blkcc.xyz/pulsar/?q=identifier_value:*';
+    const url ='https://api.blkcc.xyz/pulsar/?pretty=true&size=100&q=*:*';
     axios.get(url).then(function(result){
       result.data.hits.hits.forEach((item) => {
         if(appVersions.indexOf(item._source.app) !== -1 && ignoreList.indexOf(item._source.issuer_name) === -1) {
