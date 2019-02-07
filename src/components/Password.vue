@@ -207,7 +207,6 @@ export default {
         this.currentPassword,
         'owner'
       )
-      
       this.sending = true
       this.hideSuccess()
       this.hideDanger()      
