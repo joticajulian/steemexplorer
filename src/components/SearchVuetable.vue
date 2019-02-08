@@ -47,12 +47,6 @@ export default {
     },
     detailRowComponent: {
       type: String
-    },
-    searchInputData: {
-      type: Object,
-      default() {
-        return {}
-      }
     }
   },
   data () {
@@ -142,9 +136,9 @@ export default {
       const vuetableData = JSON.parse(JSON.stringify(this.vuetableData));
       const dictionary = this.dictionary;
       let initialData = this.vuetableData.data;
-      let finalData = [];
+      let finalData = initialData;
       let distinct = [];
-      if(searchInputData !== null && searchInputData['legalIdentifier'].length > 0) {
+      if(searchInputData !== null && searchInputData['legalIdentifier'] !== undefined && searchInputData['legalIdentifier'].length > 0) {
         for (var i = 0; i < initialData.length; i++) {
           const id = initialData[i]._id;
           const value = initialData[i].identifier_value;
@@ -161,7 +155,7 @@ export default {
         distinct = [];
       }
 
-      if(searchInputData !== null && searchInputData['issuerName'].length > 0) {
+      if(searchInputData !== null && searchInputData['issuerName'] !== undefined && searchInputData['issuerName'].length > 0) {
         finalData = [];
         for (var i = 0; i < initialData.length; i++) {
           const id = initialData[i]._id;
@@ -179,7 +173,7 @@ export default {
         distinct = [];
       }
 
-      if(searchInputData !== null && searchInputData['homeMemberState'].length > 0) {
+      if(searchInputData !== null && searchInputData['homeMemberState'] !== undefined && searchInputData['homeMemberState'].length > 0) {
         finalData = [];
         for (var i = 0; i < initialData.length; i++) {
           const id = initialData[i]._id;
@@ -197,7 +191,7 @@ export default {
         distinct = [];
       }
 
-      if(searchInputData !== null && searchInputData['subclass'].length > 0) {
+      if(searchInputData !== null && searchInputData['subclass'] !== undefined  && searchInputData['subclass'].length > 0) {
         const subclasses = [];
         searchInputData['subclass'].forEach(inputValue => {
           subclasses.push(inputValue);
@@ -227,7 +221,7 @@ export default {
         distinct = [];
       }
 
-      if(searchInputData !== null && searchInputData['financialYear'].length > 0) {
+      if(searchInputData !== null && searchInputData['financialYear'] !== undefined  && searchInputData['financialYear'].length > 0) {
         finalData = [];
         for (var i = 0; i < initialData.length; i++) {
           const id = initialData[i]._id;
@@ -245,7 +239,7 @@ export default {
         distinct = [];
       }
 
-      if(searchInputData !== null && searchInputData['title'].length > 0) {
+      if(searchInputData !== null && searchInputData['title'] !== undefined  && searchInputData['title'].length > 0) {
         finalData = [];
         for (var i = 0; i < initialData.length; i++) {
           const id = initialData[i]._id;

@@ -214,7 +214,14 @@ export default {
       this.financialYear = [];
       this.title = '';
 
-      this.$refs.searchvuetable.onLoadSuccess();
+      this.$refs.searchvuetable.refresh({
+        legalIdentifier: this.legalIdentifier,
+        issuerName: this.issuerName,
+        homeMemberState: this.homeMemberState,
+        subclass: this.subclass,
+        financialYear: this.financialYear,
+        title: this.title
+      });
     },
     onAction (action, data, index) {
       if (action === 'view-item') {
