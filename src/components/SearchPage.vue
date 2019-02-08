@@ -152,9 +152,9 @@ export default {
       fields: FieldDefs,
       sortOrder: [
         {
-          field: 'email',
-          sortField: 'email',
-          direction: 'asc'
+          field: 'storage_date',
+          sortField: 'storage_date',
+          direction: 'desc'
         }
       ],
       moreParams: {},
@@ -202,7 +202,8 @@ export default {
         issuerName: this.issuerName,
         homeMemberState: this.homeMemberState,
         subclass: this.subclass,
-        financialYear: this.financialYear
+        financialYear: this.financialYear,
+        title: this.title
       });
     },
     clear() {
@@ -211,6 +212,7 @@ export default {
       this.homeMemberState = [];
       this.subclass = [];
       this.financialYear = [];
+      this.title = '';
 
       this.$refs.searchvuetable.onLoadSuccess();
     },
