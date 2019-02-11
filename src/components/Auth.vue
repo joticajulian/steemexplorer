@@ -145,7 +145,12 @@ export default {
       //let self = this;
 
       var account = accounts[0];
-      var json_metadata = JSON.parse(account.json_metadata);
+      var json_metadata = {}
+      try{
+        json_metadata = JSON.parse(account.json_metadata);
+      }catch(error){
+
+      }
       var keyFound = false;
       var typeOfPassword = "";
       var auth = {
