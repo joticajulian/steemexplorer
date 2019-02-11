@@ -28,7 +28,7 @@
             <label for="inputCurrentPassword" class="col-md-2 col-form-label">CURRENT PASSWORD</label>
             <div class="col-md-6">
               <input class="form-control" type="password" id="inputCurrentPassword" 
-                     v-model="currentPassword" placeholder="Current password"
+                     v-model="currentPassword" placeholder="Current password or owner key"
                      :class="{'is-invalid': error.currentPassword }"/>
               <div v-if="error.currentPassword" class="invalid-feedback">{{ errorText.currentPassword }}</div>       
             </div>
@@ -98,6 +98,7 @@ export default {
       
       account: null,
       currentPassword: '',
+      passwordType: '',
       newPassword: '',
       reNewPassword: '',
       username: '',
@@ -202,11 +203,15 @@ export default {
         posting: roles.posting
       }]
       
-      var privKey = PrivateKey.fromLogin(
-        this.$store.state.auth.user,
-        this.currentPassword,
-        'owner'
-      )
+      if(this.passwordType === 'master') {
+        var privKey = PrivateKey.fromLogin(
+          this.$store.state.auth.user,
+          this.currentPassword,
+          'owner'
+        )
+      } else {
+        var privKey = PrivateKey.fromString(this.currentPassword)
+      }
       
       this.sending = true
       this.hideSuccess()
@@ -284,24 +289,39 @@ export default {
     
     //validation
     validateCurrentPassword() {
+      if(!this.account) return false
+
+      // validate if the input is the master key
       var privKey = PrivateKey.fromLogin(
           this.$store.state.auth.user,
           this.currentPassword,
           'owner'
         )
       var pubKey = privKey.createPublic(Config.STEEM_ADDRESS_PREFIX).toString();
-      
-      if(!this.account) return false
-      
+
       if(this.account.owner.key_auths[0][0] === pubKey){
         this.error.currentPassword = false
         this.errorText.currentPassword = 'No error'
+        this.passwordType = 'master'
         return true
-      } else {
-        this.error.currentPassword = true
-        this.errorText.currentPassword = 'Incorrect password.'
-        return false
       }
+
+      // validate if the input is the owner key
+      try{
+        var privKey = PrivateKey.fromString(this.currentPassword)
+        var pubKey = privKey.createPublic(Config.STEEM_ADDRESS_PREFIX).toString();
+
+        if(this.account.owner.key_auths[0][0] === pubKey){
+          this.error.currentPassword = false
+          this.errorText.currentPassword = 'No error'
+          this.passwordType = 'owner'
+          return true
+        }
+      }catch(error){}
+
+      this.error.currentPassword = true
+      this.errorText.currentPassword = 'Incorrect password.'
+      return false
     },
     
     validateNewPassword() {
