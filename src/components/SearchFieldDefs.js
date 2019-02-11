@@ -58,8 +58,8 @@ export default [
   {
     name: 'revised',
     title: 'Revised<br/>Document?',
-    callback: 'formatBoolean'
-
+    callback: 'formatBoolean',
+    sortField: 'revised',
   },
   {
     name: '__slot:actions',

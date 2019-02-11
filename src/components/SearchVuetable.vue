@@ -127,13 +127,18 @@ export default {
         ? ''
         : moment(value, 'YYYY-MM-DD').format(fmt)
     },
-    refresh(searchInputData) {
+    refresh(searchInputData = null) {
+      if(searchInputData === null) {
+        if(this.searchInputData !== undefined) {
+          searchInputData = this.searchInputData;
+        }
+      }
       const vuetableData = JSON.parse(JSON.stringify(this.vuetableData));
       const dictionary = this.dictionary;
       let initialData = this.vuetableData.data;
-      let finalData = [];
+      let finalData = initialData;
       let distinct = [];
-      if(searchInputData['legalIdentifier'].length > 0) {
+      if(searchInputData !== null && searchInputData['legalIdentifier'] !== undefined && searchInputData['legalIdentifier'].length > 0) {
         for (var i = 0; i < initialData.length; i++) {
           const id = initialData[i]._id;
           const value = initialData[i].identifier_value;
@@ -150,7 +155,7 @@ export default {
         distinct = [];
       }
 
-      if(searchInputData['issuerName'].length > 0) {
+      if(searchInputData !== null && searchInputData['issuerName'] !== undefined && searchInputData['issuerName'].length > 0) {
         finalData = [];
         for (var i = 0; i < initialData.length; i++) {
           const id = initialData[i]._id;
@@ -168,7 +173,7 @@ export default {
         distinct = [];
       }
 
-      if(searchInputData['homeMemberState'].length > 0) {
+      if(searchInputData !== null && searchInputData['homeMemberState'] !== undefined && searchInputData['homeMemberState'].length > 0) {
         finalData = [];
         for (var i = 0; i < initialData.length; i++) {
           const id = initialData[i]._id;
@@ -186,7 +191,7 @@ export default {
         distinct = [];
       }
 
-      if(searchInputData['subclass'].length > 0) {
+      if(searchInputData !== null && searchInputData['subclass'] !== undefined  && searchInputData['subclass'].length > 0) {
         const subclasses = [];
         searchInputData['subclass'].forEach(inputValue => {
           subclasses.push(inputValue);
@@ -216,7 +221,7 @@ export default {
         distinct = [];
       }
 
-      if(searchInputData['financialYear'].length > 0) {
+      if(searchInputData !== null && searchInputData['financialYear'] !== undefined  && searchInputData['financialYear'].length > 0) {
         finalData = [];
         for (var i = 0; i < initialData.length; i++) {
           const id = initialData[i]._id;
@@ -234,13 +239,39 @@ export default {
         distinct = [];
       }
 
+      if(searchInputData !== null && searchInputData['title'] !== undefined  && searchInputData['title'].length > 0) {
+        finalData = [];
+        for (var i = 0; i < initialData.length; i++) {
+          const id = initialData[i]._id;
+          const value = initialData[i].comment;
+          const inputValue = searchInputData['title'];
+          if (value.indexOf(inputValue) !== -1) {
+            if (distinct.indexOf(id) === -1) {
+              distinct.push(id);
+              finalData.push(initialData[i]);
+            }
+          }
+        }
+        initialData = finalData;
+        distinct = [];
+      }
+
+      const sortField = this.sortOrder[0].sortField;
+      const sortDirection = this.sortOrder[0].direction;
+      finalData.sort((a, b) => {
+        if(a[sortField] > b[sortField]) return sortDirection === 'desc' ? -1 : 1;
+        else if(a.storage_date < b.storage_date) return sortDirection === 'desc' ? 1 : -1;
+        else return 0;
+      });
+
       vuetableData.data = finalData;
       this.$refs.vuetable.setData(vuetableData);
+      this.searchInputData = searchInputData;
     },
     onLoadSuccess(data = null) {
+      const self = this;
       const ignoreList = ['Bogdan', 'Bogdan1'];
       const appVersions = ['pulsar/0.0.1', 'pulsar/0.0.2', 'sendjs/0.0.1'];
-      const self = this;
       const distinct = [];
       const searchResultData = [];
       const vuetableData = {
@@ -283,15 +314,16 @@ export default {
           }
         });
 
+        const sortField = self.sortOrder[0].sortField;
+        const sortDirection = self.sortOrder[0].direction;
         searchResultData.sort((a, b) => {
-          if(a.storage_date > b.storage_date) return -1;
-          else if(a.storage_date < b.storage_date) return 1;
+          if(a[sortField] > b[sortField]) return sortDirection === 'desc' ? -1 : 1;
+          else if(a.storage_date < b.storage_date) return sortDirection === 'desc' ? 1 : -1;
           else return 0;
         });
 
         for (var i = 0; i < searchResultData.length; i++) {
           if (distinct.indexOf(searchResultData[i].identifier_value) === -1) {
-            // distinct.push(searchResultData[i].identifier_value);
             vuetableData.data.push(searchResultData[i]);
           }
         }
@@ -302,6 +334,8 @@ export default {
         self.$refs.pagination.setPaginationData(vuetableData.links.pagination);
         self.$refs.paginationInfo.setPaginationData(vuetableData.links.pagination);
         self.vuetableData = vuetableData;
+
+        self.refresh();
       }).catch(function(error){
         console.log(error);
       });
