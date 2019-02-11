@@ -80,6 +80,14 @@
             </div>
           </transition-group>
         </div>
+        <div class="schedule">
+          <h2>Schedule</h2>
+          <transition-group name="list-schedule" tag="div">
+            <div v-for="(wit,key,index) in schedule" :key="wit" class="list-schedule-item">
+              {{wit}}
+            </div>
+          </transition-group>
+        </div>
       </div>
       <div v-else>
         <div class="loader"></div>
@@ -209,7 +217,7 @@ export default {
         
         
       // SCHEDULE
-      /*if(self.schedule.length == 0){
+      if(self.schedule.length == 0){
           self.schedule = result.witness_schedule.current_shuffled_witnesses;
           return;
         }
@@ -224,7 +232,7 @@ export default {
         for(var i=0;i<id;i++){
           self.$set(self.schedule, round.length-id-1+i, round[i]);
         }
-        self.$set(self.schedule, round.length-1, round[id]);*/
+        self.$set(self.schedule, round.length-1, round[id]);
       
     },
   
@@ -288,7 +296,7 @@ export default {
 <style scoped>
 
 .last-blocks{
-  width: calc(100% - 8rem - 10px);
+  width: calc(100% - 8rem - 60px);
   display: inline-block;
   vertical-align: top;
 }
