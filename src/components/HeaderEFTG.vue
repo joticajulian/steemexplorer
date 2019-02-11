@@ -14,8 +14,7 @@
             <div id="logo-ec"><a href="#/"><img src="../assets/logo2018commissionname.png" /></a></div>            
           </div>
           <div class="d-flex align-items-end">
-            <div id="logo-eftg" class="ml-2"><a href="#/"><img src="../assets/logo-eftg.png" /></a></div>
-            <span class="badge badge-danger ml-2">version 0.19.12</span>
+            <div id="logo-eftg" class="ml-2"><a href="#/"><img src="../assets/logo-eftg.png" /></a></div>            
           </div>  
         </div>
         <div v-if="showAuth" class="col d-flex justify-content-end">

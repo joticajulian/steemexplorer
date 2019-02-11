@@ -219,6 +219,8 @@ export default {
       type_submission: 'first',
       showFinancialYear: false,
       
+      lastPermlink: '',
+      
       sending: false,      
       error: {
         issuer_name: false,
@@ -392,6 +394,85 @@ export default {
         var username = self.$store.state.auth.user;
         var privKey = self.$store.state.auth.keys.posting;
 
+        // Creation of the new post in the blockchain
+        var discDate = "";
+        var submDate = ''
+        try {
+          discDate = Utils.dateToString(
+            Utils.ddmmyyyytoDate(self.disclosure_date)
+          );
+        } catch (e) {
+          discDate = "";
+        }
+        
+        try {
+          submDate = Utils.dateToString(
+            Utils.ddmmyyyytoDate(self.submission_date)
+          );
+        } catch (e) {
+          submDate = '';
+        }
+
+        // TODO: addRandom starts false and we check if the post exists using dsteem 
+        var addRandom = true;
+        
+        while (true) {
+          var permlink = Utils.createPermLink(self.comment, addRandom);
+          var urlPost = "oam/@" + username + "/" + permlink;
+          var post = await self.client.database.getState(urlPost);
+          console.log(post);
+          //TODO: fix dsteem response problem... if the post exists, then addRandom=true and continue the while loop, else break
+          break;
+        }
+        
+        var json_metadata = {
+          issuer_name: self.issuer_name,
+          home_member_state: self.home_member_state,
+          identifier_id: parseInt(self.identifier_id),
+          identifier_value: self.identifier_value,
+          subclass: self.subclass,
+          disclosure_date: discDate,
+          submission_date: submDate,
+          document_language: self.document_language,
+          comment: self.comment,
+          financial_year: self.financial_year,
+          type_submission: self.type_submission,
+          tags: [
+            self.subclassTag,
+            self.issuer_name,
+            self.home_member_state,
+            self.identifier_value
+          ],
+          storage_date: Utils.dateToString(new Date()),
+          permlink: permlink,
+          app:Config.APP_VERSION
+        };
+        
+        if(self.lastPermlink !== '') {
+          try {          
+            var previous_post = await self.client.database.call('get_content',[username,self.lastPermlink])
+            var previous_json_metadata = JSON.parse(previous_post.json_metadata)
+            var same_post = true
+            for(var key in json_metadata){
+              if(key==='storage_date' || key==='tags' || key==='permlink') continue
+              
+              if(json_metadata[key] !== previous_json_metadata[key]){
+                same_post = false
+                console.log('different in key:' +key+': '+json_metadata[key])
+                break
+              }
+            }
+            
+            if(same_post) {
+              self.showDanger('This document was already submitted.')
+              return false
+            }
+          } catch (error) {
+            console.log('It was not possible to load the previous post: ')
+            console.log(error)
+          }
+        }
+        
         // read file, calculation of the hash, and signature with privkey
         // (format used in ImageHoster for uploading)
         self.showInfo('Reading file...')
@@ -435,62 +516,8 @@ export default {
         })        
         
         var pdfUrl = response.data.url;
-
-        // Creation of the new post in the blockchain
-        var discDate = "";
-        var submDate = ''
-        try {
-          discDate = Utils.dateToString(
-            Utils.ddmmyyyytoDate(self.disclosure_date)
-          );
-        } catch (e) {
-          discDate = "";
-        }
-        
-        try {
-          submDate = Utils.dateToString(
-            Utils.ddmmyyyytoDate(self.submission_date)
-          );
-        } catch (e) {
-          submDate = '';
-        }
-
-        // TODO: addRandom starts false and we check if the post exists using dsteem 
-        var addRandom = true;
-        
-        while (true) {
-          var permlink = Utils.createPermLink(self.comment, addRandom);
-          var urlPost = "oam/@" + username + "/" + permlink;
-          var post = await self.client.database.getState(urlPost);
-          console.log(post);
-          //TODO: fix dsteem response problem... if the post exists, then addRandom=true and continue the while loop, else break
-          break;
-        }
         
         var body = "[[pdf link]](" + pdfUrl + ")";
-
-        var json_metadata = {
-          issuer_name: self.issuer_name,
-          home_member_state: self.home_member_state,
-          identifier_id: parseInt(self.identifier_id),
-          identifier_value: self.identifier_value,
-          subclass: self.subclass,
-          disclosure_date: discDate,
-          submission_date: submDate,
-          document_language: self.document_language,
-          comment: self.comment,
-          financial_year: self.financial_year,
-          type_submission: self.type_submission,
-          tags: [
-            self.subclassTag,
-            self.issuer_name,
-            self.home_member_state,
-            self.identifier_value
-          ],
-          storage_date: Utils.dateToString(new Date()),
-          permlink: permlink,
-          app:Config.APP_VERSION
-        };
 
         var post = {
           author: username,
@@ -529,7 +556,9 @@ export default {
         //var result = await self.client.broadcast.send(signed_transaction);
         var result = await self.client.broadcast.comment(post, privKey);
         
-        self.showAlert(true,'Document published! <a href="/#/explorer/@'+username+'/'+permlink+'" class="alert-link" target="_blank">@'+username+'/'+permlink+'</a>');        
+        self.showAlert(true,'Document published! <a href="/#/explorer/@'+username+'/'+permlink+'" class="alert-link" target="_blank">@'+username+'/'+permlink+'</a>');
+        self.lastPermlink = permlink;
+        
         console.log("document publised!");
         console.log(result);
       }
