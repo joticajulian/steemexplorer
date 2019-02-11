@@ -55,16 +55,16 @@
             <router-link to="/oam-portal" class="nav-item nav-link">OAM Portal</router-link>
           </li>
           <li class="nav-item">
-            <router-link to="/search.html" class="nav-item nav-link">Investor Portal</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/faq" class="nav-item nav-link">FAQ</router-link>
+            <router-link to="/explorer" class="nav-item nav-link">Explorer</router-link>
           </li>
           <li class="nav-item">
             <router-link to="/map" class="nav-item nav-link">Map</router-link>
           </li>
           <li class="nav-item">
-            <router-link to="/explorer" class="nav-item nav-link">Explorer</router-link>
+            <router-link to="/search.html" class="nav-item nav-link">Investor Portal</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link to="/faq" class="nav-item nav-link">FAQ</router-link>
           </li>
           <li class="nav-item">
             <router-link to="/contact" class="nav-item nav-link">Contact</router-link>

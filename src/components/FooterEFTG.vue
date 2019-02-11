@@ -17,6 +17,13 @@ export default {
     return {
       version: Config.APP_VERSION.substring(7)
     }
+  },
+
+  created() {
+    var debug = true
+    if(debug){
+      console.log('RPC NODE: '+Config.RPC_NODE.url);
+    }
   }
 } 
 </script>

@@ -42,8 +42,7 @@ export default {
       }
       return "'" + url + "'";
     }
-    //return "'https://steemitimages.com/u/anyx/avatar/small'";
-    return "'../assets/no-picture-profile.png'";
+    return "'https://steemitimages.com/DQmb2HNSGKN3pakguJ4ChCRjgkVuDN9WniFRPmrxoJ4sjR4'";
   },
 
   getVotingPower: function(account) {
