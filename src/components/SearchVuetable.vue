@@ -1,4 +1,5 @@
 <script>
+import Config from "@/config.js";
 import axios from "axios";
 import accounting from 'accounting';
 import moment from 'moment';
@@ -26,6 +27,10 @@ export default {
   ],
   props: {
     apiUrl: {
+      type: String,
+      required: true
+    },
+    elasticApiUrl: {
       type: String,
       required: true
     },
@@ -290,7 +295,7 @@ export default {
         data: []
       };
       const dictionary = this.dictionary;
-      const url ='https://api.blkcc.xyz/pulsar/?pretty=true&size=100&q=*:*';
+      const url = this.elasticApiUrl + '?pretty=true&size=100&q=*:*';
       axios.get(url).then(function(result) {
         result.data.hits.hits.forEach((item) => {
           if(appVersions.indexOf(item._source.app) !== -1 && ignoreList.indexOf(item._source.issuer_name) === -1) {

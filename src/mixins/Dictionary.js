@@ -1,3 +1,4 @@
+import Config from "@/config.js";
 import axios from "axios";
 
 export default {
@@ -41,7 +42,7 @@ export default {
     
     
     // JSON Home member states
-    axios.get('https://cdn.blkcc.xyz/home_member_states.json').then(function(result){
+    axios.get(Config.CDN.url + 'home_member_states.json').then(function(result){
       self.dictionary.homeMemberStates = result.data;
       self.dictionary.homeMemberStates.forEach(homeMemberState => homeMemberState.label = homeMemberState.code + ' - ' + homeMemberState.country);
     }).catch(function(error){
@@ -50,7 +51,7 @@ export default {
     
     
     // JSON Languages
-    axios.get('https://cdn.blkcc.xyz/lang.json').then(function(result){
+    axios.get(Config.CDN.url + 'lang.json').then(function(result){
       self.dictionary.languages = result.data;
     }).catch(function(error){
       self.dictionary.error.languages = error;
@@ -58,7 +59,7 @@ export default {
       
     
     // JSON Identifiers
-    axios.get('https://cdn.blkcc.xyz/identifier.json').then(function(result){
+    axios.get(Config.CDN.url + 'identifier.json').then(function(result){
       self.dictionary.identifiers = result.data;      
     }).catch(function(error){
       self.dictionary.error.identifiers = error;              
@@ -66,7 +67,7 @@ export default {
     
     
     // JSON Classes and Subclasses
-    axios.get('https://cdn.blkcc.xyz/class_subclass_tree.json').then(function(result){
+    axios.get(Config.CDN.url + 'class_subclass_tree.json').then(function(result){
       self.dictionary.docClasses = result.data;
       
       // saving tags in docClassTags and docClassSubclass
@@ -96,7 +97,7 @@ export default {
     });
     
     // JSON Server config
-    axios.get('https://cdn.blkcc.xyz/server_config.json').then(function(result){
+    axios.get(Config.CDN.url + 'server_config.json').then(function(result){
       self.serverConfig = result.data;      
     }).catch(function(error){
       console.log('error getting server config')

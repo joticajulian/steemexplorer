@@ -5,6 +5,8 @@ const VESTS = "VESTS";
 const RPC_NODE = { url: "https://apidev.blkcc.xyz" };
 const IMAGE_HOSTER = { url: "https://cdn.blkcc.xyz" };
 const EXPLORER = { url: "http://explorer.blkcc.xyz/#" };
+const ELASTIC = { url: "https://api.blkcc.xyz/pulsar/" };
+const CDN = { url: "https://cdn.blkcc.xyz/" };
 const HARDFORK = 19
 
 const STEEM_ADDRESS_PREFIX = "EUR";
@@ -36,6 +38,8 @@ export default {
   IMAGE_HOSTER: IMAGE_HOSTER,
   EXPLORER: EXPLORER,
   HARDFORK: HARDFORK,
+  ELASTIC: ELASTIC,
+  CDN: CDN,
 
   STEEM_ADDRESS_PREFIX: STEEM_ADDRESS_PREFIX,
   STEEM_100_PERCENT: STEEM_100_PERCENT,

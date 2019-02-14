@@ -83,7 +83,8 @@
     <div>
       <search-vuetable
       ref='searchvuetable'
-      api-url="https://cdn.blkcc.xyz/search.json"
+      :api-url="searchApiUrl"
+      :elastic-api-url="elasticApiUrl"
       :fields="fields"
       :sort-order="sortOrder"
       :append-params="moreParams"
@@ -175,7 +176,9 @@ export default {
         }
       ],
       subclass: [],
-      title: ""
+      title: "",
+      searchApiUrl: Config.CDN.url + 'search.json',
+      elasticApiUrl: Config.ELASTIC.url
     };
   },
   components: {
@@ -196,7 +199,6 @@ export default {
       }
     },
     submit() {
-      console.log("submit");
       this.$refs.searchvuetable.refresh({
         legalIdentifier: this.legalIdentifier,
         issuerName: this.issuerName,
