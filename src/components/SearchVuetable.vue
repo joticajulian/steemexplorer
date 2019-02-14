@@ -144,6 +144,7 @@ export default {
       let finalData = initialData;
       let distinct = [];
       if(searchInputData !== null && searchInputData['legalIdentifier'] !== undefined && searchInputData['legalIdentifier'].length > 0) {
+        finalData = [];
         for (var i = 0; i < initialData.length; i++) {
           const id = initialData[i]._id;
           const value = initialData[i].identifier_value;
