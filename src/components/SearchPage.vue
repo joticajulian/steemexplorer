@@ -293,5 +293,6 @@ export default {
 .eftg-btn-secondary {
   background-color:#C3C3C3; 
 }
+
 </style>
 

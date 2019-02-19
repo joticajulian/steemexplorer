@@ -11,6 +11,7 @@ import VuetablePaginationInfo from 'vuetable-2/src/components/VuetablePagination
 import CustomActions from './SearchCustomActions';
 import FilterBar from './SearchFilterBar';
 import Dictionary from "@/mixins/Dictionary.js";
+import SearchVuetableCss from './SearchVuetableCss.js'
 
 Vue.use(VueEvents);
 Vue.component('custom-actions', CustomActions);
@@ -91,7 +92,7 @@ export default {
             multiSort: true,
             sortOrder: this.sortOrder,
             appendParams: this.appendParams,
-            detailRowComponent: this.detailRowComponent,
+            detailRowComponent: this.detailRowComponent
           },
           on: {
             'vuetable:cell-clicked': this.onCellClicked,
@@ -281,17 +282,15 @@ export default {
       const distinct = [];
       const searchResultData = [];
       const vuetableData = {
-        links: {
-          pagination: {
-            total: 0,
-            per_page: 15,
-            current_page: 1,
-            last_page: 1,
-            next_page_url: "https:\/\/cdn.blkcc.xyz\/search.json\/?page=2",
-            prev_page_url: null,
-            from: 1,
-            to: 1,
-          }
+        pagination: {
+          total: 10,
+          per_page: 15,
+          current_page: 1,
+          last_page: 10,
+          next_page_url: null,
+          prev_page_url: null,
+          from: 1,
+          to: 10,
         },
         data: []
       };
@@ -334,11 +333,11 @@ export default {
           }
         }
 
-        vuetableData.links.pagination.total = searchResultData.length;
-        vuetableData.links.pagination.to = searchResultData.length;
+        vuetableData.pagination.total = searchResultData.length;
+        vuetableData.pagination.to = searchResultData.length;
         self.$refs.vuetable.setData(vuetableData);
-        self.$refs.pagination.setPaginationData(vuetableData.links.pagination);
-        self.$refs.paginationInfo.setPaginationData(vuetableData.links.pagination);
+        self.$refs.pagination.setPaginationData(vuetableData.pagination);
+        self.$refs.paginationInfo.setPaginationData(vuetableData.pagination);
         self.vuetableData = vuetableData;
 
         self.refresh();
@@ -347,8 +346,13 @@ export default {
       });
     },
     onPaginationData (paginationData) {
-      this.$refs.pagination.setPaginationData(paginationData)
-      this.$refs.paginationInfo.setPaginationData(paginationData)
+      if(paginationData.pagination !== undefined) {
+        //this.$refs.pagination.setPaginationData(paginationData.pagination)
+        //this.$refs.paginationInfo.setPaginationData(paginationData.pagination)
+      } else {
+        //this.$refs.pagination.setPaginationData(paginationData)
+        //this.$refs.paginationInfo.setPaginationData(paginationData)
+      }
     },
     onChangePage (page) {
       this.$refs.vuetable.changePage(page)
