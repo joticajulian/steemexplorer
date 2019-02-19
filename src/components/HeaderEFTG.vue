@@ -37,7 +37,7 @@
               <div v-else>
                 <button class="btn btn-primary" @click="login">Login</button>
                 <b-modal ref="modalAuth" hide-footer title="Login">
-                  <AuthComponent ref="auth" v-on:close="hideModal"></AuthComponent>
+                  <AuthComponent ref="auth" v-on:login="$emit('login')" v-on:close="hideModal"></AuthComponent>
                 </b-modal>
               </div>
             </div>

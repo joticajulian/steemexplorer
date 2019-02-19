@@ -1,6 +1,6 @@
 <template>
   <div>
-    <HeaderEFTG portal="OAM Portal" :showAuth="true" ref="headerEFTG"></HeaderEFTG>
+    <HeaderEFTG portal="OAM Portal" :showAuth="true" ref="headerEFTG" v-on:login="onLogin" v-on:logout="clear"></HeaderEFTG>
     <div class="container">
       <h2 class="text-center">European Financial Transparency Gateway</h2>                            
       <h3 class="text-center mb-5">OAM Data Entry Portal</h3>
@@ -310,7 +310,7 @@ export default {
     },
     subclass: function(newVal) {
       this.debounced_validateSubclass();
-      if(newVal == 101 || newVal == 102){
+      if(newVal >= 100 && newVal < 200){
         this.showFinancialYear = true;        
       } else {
         this.showFinancialYear = false;
@@ -368,7 +368,7 @@ export default {
         valid = self.validateFile(true) && valid;
         
         // Validate year in case subclass Annual or half-year Financial Report 
-        if(self.subclass == 101 || self.subclass == 102){         
+        if(self.subclass >= 100 && self.subclass < 200){         
           valid = self.validateFinancialYear(true) && valid;
         }else{
           self.financial_year = '';
@@ -567,13 +567,27 @@ export default {
       .then(function(){
         self.sending = false
         self.hideInfo()
+        
+        this.clearFile()      
+        document.getElementById('eftg-form').classList.remove('was-validated')
       })      
       .catch(function(error, response){      
-        console.log(error);
-        self.showAlert(false,error.message);
         self.sending = false
-        self.hideInfo()      
+        self.hideInfo()
+        
+        console.log(error);
+        self.showAlert(false,error.message);              
       });
+    },
+    
+    onLogin() {
+      var username = this.$store.state.auth.user
+      if(username.length < 3) return
+      username = username.substring(0,3)
+      var hms = this.dictionary.homeMemberStates.find(function (hms) {return hms.code3.toLowerCase() === username})
+      if(hms && this.home_member_state === '') {
+        this.home_member_state = hms.code 
+      }
     },
     
     clear() {
@@ -588,20 +602,20 @@ export default {
       this.identifier_id = "1";
       this.identifier_value = "";
       this.subclass = "";
-      //this.disclosure_date = "";
-      //this.submission_date = "";
-      //this.document_language = "";
       this.comment = "";
-      //this.financial_year = "";
-      document.getElementById("inputFile").labels[0].childNodes[0].data = 'Choose file...'
-      document.getElementById('inputFile').setAttribute('type','')
-      document.getElementById('inputFile').setAttribute('type','file')
+      this.clearFile()
       
       document.getElementById('eftg-form').classList.remove('was-validated');
       
       this.hideSuccess()
       this.hideDanger()
       this.hideInfo()     
+    },
+    
+    clearFile() {
+      document.getElementById("inputFile").labels[0].childNodes[0].data = 'Choose file...'
+      document.getElementById('inputFile').setAttribute('type','')
+      document.getElementById('inputFile').setAttribute('type','file')
     },
 
     startEventListenerFile() {
