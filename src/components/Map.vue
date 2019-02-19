@@ -63,8 +63,10 @@ import 'leaflet/dist/leaflet.css';
 import greenIconUrl from '@/assets/green-circle.png'
 import redIconUrl from '@/assets/red-circle.png'
 import blueIconUrl from '@/assets/blue-circle.png'
+import yellowIconUrl from '@/assets/yellow-circle.png'
 import HeaderEFTG from "@/components/HeaderEFTG";
 import FooterEFTG from "@/components/FooterEFTG";
+import Dictionary from "@/mixins/Dictionary.js"
 
 // Axios import for HTTP requests
 import axios from 'axios';
@@ -96,6 +98,10 @@ export default {
       client: null
     }
   },
+  
+  mixins: [
+    Dictionary
+  ],
   
   components: {
     HeaderEFTG,
@@ -131,7 +137,65 @@ export default {
     clearInterval(this.ints.state);
   },
 
-  methods: {  
+  methods: {
+  
+    isOAM(wit) {
+      if(wit.length < 8) return false
+      var hms = this.dictionary.homeMemberStates.find(function (hms) {return hms.code3.toLowerCase() === wit.substring(0,3)})
+      if(hms && wit.substring(3,7) === '-tec') return true
+      return false 
+    },
+    
+    getIndexOffset(wit, status) {
+      var isOAM = this.isOAM(wit)
+      
+      var zIndex = 0
+      switch(status){
+        case 'offline':
+          zIndex = 0
+          break
+        case 'online':
+          if(isOAM) zIndex = 600
+          else zIndex = 500          
+          break
+        case 'live':
+          zIndex = 1000
+          break
+        default:
+          break
+      }
+      return zIndex
+    },
+    
+    getIcon(wit, status) {
+      var isOAM = this.isOAM(wit)
+      
+      var size = [12, 12]      
+      if(isOAM) size = [20, 20]
+      
+      var url = redIconUrl
+      
+      switch(status){
+        case 'offline':
+          url = redIconUrl
+          break
+        case 'online':
+          if(isOAM) url = blueIconUrl
+          else      url = yellowIconUrl
+          break
+        case 'live':
+          url = greenIconUrl
+          break
+        default:
+          break
+      }
+      var LeafIcon = L.Icon.extend({
+        options: {
+          iconSize: size      
+        }
+      })
+      return new LeafIcon({iconUrl:  url})
+    },
     
     /* This method prints the map and add the witnesses to it taking 
      * into account seednodes.json and the locations stored in the blockchain
@@ -153,10 +217,11 @@ export default {
       // Taking the data from assets/seednodes.json
       this.witnesses = seednodes;
       this.witnesses.forEach(function(wit){
-        var LeafIcon = L.Icon.extend({ options: {iconSize: [12, 12],} });
-        var redIcon = new LeafIcon({iconUrl: redIconUrl})
+        var redIcon = this.getIcon(wit.owner, 'offline')
+        
         if(wit.latlong[0] != null && wit.latlong[1] != null){
-          wit.marker = L.marker(wit.latlong, {icon: redIcon}).bindPopup(wit.owner).addTo(self.map);
+          var zIndex = this.getIndexOffset(wit.owner, 'offline')
+          wit.marker = L.marker(wit.latlong, {icon: redIcon, zIndexOffset:zIndex }).bindPopup(wit.owner).addTo(self.map);          
         }else{
           wit.marker = null;
         }        
@@ -285,19 +350,16 @@ export default {
          */
         wit.latlong = [parseFloat(point.lat)+Math.random()*0.1-0.05, parseFloat(point.lon)+Math.random()*0.1-0.05]
           
-        var LeafIcon = L.Icon.extend({ options: {iconSize: [12, 12],} });
-        var icon;
-        if(wit.status == 'online') icon = new LeafIcon({iconUrl: blueIconUrl})
-        else icon = new LeafIcon({iconUrl: redIconUrl})
+        var icon = this.getIcon(wit.owner,wit.status)
                   
         // changing name "wit23" etc ... to "oam-city" based on location
         wit.visible_name = wit.owner
         if (wit.owner.substring(0,3) === 'wit' || wit.owner.substring(0,3) === 'tst'){
-          wit.visible_name = 'oam-' + wit.location.toLowerCase()
+          wit.visible_name = 'dg-fisma-' + wit.location.toLowerCase()
           console.log('changing name of ' + wit.owner + ' to ' + wit.visible_name)
         }
-                  
-        wit.marker = L.marker(wit.latlong, {icon: icon}).bindPopup(wit.visible_name).addTo(this.map);
+        var zIndex = this.getIndexOffset(wit.owner, wit.status)
+        wit.marker = L.marker(wit.latlong, {icon: icon, zIndexOffset:zIndex}).bindPopup(wit.visible_name).addTo(this.map);        
       } else if(wit.marker && wit.marker!= null) {
         console.log('The site "'+wit.location+'" is not a valid location. (@'+wit.owner+'). Point taken from seednodes');
       } else {
@@ -370,7 +432,7 @@ export default {
         
               //search the previous witness to change the color to blue
               id = self.witnesses.findIndex(function(wit){return wit.owner == self.last_witness});
-              if(id >= 0) self.setMarkerColor(id, 'blue')
+              if(id >= 0) self.setMarkerColor(id, 'online')
       
               //print green the actual witness
               var aliasText = ''; 
@@ -381,12 +443,12 @@ export default {
               
               id = self.witnesses.findIndex(function(wit){return wit.owner == b.witness});
               if(id >= 0){
-                self.setMarkerColor(id, 'green')
+                self.setMarkerColor(id, 'live')
                 self.last_witness = b.witness;        
               }else{
                 console.log('Witness @'+b.witness+' is not in the list. Adding him to the map');
                 // self.current_location = '(Unknown location)';
-                this.addWitnessesToMap([b.witness])
+                self.addWitnessesToMap([b.witness])
               }
             }
           }
@@ -397,30 +459,14 @@ export default {
     },
   
     // Change the color of a marker in the map
-    setMarkerColor(id, color){
-      var LeafIcon = L.Icon.extend({options: {iconSize: [12, 12], } });
-      var icon = null;
-      var zIndex = 0;
-      switch(color){
-        case 'blue' :
-          icon = new LeafIcon({iconUrl:  blueIconUrl}); 
-          zIndex = 500;
-          break;
-        case 'red'  :
-          icon = new LeafIcon({iconUrl:   redIconUrl});
-          zIndex = 0;
-          break;
-        case 'green':
-          icon = new LeafIcon({iconUrl: greenIconUrl});
-          zIndex = 1000;
-          break;            
-        default:
-          icon = new LeafIcon({iconUrl:   redIconUrl}); 
-          break;
-      }
+    setMarkerColor(id, status){
+      var isOAM = this.isOAM(this.witnesses[id].owner)
+      
+      var icon = this.getIcon(this.witnesses[id].owner, status)
       if(this.witnesses[id].marker != null) {
+        var zIndex = this.getIndexOffset( this.witnesses[id].owner , status )
         this.witnesses[id].marker.setIcon(icon);
-        this.witnesses[id].marker.setZIndexOffset(zIndex);
+        this.witnesses[id].marker.setZIndexOffset(zIndex)
         this.current_location = '';
       } else {
         console.log('@'+this.witnesses[id].owner+' is '+color+', but he does not have a marker')
@@ -430,23 +476,23 @@ export default {
     
     getRandomOAM () {
       var oams = [
-        'oam-belgium',
-        'oam-spain',
-        'oam-rome',
-        'oam-berlin',
-        'oam-barcelona',
-        'oam-amsterdam',
-        'oam-copenhagen',
-        'oam-brussels',
-        'oam-munich',
-        'oam-edinburgh',
-        'oam-prague',
-        'oam-milan',
-        'oam-lisbon',
-        'oam-stockholm',
-        'oam-dublin',
-        'oam-florence',
-        'oam-pisa'
+        'dg-fisma-belgium',
+        'dg-fisma-spain',
+        'dg-fisma-rome',
+        'dg-fisma-berlin',
+        'dg-fisma-barcelona',
+        'dg-fisma-amsterdam',
+        'dg-fisma-copenhagen',
+        'dg-fisma-brussels',
+        'dg-fisma-munich',
+        'dg-fisma-edinburgh',
+        'dg-fisma-prague',
+        'dg-fisma-milan',
+        'dg-fisma-lisbon',
+        'dg-fisma-stockholm',
+        'dg-fisma-dublin',
+        'dg-fisma-florence',
+        'dg-fisma-pisa'
       ]
       var random = Math.floor(oams.length * Math.random())
       return oams[random]
