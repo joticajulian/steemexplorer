@@ -206,7 +206,7 @@ export default {
         subclass: this.subclass,
         financialYear: this.financialYear,
         title: this.title
-      });
+      }, 1);
     },
     clear() {
       this.legalIdentifier = [];

@@ -111,6 +111,9 @@ export default {
           h('vuetable-pagination-info', { ref: 'paginationInfo' }),
           h('vuetable-pagination', {
             ref: 'pagination',
+            props: {
+              css: SearchVuetableCss.pagination
+            },
             on: {
               'vuetable-pagination:change-page': this.onChangePage
             }
@@ -133,7 +136,7 @@ export default {
         ? ''
         : moment(value, 'YYYY-MM-DD').format(fmt)
     },
-    refresh(searchInputData = null) {
+    refresh(searchInputData = null, page = null) {
       if(searchInputData === null) {
         if(this.searchInputData !== undefined) {
           searchInputData = this.searchInputData;
@@ -271,9 +274,30 @@ export default {
         else return 0;
       });
 
-      vuetableData.data = finalData;
+      vuetableData.pagination.total = finalData.length;
+      if(page !== null) {
+        if(page === 'prev') {
+          vuetableData.pagination.current_page --;
+        } else if(page === 'next') {
+          vuetableData.pagination.current_page ++;
+        } else {
+          vuetableData.pagination.current_page = page;
+        }
+      }
+      const current_page = vuetableData.pagination.current_page;
+      const per_page = vuetableData.pagination.per_page;
+      const total = vuetableData.pagination.total;
+
+      vuetableData.pagination.last_page = Math.ceil(finalData.length / per_page);
+      vuetableData.pagination.from = (current_page - 1) * per_page + 1;
+      vuetableData.pagination.to = Math.min(current_page * per_page, total);
+        
+      vuetableData.data = this.paginate(finalData, vuetableData.pagination.per_page, vuetableData.pagination.current_page);
       this.$refs.vuetable.setData(vuetableData);
+      this.$refs.pagination.setPaginationData(vuetableData.pagination);
+      this.$refs.paginationInfo.setPaginationData(vuetableData.pagination);
       this.searchInputData = searchInputData;
+      this.vuetableData.pagination = vuetableData.pagination;
     },
     onLoadSuccess(data = null) {
       const self = this;
@@ -283,14 +307,14 @@ export default {
       const searchResultData = [];
       const vuetableData = {
         pagination: {
-          total: 10,
+          total: 15,
           per_page: 15,
           current_page: 1,
-          last_page: 10,
+          last_page: 1,
           next_page_url: null,
           prev_page_url: null,
           from: 1,
-          to: 10,
+          to: 15,
         },
         data: []
       };
@@ -333,8 +357,6 @@ export default {
           }
         }
 
-        vuetableData.pagination.total = searchResultData.length;
-        vuetableData.pagination.to = searchResultData.length;
         self.$refs.vuetable.setData(vuetableData);
         self.$refs.pagination.setPaginationData(vuetableData.pagination);
         self.$refs.paginationInfo.setPaginationData(vuetableData.pagination);
@@ -354,7 +376,11 @@ export default {
         //this.$refs.paginationInfo.setPaginationData(paginationData)
       }
     },
+    paginate (array, page_size, page_number) {
+      return array.slice((page_number - 1) * page_size, page_number * page_size);
+    },
     onChangePage (page) {
+      this.refresh(null, page);
       this.$refs.vuetable.changePage(page)
     },
     onCellClicked (data, field, event) {
