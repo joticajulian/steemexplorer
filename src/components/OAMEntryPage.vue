@@ -271,7 +271,10 @@ export default {
   ],
   
   created() {
-    this.client = new Client(Config.RPC_NODE.url);
+    let opts = {} ;
+    opts.addressPrefix = Config.STEEM_ADDRESS_PREFIX
+    if(Config.STEEM_CHAIN_ID) opts.chainId = Config.STEEM_CHAIN_ID
+    this.client = new Client(Config.RPC_NODE.url, opts);
   
     //validate fields while typing
     this.debounced_validateIssuerName       = debounce(this.validateIssuerName      , 300);
@@ -378,18 +381,14 @@ export default {
         form.classList.add('was-validated');
         
         if (!valid) {
-          console.log("Error validating fields!");
-          
-          self.showAlert(false,"Error validating fields!");
-          
-          return false;
+          throw new Error("Error validating fields!");
         }
 
         // User credentials
         if (!self.$store.state.auth.logged) {
           self.$refs.headerEFTG.login();
           //todo: make that after login it submits the post automatically
-          return;
+          throw new Error('Please login');
         }
         var username = self.$store.state.auth.user;
         var privKey = self.$store.state.auth.keys.posting;
@@ -464,8 +463,7 @@ export default {
             }
             
             if(same_post) {
-              self.showDanger('This document was already submitted.')
-              return false
+              throw new Error('This document was already submitted.')
             }
           } catch (error) {
             console.log('It was not possible to load the previous post: ')
@@ -568,7 +566,7 @@ export default {
         self.sending = false
         self.hideInfo()
         
-        this.clearFile()      
+        self.clearFile()
         document.getElementById('eftg-form').classList.remove('was-validated')
       })      
       .catch(function(error, response){      
@@ -605,6 +603,7 @@ export default {
       this.comment = "";
       this.clearFile()
       
+      this.clearErrors()
       document.getElementById('eftg-form').classList.remove('was-validated');
       
       this.hideSuccess()
@@ -612,6 +611,11 @@ export default {
       this.hideInfo()     
     },
     
+    clearErrors() {
+      for(var key in this.error) this.error[key] = false
+      for(var key in this.errorText) this.errorText[key] = 'No error'
+    },
+
     clearFile() {
       document.getElementById("inputFile").labels[0].childNodes[0].data = 'Choose file...'
       document.getElementById('inputFile').setAttribute('type','')
