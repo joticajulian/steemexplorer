@@ -172,7 +172,7 @@
           </div>
           </div>
         </div>
-        <div class="row">
+        <div class="row mt-4">
           <div class="form-group col-md-6 align-bottom" style="padding-top: 8px;">
             <button v-on:click="submit" class="btn btn-primary btn-large" :disabled="sending"><div v-if="sending" class="mini loader"></div>Submit</button>
             <button v-on:click="clear"  class="btn btn-secondary btn-large">Clear</button>
