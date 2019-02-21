@@ -8,8 +8,11 @@
     <div class="map">
       <div id="map"></div>
       <div class="last-witness">
-        <div v-if="lastBlocks.length > 0"
-        >Current Witness: <a :href="'/#/explorer/@'+current_witness.witness">{{current_witness.visible_name}}</a> {{current_location}}
+        <div v-if="lastBlocks.length > 0">
+          <div><img :src="icon.green" width="10px" class="mr-2"/>Current Witness: <a :href="'/#/explorer/@'+current_witness.witness">{{current_witness.visible_name}}</a> {{current_location}}</div>
+          <div><img :src="icon.blue"   width="10px" class="mr-2"/>OAM witness online</div>
+          <div><img :src="icon.yellow" width="10px" class="mr-2"/>European Commission witness online</div>
+          <div><img :src="icon.red" width="10px" class="mr-2"/>witness offline</div>
         </div>
       </div>
     </div
@@ -95,7 +98,13 @@ export default {
         visible_name: ''
       },    
       first_time: true,
-      client: null
+      client: null,
+      icon: {
+        green: greenIconUrl,
+        blue:  blueIconUrl,
+        red:   redIconUrl,
+        yellow:yellowIconUrl
+      }
     }
   },
   
@@ -355,7 +364,7 @@ export default {
         // changing name "wit23" etc ... to "oam-city" based on location
         wit.visible_name = wit.owner
         if (wit.owner.substring(0,3) === 'wit' || wit.owner.substring(0,3) === 'tst'){
-          wit.visible_name = 'dg-fisma-' + wit.location.toLowerCase()
+          wit.visible_name = 'ec-' + wit.location.toLowerCase()
           console.log('changing name of ' + wit.owner + ' to ' + wit.visible_name)
         }
         var zIndex = this.getIndexOffset(wit.owner, wit.status)
