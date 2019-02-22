@@ -7,6 +7,7 @@ import Map from "@/components/Map";
 import Faq from "@/components/Faq";
 import Contact from "@/components/Contact";
 import Password from "@/components/Password";
+import Witnesses from '@/components/Witnesses'
 
 // Explorer
 import HomeExplorer from '@/components/explorer/Home'
@@ -53,6 +54,11 @@ export default new Router({
       path: "/password",
       name: "Password",
       component: Password
+    },
+    {
+      path: "/witnesses",
+      name: "Witnesses",
+      component: Witnesses
     },
     {
       path: "/explorer",

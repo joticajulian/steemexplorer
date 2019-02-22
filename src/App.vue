@@ -116,6 +116,12 @@ body {
   color: #C3C3C3 !important;
 }
 
+#app .table-primary th{
+  background-color: #0F5494 !important;
+  border-color: #0F5494 !important;
+  color: white !important;
+}
+
 @media (min-width: 1200px) {
 
   #app .container{

@@ -114,8 +114,8 @@ export default {
 
       // keysFromWIF: suppossing that password is WIF
       var keysFromWIF = {
-        //owner: { public: "", private: "" },
-        //active: { public: "", private: "" },
+        owner: { public: "", private: "" },
+        active: { public: "", private: "" },
         posting: { public: "", private: "" }
       };
 
@@ -140,8 +140,8 @@ export default {
           .toString();
       }catch(error){}
 
-      //var roles = ["owner", "active", "posting"];
-      var roles = ["posting"];
+      var roles = ["owner", "active", "posting"];
+      //var roles = ["posting"];
       //let self = this;
 
       var account = accounts[0];

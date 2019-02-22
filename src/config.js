@@ -9,6 +9,8 @@ const ELASTIC = { url: "https://api.blkcc.xyz/pulsar/" };
 const CDN = { url: "https://cdn.blkcc.xyz/" };
 const HARDFORK = 19
 
+const EFTG_HARDFORK_0_1 = false
+
 const STEEM_ADDRESS_PREFIX = "EUR";
 const STEEM_100_PERCENT = 10000;
 const STEEM_VOTE_REGENERATION_SECONDS = 5 * 24 * 60 * 60;
@@ -40,6 +42,8 @@ export default {
   HARDFORK: HARDFORK,
   ELASTIC: ELASTIC,
   CDN: CDN,
+
+  EFTG_HARDFORK_0_1,
 
   STEEM_ADDRESS_PREFIX: STEEM_ADDRESS_PREFIX,
   STEEM_100_PERCENT: STEEM_100_PERCENT,
