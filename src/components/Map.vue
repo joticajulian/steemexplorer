@@ -226,10 +226,10 @@ export default {
       // Taking the data from assets/seednodes.json
       this.witnesses = seednodes;
       this.witnesses.forEach(function(wit){
-        var redIcon = this.getIcon(wit.owner, 'offline')
+        var redIcon = self.getIcon(wit.owner, 'offline')
         
         if(wit.latlong[0] != null && wit.latlong[1] != null){
-          var zIndex = this.getIndexOffset(wit.owner, 'offline')
+          var zIndex = self.getIndexOffset(wit.owner, 'offline')
           wit.marker = L.marker(wit.latlong, {icon: redIcon, zIndexOffset:zIndex }).bindPopup(wit.owner).addTo(self.map);          
         }else{
           wit.marker = null;
@@ -366,6 +366,7 @@ export default {
         if (wit.owner.substring(0,3) === 'wit' || wit.owner.substring(0,3) === 'tst'){
           wit.visible_name = 'ec-' + wit.location.toLowerCase()
           console.log('changing name of ' + wit.owner + ' to ' + wit.visible_name)
+          this.updateBlockVisibleName(wit)
         }
         var zIndex = this.getIndexOffset(wit.owner, wit.status)
         wit.marker = L.marker(wit.latlong, {icon: icon, zIndexOffset:zIndex}).bindPopup(wit.visible_name).addTo(this.map);        
@@ -375,7 +376,13 @@ export default {
         wit.marker = null;
         console.log('The site "'+wit.location+'" is not a valid location. (@'+wit.owner+')');  
       }
-    },    
+    },
+
+    updateBlockVisibleName(wit) {
+      var id = this.lastBlocks.findIndex(function(b){return b.witness === wit.owner })
+      if(id >= 0) this.$set(this.lastBlocks[id],'witness_visible_name', wit.visible_name)
+      if(id == 0) this.current_witness.visible_name = wit.visible_name
+    },
   
     /* fetchBlocks gets the last 5 blocks and looks 
      * who is the witness to show it in the map
@@ -485,23 +492,23 @@ export default {
     
     getRandomOAM () {
       var oams = [
-        'dg-fisma-belgium',
-        'dg-fisma-spain',
-        'dg-fisma-rome',
-        'dg-fisma-berlin',
-        'dg-fisma-barcelona',
-        'dg-fisma-amsterdam',
-        'dg-fisma-copenhagen',
-        'dg-fisma-brussels',
-        'dg-fisma-munich',
-        'dg-fisma-edinburgh',
-        'dg-fisma-prague',
-        'dg-fisma-milan',
-        'dg-fisma-lisbon',
-        'dg-fisma-stockholm',
-        'dg-fisma-dublin',
-        'dg-fisma-florence',
-        'dg-fisma-pisa'
+        'ec-belgium',
+        'ec-spain',
+        'ec-rome',
+        'ec-berlin',
+        'ec-barcelona',
+        'ec-amsterdam',
+        'ec-copenhagen',
+        'ec-brussels',
+        'ec-munich',
+        'ec-edinburgh',
+        'ec-prague',
+        'ec-milan',
+        'ec-lisbon',
+        'ec-stockholm',
+        'ec-dublin',
+        'ec-florence',
+        'ec-pisa'
       ]
       var random = Math.floor(oams.length * Math.random())
       return oams[random]
