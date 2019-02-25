@@ -253,7 +253,7 @@ export default {
         finalData = [];
         for (var i = 0; i < initialData.length; i++) {
           const id = initialData[i]._id;
-          const value = initialData[i].disclosure_date;
+          const value = initialData[i].disclosure_date.substring(0, 10);
           const inputValue = searchInputData['disclosureDateFrom'];
           if (value >= inputValue) {
             if (distinct.indexOf(id) === -1) {
@@ -270,9 +270,9 @@ export default {
         finalData = [];
         for (var i = 0; i < initialData.length; i++) {
           const id = initialData[i]._id;
-          const value = initialData[i].disclosure_date;
+          const value = initialData[i].disclosure_date.substring(0, 10);
           const inputValue = searchInputData['disclosureDateTo'];
-          if (value >= inputValue) {
+          if (value <= inputValue) {
             if (distinct.indexOf(id) === -1) {
               distinct.push(id);
               finalData.push(initialData[i]);
