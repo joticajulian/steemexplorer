@@ -3,7 +3,7 @@
     <HeaderEFTG portal="Investor Portal" ref="headerEFTG"></HeaderEFTG>
     <div> <!--<form>-->
     <div class="container">
-      <h2 class="text-center">European Financial Transparency Gateway</h2>                            
+      <h2 class="text-center">European Financial Transparency Gateway</h2>
       <h3 class="text-center mb-5">Investor Portal</h3>
       <div class="row">
         <div class="col-md-12">
@@ -55,7 +55,7 @@
         </div>
         <div class="col-md-3" hidden>
             <div id="pdfPreview_" class="eftg-pdf-preview">
-              <!-- <img src="../assets/pdf-preview.png" style="width: 95%"/> -->           
+              <!-- <img src="../assets/pdf-preview.png" style="width: 95%"/> -->
             </div>
         </div>
       </div>
@@ -64,7 +64,7 @@
       <!-- Modal Component -->
       <b-modal id="mdPdfPreview" v-bind:title="docName" size="lg" centered>
         <div id="pdfPreview" style="min-height: 600px !important; height: 600px !important;"></div>
-        <div slot="modal-footer" class="w-100">                        
+        <div slot="modal-footer" class="w-100">
           <div class="text-right">
             <button size="sm" class="btn ui basic button" @click="hideModal">
               Close
@@ -116,7 +116,7 @@
       </div>
     </div>
   </div>
-  
+
 </template>
 
 <script>
@@ -188,7 +188,7 @@ export default {
     PulsarApi, Dictionary
   ],
   mounted() {
-    
+
   },
   methods: {
     addTag (newTag) {
@@ -205,7 +205,9 @@ export default {
         homeMemberState: this.homeMemberState,
         subclass: this.subclass,
         financialYear: this.financialYear,
-        title: this.title
+        title: this.title,
+        disclosureDateFrom: this.disclosureDateFrom,
+        disclosureDateTo: this.disclosureDateTo
       }, 1);
     },
     clear() {
@@ -215,6 +217,8 @@ export default {
       this.subclass = [];
       this.financialYear = [];
       this.title = '';
+      this.disclosureDateFrom = null,
+      this.disclosureDateTo = null;
 
       this.$refs.searchvuetable.refresh({
         legalIdentifier: this.legalIdentifier,
@@ -222,7 +226,9 @@ export default {
         homeMemberState: this.homeMemberState,
         subclass: this.subclass,
         financialYear: this.financialYear,
-        title: this.title
+        title: this.title,
+        disclosureDateFrom: this.disclosureDateFrom,
+        disclosureDateTo: this.disclosureDateTo
       });
     },
     onAction (action, data, index) {
@@ -232,7 +238,7 @@ export default {
         this.tempIndex = index;
         this.viewPdf(data.document_url);
       } else if(action === "download-item") {
-        this.hideModal();      
+        this.hideModal();
         window.open(data.document_url, '_blank'); return false;
       }
     },
@@ -274,7 +280,7 @@ export default {
 }
 
 .eftg-container {
-  
+
 }
 
 .eftg-pdf-preview {
@@ -291,7 +297,7 @@ export default {
 }
 
 .eftg-btn-secondary {
-  background-color:#C3C3C3; 
+  background-color:#C3C3C3;
 }
 
 </style>

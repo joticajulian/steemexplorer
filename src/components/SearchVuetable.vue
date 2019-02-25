@@ -249,6 +249,40 @@ export default {
         distinct = [];
       }
 
+      if(searchInputData !== null && searchInputData['disclosureDateFrom'] !== undefined && searchInputData['disclosureDateFrom'] !== null) {
+        finalData = [];
+        for (var i = 0; i < initialData.length; i++) {
+          const id = initialData[i]._id;
+          const value = initialData[i].disclosure_date;
+          const inputValue = searchInputData['disclosureDateFrom'];
+          if (value >= inputValue) {
+            if (distinct.indexOf(id) === -1) {
+              distinct.push(id);
+              finalData.push(initialData[i]);
+            }
+          }
+        }
+        initialData = finalData;
+        distinct = [];
+      }
+
+      if(searchInputData !== null && searchInputData['disclosureDateTo'] !== undefined && searchInputData['disclosureDateTo'] !== null) {
+        finalData = [];
+        for (var i = 0; i < initialData.length; i++) {
+          const id = initialData[i]._id;
+          const value = initialData[i].disclosure_date;
+          const inputValue = searchInputData['disclosureDateTo'];
+          if (value >= inputValue) {
+            if (distinct.indexOf(id) === -1) {
+              distinct.push(id);
+              finalData.push(initialData[i]);
+            }
+          }
+        }
+        initialData = finalData;
+        distinct = [];
+      }
+
       if(searchInputData !== null && searchInputData['title'] !== undefined  && searchInputData['title'].length > 0) {
         finalData = [];
         for (var i = 0; i < initialData.length; i++) {
@@ -291,7 +325,7 @@ export default {
       vuetableData.pagination.last_page = Math.ceil(finalData.length / per_page);
       vuetableData.pagination.from = (current_page - 1) * per_page + 1;
       vuetableData.pagination.to = Math.min(current_page * per_page, total);
-        
+
       vuetableData.data = this.paginate(finalData, vuetableData.pagination.per_page, vuetableData.pagination.current_page);
       this.$refs.vuetable.setData(vuetableData);
       this.$refs.pagination.setPaginationData(vuetableData.pagination);
