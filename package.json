@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve --public pulsar.dev.blkcc.xyz --host 0.0.0.0",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
@@ -16,7 +16,7 @@
     "bootstrap": "^4.3.1",
     "bootstrap-vue": "^2.0.0-rc.13",
     "crypto": "^1.0.1",
-    "eftg-dsteem": "2.0.1",
+    "eftg-dsteem": "2.0.4",
     "leaflet.icon.glyph": "^0.2.0",
     "lodash.debounce": "4.0.8",
     "moment": "^2.22.2",
