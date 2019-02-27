@@ -4,7 +4,6 @@ const SP = "SP";
 const VESTS = "VESTS";
 const RPC_NODE = { url: "https://apidev.blkcc.xyz" };
 const IMAGE_HOSTER = { url: "https://cdn.blkcc.xyz" };
-const EXPLORER = { url: "http://explorer.blkcc.xyz/#" };
 const ELASTIC = { url: "https://api.blkcc.xyz/pulsar/" };
 const CDN = { url: "https://cdn.blkcc.xyz/" };
 const HARDFORK = 19
@@ -29,7 +28,6 @@ const MAP = {
 }
 
 const APP_VERSION = "pulsar/0.0.2";
-const APP_VERSIONS = ['pulsar/0.0.1', 'pulsar/0.0.2', 'sendjs/0.0.1'];
 
 export default {
   SBD: SBD,
@@ -38,7 +36,6 @@ export default {
   VESTS: VESTS,
   RPC_NODE: RPC_NODE,
   IMAGE_HOSTER: IMAGE_HOSTER,
-  EXPLORER: EXPLORER,
   HARDFORK: HARDFORK,
   ELASTIC: ELASTIC,
   CDN: CDN,
