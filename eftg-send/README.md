@@ -1,6 +1,6 @@
 # eftg-send
 
-This tool provides a way to publish new reports in the EFTG Blockchain using Node.js. Use it as an alternative of the manual registration needed for the [website](https://pulsar.blkcc.xyz).
+This tool provides a way to publish new reports in the EFTG Blockchain using Node.js. Use it as an alternative of the manual registration needed for the [website](https://eftg.eu).
 
 Installation
 ----------
@@ -22,42 +22,48 @@ npm install
 ```
 How to use
 ----------
-Open the file `config.js` and set your username and posting key
+
+The data to upload must me formatted in a JSON format, using the schema defined in this file: data.json.
+
+Save the file in eftg-send/data.json
+
+For example:
+
+```
+{
+    "filename":          "../../test_files/POST_RI2017.pdf",
+    "issuer_name":       "Post Telecom PSF S.A.",  
+    "home_member_state": "LU",  // Full list of countries at https://cdn.blkcc.xyz/home_member_states.json
+    "identifier_id":     4,
+    "identifier_value":  "549300HODTJUIOVE3C26", 
+    "subclass":          101, // Full list of subclasses at https://cdn.blkcc.xyz/class_subclass_tree.json
+    "subclassTag":       "annual-financreport", // Full list of tags at https://cdn.blkcc.xyz/class_subclass_tree.json
+    "disclosure_date":   "2013-12-31T12:00:00",
+    "submission_date":   "2013-12-31T12:00:00",
+    "type_submission":   "first", //Can be only "first" or "revised"
+    "document_language": "en", // Full list of languages at https://cdn.blkcc.xyz/lang.json
+    "title":             "Annual Financial Report Post 2013", 
+    "financial_year":    "2013"
+  }
+```
+
+Open the file `config.js` and set your username and password.
+
+!!! Use only the provided account type: contry_code-busX  (example: rou-bus1) !!! 
 ```
 // Authentication
-const username = 'your username'
-const password = 'your posting key'
+const username = 'country_code-busX'
+const password = 'your password'
 ```
 
-Open `send.js` to define the metadata and report to upload
-```
-// File to upload
-const filename = '../POST_RI2017.pdf'
-
-// Metadata
-const issuer_name       = 'Post Telecom PSF S.A.'
-const home_member_state = 'LU'
-const identifier_id     = 4 //ISIN. Check IDs at https://cdn.blkcc.xyz/identifier.json
-const identifier_value  = '549300HODTJUIOVE3C26'
-const subclass          = 3 //Annual Financial report. Check classes and subclasses at https://cdn.blkcc.xyz/class_subclass_tree.json
-const disclosure_date   = '2017-12-31T12:00:00' //format yyyy-mm-ddTHH:mm:ss
-const document_language = 'en' // https://cdn.blkcc.xyz/lang.json
-const title             = 'Groupe Post Luxembourg Rapport Integre 2017'
-const financial_year    = '2017'
-const tags              = [
-                            'annual-financreport', // https://cdn.blkcc.xyz/class_subclass_tree.json
-                            issuer_name,
-                            home_member_state,
-                            identifier_value
-                          ]
-```
 Save the changes, and run in the terminal
 ```
 node send.js
 ```
-It it works properly it will show a message like this
+If it works properly, it will send the documents and show a message like this
 ```
-New report published!!
-permlink: @jga/5dq03j-groupe-post-luxembourg-rapport-integre-2017
-link pdf: https://cdn.blkcc.xyz/DQmd1JYzCSdgPWVeskymUqsgZwbaMKLws8VS59ehfm9HxPR/POST_RI2017.pdf
+New document published!! [1/2]
+permlink: @oamname/7l8x3o-annual-financial-report-post-2017
+New document published!! [2/2]
+permlink: @oamname/psxwx-annual-financial-report-post-2018
 ```
