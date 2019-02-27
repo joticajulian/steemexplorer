@@ -8,7 +8,7 @@
     <div class="data" v-for="(b,key,index) in beneficiaries">
       <div class="row"
         ><div class="beneficiary">
-          <a :href="'#/@'+b.account">@{{b.account}}</a>          
+          <router-link :to="'/@'+b.account">@{{b.account}}</router-link>          
         </div
         ><div class="weight">{{b.bene_weight}}</div
         ><div class="value">{{b.bene_value}}</div        

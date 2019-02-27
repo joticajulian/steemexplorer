@@ -18,7 +18,7 @@
           valueA2: typeCard=='witnesses'}">        
           <div v-if="typeof item === 'object'">
             <div v-if="link==true && item.link">
-              <a :href="item.link">{{item.text}}</a>
+              <router-link :to="item.link">{{item.text}}</router-link>
             </div>
             <div v-else>
               <card-data :data="item"></card-data>

@@ -11,10 +11,10 @@
       <div class="row">
         <div class="col d-flex justify-content-start">
           <div class="d-flex align-items-end">
-            <div id="logo-ec"><a href="#/"><img src="../assets/logo2018commissionname.png" /></a></div>            
+            <div id="logo-ec"><router-link to="/"><img src="../assets/logo2018commissionname.png" /></router-link></div>            
           </div>
           <div class="d-flex align-items-end">
-            <div id="logo-eftg" class="ml-2"><a href="#/"><img src="../assets/logo-eftg.png" /></a></div>            
+            <div id="logo-eftg" class="ml-2"><router-link to="/"><img src="../assets/logo-eftg.png" /></router-link></div>            
           </div>  
         </div>
         <div v-if="showAuth" class="col d-flex justify-content-end">
@@ -37,7 +37,7 @@
               <div v-else>
                 <button class="btn btn-primary" @click="login">Login</button>
                 <b-modal ref="modalAuth" hide-footer title="Login">
-                  <AuthComponent ref="auth" v-on:login="$emit('login')" v-on:close="hideModal"></AuthComponent>
+                  <AuthComponent ref="auth" v-on:login="$emit('login')"></AuthComponent>
                 </b-modal>
               </div>
             </div>
@@ -131,12 +131,6 @@ export default {
         }
       };
       this.$emit('logout')
-    },
-    hideModal() {
-      this.$refs.modalAuth.hide()
-    },
-    validImageUrl(url) {
-      return url && url.length > 0; //todo: validate the whole path
     }
   },
   components: {

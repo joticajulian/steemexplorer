@@ -63,7 +63,7 @@
           <transition-group name="list-blocks" tag="div" class="block-group">
             <div v-for="(b,key,index) in lastBlocks" :key="b.block_num" class="list-blocks-item">
               <div class="block-left">
-                <a :href="'#/explorer/b/'+b.block_num">{{b.block_num}}</a>
+                <router-link :to="'/explorer/b/'+b.block_num">{{b.block_num}}</router-link>
                 <span v-if="b.loaded">
                   - {{b.size_txs}} transactions
                   <span v-if="b.size_posts>0">
@@ -75,7 +75,7 @@
                 </span>
               </div
               ><div class="block-right">
-                <span class="small">witness</span><br><a :href="'#/explorer/@'+b.witness">{{b.witness}}</a>
+                <span class="small">witness</span><br><router-link :to="'/explorer/@'+b.witness">{{b.witness}}</router-link>
               </div>
             </div>
           </transition-group>
@@ -194,6 +194,7 @@ export default {
       this.exists.reward = true;
       
       var result = await this.client.database.getState('')
+      //var result = await this.client.database.call('get_witness_schedule')
       
       //DYNAMIC GLOBAL PROPERTIES
       var keys = ['current_supply', 'current_sbd_supply', 'virtual_supply', 'total_vesting_fund_steem', 'total_vesting_shares', 'pending_rewarded_vesting_shares', 'pending_rewarded_vesting_steem', 'sbd_interest_rate', 'sbd_print_rate', 'maximum_block_size'];

@@ -9,7 +9,7 @@
       <div id="map"></div>
       <div class="last-witness">
         <div v-if="lastBlocks.length > 0">
-          <div><img :src="icon.green" width="10px" class="mr-2"/>Current Witness: <a :href="'/#/explorer/@'+current_witness.witness">{{current_witness.visible_name}}</a> {{current_location}}</div>
+          <div><img :src="icon.green" width="10px" class="mr-2"/>Current Witness: <router-link :to="'/explorer/@'+current_witness.witness">{{current_witness.visible_name}}</router-link> {{current_location}}</div>
           <div><img :src="icon.blue"   width="10px" class="mr-2"/>OAM witness online</div>
           <div><img :src="icon.yellow" width="10px" class="mr-2"/>European Commission witness online</div>
           <div><img :src="icon.red" width="10px" class="mr-2"/>witness offline</div>
@@ -23,7 +23,7 @@
           <transition-group name="list-blocks" tag="div">
             <div v-for="(b,key,index) in lastBlocks" :key="b.block_num" class="list-blocks-item">
               <div class="block-left">
-                <a :href="'/#/explorer/b/'+b.block_num">{{b.block_num}}</a>
+                <router-link :to="'/explorer/b/'+b.block_num">{{b.block_num}}</router-link>
                 <span v-if="b.loaded">
                   - {{b.size_txs}} transactions
                   <span v-if="b.size_posts>0">
@@ -35,7 +35,7 @@
                 </span>
               </div
               ><div class="block-right">
-                <span class="small">witness</span><br><a :href="'/#/explorer/@'+b.witness">{{b.witness_visible_name}}</a>
+                <span class="small">witness</span><br><router-link :to="'/explorer/@'+b.witness">{{b.witness_visible_name}}</router-link>
               </div>
             </div>
           </transition-group>

@@ -16,16 +16,16 @@
         <card-data :data="this.postGenerals"></card-data>  
       </div
       ><div class="col-md-9">
-        <h2><a :href="'#/explorer/@'+post.author">@{{post.author}}</a> ({{this.getReputation(post.author_reputation)}})</h2>
+        <h2><router-link :to="'/explorer/@'+post.author">@{{post.author}}</router-link> ({{this.getReputation(post.author_reputation)}})</h2>
         <div v-if="post.depth==0">
           <h1>{{post.title}}</h1>
         </div>
         <div v-else>
           <h1>Comment</h1>
           <div v-if="post.depth > 1">
-            <a :href="'#/explorer/@'+post.parent_author+'/'+post.parent_permlink">Parent Comment</a>
+            <router-link :to="'/explorer/@'+post.parent_author+'/'+post.parent_permlink">Parent Comment</router-link>
           </div>
-          <a :href="'#/explorer/@'+post.root_author+'/'+post.root_permlink">Root Post</a>
+          <router-link :to="'/explorer/@'+post.root_author+'/'+post.root_permlink">Root Post</router-link>
         </div>
         <div class="body break-word">{{post.body}}</div>
         <h2>JSON metadata</h2>

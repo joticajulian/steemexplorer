@@ -30,7 +30,7 @@
             <td
               ><div v-bind:style="{ backgroundImage: 'url(' + wit.imgUrl + ')' }" class="image-profile mr-2"                  
               ></div
-              ><a :href="'/#/explorer/@'+wit.owner">{{ wit.owner }}</a>
+              ><router-link :to="'/explorer/@'+wit.owner">{{ wit.owner }}</router-link>
             </td>
             <td><div class="circle" :class="{enabled:wit.enabled, disabled:!wit.enabled}"></div></td>
             <td>{{ wit.running_version }}</td>
@@ -359,7 +359,7 @@ export default {
         self.saving = false
         var block = result.block_num
         var trx_id = result.id
-        self.showSuccess('Votes saved! <a href="/#/explorer/b/'+block+'/'+trx_id+'" class="alert-link" target="_blank">trx link</a>')
+        self.showSuccess('<a href="/explorer/b/'+block+'/'+trx_id+'" class="alert-link" target="_blank">Votes saved!</a>')
         self.loadVotesFromAccount()
       })
       .catch(function(error){

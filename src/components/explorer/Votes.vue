@@ -10,7 +10,7 @@
     <div class="data" v-for="(v,key,index) in votes">
       <div class="row"
         ><div class="voter">
-          <a :href="'#/@'+v.voter">@{{v.voter}}</a>
+          <router-link :to="'/@'+v.voter">@{{v.voter}}</router-link>
           <span class="reputation">({{v.rep_log}})</span>
         </div
         ><div class="weight">{{v.vote_weight}}</div

@@ -60,7 +60,7 @@
         <div class="center">
           <div v-for="(p,key,index) in pages" class="page"
             ><span v-if="p.link"
-              ><a :href="p.link">{{p.text}}</a
+              ><router-link :to="p.link">{{p.text}}</router-link
             ></span
             ><span v-else>{{p.text}}</span          
           ></div>
@@ -164,7 +164,7 @@ export default {
       result[0].profile_image = Utils.extractUrlProfileImage(result[0].json_metadata);
       result[0].cover_image = Utils.extractUrlCoverImage(result[0].json_metadata);
       for(var i=0;i<result[0].witness_votes.length;i++){
-        result[0].witness_votes[i] = {link:'#/explorer/@'+result[0].witness_votes[i] , text:result[0].witness_votes[i]};
+        result[0].witness_votes[i] = {link:'/explorer/@'+result[0].witness_votes[i] , text:result[0].witness_votes[i]};
       }
         
       this.account = result[0];
@@ -264,7 +264,7 @@ export default {
     arrayAuthorities: function(auth){
       var array = [];
       for(var i=0;i<auth.key_auths.length;i++) array.push( auth.key_auths[i][0] );
-      for(var i=0;i<auth.account_auths.length;i++) array.push( {link:'#/explorer/@'+auth.account_auths[i][0] , text:auth.account_auths[i][0]} );
+      for(var i=0;i<auth.account_auths.length;i++) array.push( {link:'/explorer/@'+auth.account_auths[i][0] , text:auth.account_auths[i][0]} );
       return array;
     }
   }

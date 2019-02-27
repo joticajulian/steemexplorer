@@ -62,9 +62,8 @@ export default {
         var auth = await self.login(self.username, self.password);
         if (auth.logged) {
           self.$store.state.auth = auth
-          self.$emit("login", auth);
-          self.$emit("close");
-
+          self.$emit("login");
+          
           //save password in the browser if the user asks for it
           /*if (self.savePassword) {
             localStorage.username = self.username;

@@ -8,12 +8,12 @@
           <img class="card-img-top" src="">
           <div class="card-body row">
             <div class="col-4 text-center">
-              <a href="#/faq" class="text-primary"><font-awesome-icon icon="question-circle" size="4x"/></a>
+              <router-link to="/faq" class="text-primary"><font-awesome-icon icon="question-circle" size="4x"/></router-link>
             </div>
             <div class="col-8">
               <h5 class="card-title">FAQs</h5>
               <p class="card-text">Find out more about the Blockchain based EFTG project. Get more details about the existing functionalities.</p>
-              <a href="#/faq" class="btn btn-primary">Open</a>
+              <router-link to="/faq" class="btn btn-primary">Open</router-link>
             </div>        
           </div>
         </div>
@@ -21,12 +21,12 @@
           <img class="card-img-top" src="">
           <div class="card-body row">
             <div class="col-4 text-center">
-              <a href="#/oam-portal" class="text-primary"><font-awesome-icon icon="university" size="4x"/></a>
+              <router-link to="/oam-portal" class="text-primary"><font-awesome-icon icon="university" size="4x"/></router-link>
             </div>
             <div class="col-8">
               <h5 class="card-title">OAM Portal</h5>
               <p class="card-text">For Official Appointed Mechanism that handle the financial documents received from European companies.</p>
-              <a href="#/oam-portal" class="btn btn-primary">Open</a>
+              <router-link to="/oam-portal" class="btn btn-primary">Open</router-link>
             </div>
             <div class="col-12 mt-2">
               <div class="card-body text-center bg-info">
@@ -37,12 +37,12 @@
         <div class="card">
           <div class="card-body row">
             <div class="col-4 text-center">
-              <a href="#/search.html" class="text-primary"><font-awesome-icon icon="business-time" size="4x"/></a>              
+              <router-link to="/search.html" class="text-primary"><font-awesome-icon icon="business-time" size="4x"/></router-link>              
             </div>
             <div class="col-8">
               <h5 class="card-title">Investor Portal</h5>
               <p class="card-text">For investor that wants to search details and financial data of the European companies.</p>
-              <a href="#/search.html" class="btn btn-primary">Open</a>              
+              <router-link to="/search.html" class="btn btn-primary">Open</router-link>              
             </div>
             <div class="col-12 mt-2">
               <div class="card-body text-center bg-info">
