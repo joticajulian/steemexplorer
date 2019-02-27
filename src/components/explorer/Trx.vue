@@ -56,7 +56,7 @@
         <router-link :to="'/explorer/@'+op.owner">{{op.owner}}</router-link> update witness. Creation fee: {{op.props.account_creation_fee}}
       </div>
       <div v-else-if="typeOp == 'account_witness_vote'">
-        <router-link :to="'/explorer/@'+op.account">{{op.account}}</router-link> <span v-if="op.approve">approve</span><span v-else>unapprove</span> witness <router-link :to="'/explorer/@'+op.witness">{{op.witness}}</router-link>
+        <router-link :to="'/explorer/@'+op.account">{{op.account}}</router-link><span v-if="op.approve"> approve</span><span v-else> unapprove</span> witness <router-link :to="'/explorer/@'+op.witness">{{op.witness}}</router-link>
       </div>
       <div v-else-if="typeOp == 'claim_reward_balance'">
         <router-link :to="'/explorer/@'+op.account">{{op.account}}</router-link> claim reward: {{op.reward_sbd}}, {{op.reward_steem}}, {{this.vests2sp(op.reward_vests)}}
