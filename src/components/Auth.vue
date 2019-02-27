@@ -17,8 +17,8 @@
       </div>
       <div class="row">
         <div class="form-group col-md-12 align-bottom" style="padding-top: 8px;">
-          <button @click="try_to_login" class="btn btn-primary eftg-btn-primary">Login</button>
-          <button @click="close"  class="btn btn-secondary eftg-btn-primary">Cancel</button>
+          <button @click="try_to_login" class="btn btn-primary mr-2">Login</button>
+          <button @click="close"  class="btn btn-secondary">Cancel</button>
         </div>
       </div>
       <div v-if="error"  class="alert alert-danger" role="alert">{{errorText}}</div>   

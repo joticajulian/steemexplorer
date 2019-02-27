@@ -48,7 +48,7 @@
             </fieldset>
             <fieldset class="form-group col-md-3 align-bottom" style="padding-top: 8px;">
               <br/>
-              <button type="submit" class="btn btn-primary eftg-btn-primary" v-on:click="submit">Submit</button>
+              <button type="submit" class="btn btn-primary eftg-btn-primary mr-2" v-on:click="submit">Submit</button>
               <button type="button" class="btn btn-secondary eftg-btn-secondary" v-on:click="clear">Clear</button>
             </fieldset>
           </div>

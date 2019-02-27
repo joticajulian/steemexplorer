@@ -55,7 +55,7 @@
       </table>
       <div class="row mt-4">
         <div class="form-group col-12">
-          <button @click="save" class="btn btn-primary btn-large" :disabled="saving"><div v-if="saving" class="mini loader"></div>Save</button>
+          <button @click="save" class="btn btn-primary btn-large mr-2" :disabled="saving"><div v-if="saving" class="mini loader"></div>Save</button>
           <button @click="reset" class="btn btn-secondary btn-large">Reset</button>
         </div>            
       </div>
