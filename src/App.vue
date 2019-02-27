@@ -3,7 +3,7 @@
     <router-view style="min-height:90vh;">
     </router-view>
     <FooterEFTG></FooterEFTG>
-  </div>  
+  </div>
 </template>
 
 <script>
