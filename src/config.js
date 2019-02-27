@@ -1,11 +1,32 @@
+const config = {
+  'production': {
+    RPC_NODE : { url: "https://api.eftg.eu" },
+    IMAGE_HOSTER : { url: "https://cdn.blkcc.xyz" },
+    ELASTIC : { url: "https://api.eftg.eu/pulsar/" },
+    CDN : { url: "https://cdn.blkcc.xyz/" }
+  },
+  'acceptance': {
+    RPC_NODE : { url: "https://api.blkcc.xyz" },
+    IMAGE_HOSTER : { url: "https://cdn.blkcc.xyz" },
+    ELASTIC : { url: "https://api.blkcc.xyz/pulsar/" },
+    CDN : { url: "https://cdn.blkcc.xyz/" }
+  },
+  'development': {
+    RPC_NODE : { url: "https://apidev.blkcc.xyz" },
+    IMAGE_HOSTER : { url: "https://cdn.blkcc.xyz" },
+    ELASTIC : { url: "https://api.blkcc.xyz/pulsar/" },
+    CDN : { url: "https://cdn.blkcc.xyz/" }
+  }
+}
+
+const environment = process.env.NODE_ENV || 'development';
+const finalConfig = config[environment];
+
 const SBD = "EUR";
 const STEEM = "EFTG";
 const SP = "SP";
 const VESTS = "VESTS";
-const RPC_NODE = { url: "https://apidev.blkcc.xyz" };
-const IMAGE_HOSTER = { url: "https://cdn.blkcc.xyz" };
-const ELASTIC = { url: "https://api.blkcc.xyz/pulsar/" };
-const CDN = { url: "https://cdn.blkcc.xyz/" };
+
 const HARDFORK = 19
 
 const EFTG_HARDFORK_0_1 = false
@@ -30,16 +51,18 @@ const MAP = {
 const APP_VERSION = "pulsar/0.0.2";
 
 export default {
+
+  RPC_NODE: finalConfig.RPC_NODE,
+  IMAGE_HOSTER: finalConfig.IMAGE_HOSTER,
+  ELASTIC: finalConfig.ELASTIC,
+  CDN: finalConfig.CDN,
+  
   SBD: SBD,
   STEEM: STEEM,
   SP: SP,
   VESTS: VESTS,
-  RPC_NODE: RPC_NODE,
-  IMAGE_HOSTER: IMAGE_HOSTER,
   HARDFORK: HARDFORK,
-  ELASTIC: ELASTIC,
-  CDN: CDN,
-
+  
   EFTG_HARDFORK_0_1,
 
   STEEM_ADDRESS_PREFIX: STEEM_ADDRESS_PREFIX,
