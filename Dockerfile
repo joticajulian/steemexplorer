@@ -14,6 +14,8 @@ ENV NODE_ENV=$NODE_ENV
 RUN npm run build
 
 FROM nginx:alpine as release
+COPY default.conf /etc/nginx/conf.d/
+
 WORKDIR /usr/share/nginx/html
 
 ### Copy static files to final stage image
