@@ -121,10 +121,7 @@ export default {
     let self = this     
     this.client = new Client(Config.RPC_NODE.url);
     this.client.database.getDynamicGlobalProperties().then(function(result){
-      console.log("dinamic global properties")
-      console.log(result)
       self.last_block_num = result.head_block_number;
-      console.log(self.last_block_num)
       self.first_time = false;
     })      
   },
@@ -224,7 +221,7 @@ export default {
       }).addTo(this.map);
     
       // Taking the data from assets/seednodes.json
-      this.witnesses = seednodes;
+      this.witnesses = seednodes.slice()
       this.witnesses.forEach(function(wit){
         var redIcon = self.getIcon(wit.owner, 'offline')
         
@@ -238,15 +235,9 @@ export default {
       
       // Taking the data from the blockchain (location stored in metadata)      
       var result = await this.client.database.call('get_witnesses_by_vote', ['',Config.MAP.TOP_WITNESSES]);
-      
-      /*steem.api.getWitnessesByVote('',Config.MAP.TOP_WITNESSES, function(err, result){
-        if (err || !result) {
-          console.log("error loading witnesses, try again");
-          return;
-        }*/
-    
+
       var names = [];
-    
+
       // add new data to witnesses
       result.forEach(function(wit){
         names.push(wit.owner);
