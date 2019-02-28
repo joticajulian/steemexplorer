@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "serve-blkcc": "vue-cli-service serve --public pulsar.dev.blkcc.xyz --host 0.0.0.0",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
