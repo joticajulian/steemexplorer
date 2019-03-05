@@ -132,7 +132,7 @@ export default {
   },
   methods: {
     link: function(author, permlink){
-      return '#/explorer/@'+author+'/'+permlink;
+      return '/explorer/@'+author+'/'+permlink;
     },
     linkCut: function(author, permlink){
       var l = '@'+author+'/'+permlink;

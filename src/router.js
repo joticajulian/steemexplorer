@@ -8,6 +8,7 @@ import Faq from '@/components/Faq'
 import Contact from '@/components/Contact'
 import Password from '@/components/Password'
 import Witnesses from '@/components/Witnesses'
+import Page404 from '@/components/Page404'
 
 // Explorer
 import HomeExplorer from '@/components/explorer/Home'
@@ -98,6 +99,10 @@ export default new Router({
       path: '/explorer/b/:id/:tx',
       name: 'Transaction',
       component: TransactionExplorer
+    },{
+      path: '*',
+      name: 'Page404',
+      component: Page404
     }
   ]
 })
