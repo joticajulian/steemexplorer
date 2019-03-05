@@ -1,6 +1,7 @@
 <script>
 import Config from "@/config.js";
 import axios from "axios";
+import { Client } from 'eftg-dsteem'
 import accounting from 'accounting';
 import moment from 'moment';
 import Vue from 'vue';
@@ -57,9 +58,20 @@ export default {
   },
   data () {
     return {
-      vuetableData: null
+      vuetableData: null,
+      client: null,
+      subclassList: [],
+      permissions: [],
     }
   },
+
+  created () {
+    let opts = {} ;
+    opts.addressPrefix = Config.STEEM_ADDRESS_PREFIX
+    if(Config.STEEM_CHAIN_ID) opts.chainId = Config.STEEM_CHAIN_ID
+    this.client = new Client(Config.RPC_NODE.url, opts)
+  },
+
   mounted () {
     this.$events.$on('filter-set', eventData => this.onFilterSet(eventData))
     this.$events.$on('filter-reset', e => this.onFilterReset())
@@ -333,7 +345,8 @@ export default {
       this.searchInputData = searchInputData;
       this.vuetableData.pagination = vuetableData.pagination;
     },
-    onLoadSuccess(data = null) {
+
+    async onLoadSuccess(data = null) {
       const self = this;
       const ignoreList = ['Bogdan', 'Bogdan1'];
       const appVersions = ['pulsar/0.0.1', 'pulsar/0.0.2', 'sendjs/0.0.1'];
@@ -354,52 +367,113 @@ export default {
       };
       const dictionary = this.dictionary;
       const url = this.elasticApiUrl + '?pretty=true&size=100&q=*:*';
-      axios.get(url).then(function(result) {
-        result.data.hits.hits.forEach((item) => {
-          if(appVersions.indexOf(item._source.app) !== -1 && ignoreList.indexOf(item._source.issuer_name) === -1) {
-            const itemData = item._source;
-            itemData._id = item._id;
-            itemData.issuer_name_identifier = item._source.issuer_name + '<br/>' + item._source.identifier_value;
-            itemData.document_url = '#';
-            if(typeof item._source.link !== 'undefined') {
-              itemData.document_url = item._source.link;
-              itemData.revised = item._source.type_submission === 'revised' ? true : false;
-              if(itemData.document_url.length > 0) {
-                itemData.document_url = itemData.document_url.replace('[[pdf link]](', '');
-                itemData.document_url = itemData.document_url.replace(')', '');
+
+      var account = null
+      if(Config.EFTG_HARDFORK_0_1) {
+        this.subclassList = []
+        this.dictionary.docClassSubclass.forEach(function(c){ self.subclassList.push(c.id) })
+        
+        if (this.$store.state.auth.logged) {
+          var username = self.$store.state.auth.user;
+          var accounts = await self.client.database.getAccounts([username])
+          var account = accounts[0]
+          var reporter_names = []
+          this.permissions = []
+
+          for(var i in account.subscriptions) {
+            if( !reporter_names.find(function(name){ return name == account.subscriptions[i].reporter }) )
+              reporter_names.push( account.subscriptions[i].reporter )
+          }
+
+          var owners = await self.client.database.call('get_owners',[reporter_names])
+          console.log('owners: ')
+          console.log(owners)
+
+          for(var i in account.subscriptions) {
+            var subscription = account.subscriptions[i]
+            for(var j in owners) {
+              var plan = owners[j].plans.find(function(p){ return p.owner==subscription.reporter && p.name==subscription.plan })
+              if( plan ) {
+                var permission = this.permissions.find( function(perm){ return perm.reporter==plan.owner } )
+                if( plan.id_items.length == 0 ) {
+                  // no id_items means right to access all subclasses
+                  if( permission ) {
+                    permission.subclasses = this.subclassList.slice()
+                  } else {
+                    this.permissions.push({
+                      reporter: plan.owner,
+                      subclasses: this.subclassList.slice()
+                    })
+                  }
+                } else {
+                  if( permission ) {
+                    permission.subclasses.push(...plan.id_items)
+                  } else {
+                    this.permissions.push({
+                      reporter: plan.owner,
+                      subclasses: plan.id_items.slice()
+                    })
+                  }
+                }
+                break
               }
             }
-            itemData.subclass_label = itemData.subclass;
-            if(typeof dictionary.docClassLabels[itemData.subclass + ""] !== 'undefined') {
-              itemData.subclass_label = dictionary.docClassLabels[itemData.subclass + ""];
-            }
-            searchResultData.push(itemData);
-          }
-        });
-
-        const sortField = self.sortOrder[0].sortField;
-        const sortDirection = self.sortOrder[0].direction;
-        searchResultData.sort((a, b) => {
-          if(a[sortField] > b[sortField]) return sortDirection === 'desc' ? -1 : 1;
-          else if(a.storage_date < b.storage_date) return sortDirection === 'desc' ? 1 : -1;
-          else return 0;
-        });
-
-        for (var i = 0; i < searchResultData.length; i++) {
-          if (distinct.indexOf(searchResultData[i].identifier_value) === -1) {
-            vuetableData.data.push(searchResultData[i]);
           }
         }
+      }
 
-        self.$refs.vuetable.setData(vuetableData);
-        self.$refs.pagination.setPaginationData(vuetableData.pagination);
-        self.$refs.paginationInfo.setPaginationData(vuetableData.pagination);
-        self.vuetableData = vuetableData;
+      var result = await axios.get(url)
 
-        self.refresh();
-      }).catch(function(error){
-        console.log(error);
+      result.data.hits.hits.forEach((item) => {
+        if(appVersions.indexOf(item._source.app) !== -1 && ignoreList.indexOf(item._source.issuer_name) === -1) {
+          const itemData = item._source;
+          itemData._id = item._id;
+          itemData.issuer_name_identifier = item._source.issuer_name + '<br/>' + item._source.identifier_value;
+          itemData.document_url = '#';
+          if(typeof item._source.link !== 'undefined') {
+            itemData.document_url = item._source.link;
+            itemData.revised = item._source.type_submission === 'revised' ? true : false;
+            if(itemData.document_url.length > 0) {
+              itemData.document_url = itemData.document_url.replace('[[pdf link]](', '');
+              itemData.document_url = itemData.document_url.replace(')', '');
+            }
+          }
+          itemData.subclass_label = itemData.subclass;
+          if(typeof dictionary.docClassLabels[itemData.subclass + ""] !== 'undefined') {
+            itemData.subclass_label = dictionary.docClassLabels[itemData.subclass + ""];
+          }
+          itemData.has_permission = true
+          if(Config.EFTG_HARDFORK_0_1) {
+            if(!this.hasPermission(itemData.author, itemData.subclass)) {
+              itemData.document_url = ''
+              itemData.link = ''
+              itemData.has_permission = false
+            }
+          }
+          searchResultData.push(itemData);
+        }
       });
+
+      const sortField = self.sortOrder[0].sortField;
+      const sortDirection = self.sortOrder[0].direction;
+      searchResultData.sort((a, b) => {
+        if(a[sortField] > b[sortField]) return sortDirection === 'desc' ? -1 : 1;
+        else if(a.storage_date < b.storage_date) return sortDirection === 'desc' ? 1 : -1;
+        else return 0;
+      });
+
+      for (var i = 0; i < searchResultData.length; i++) {
+        if (distinct.indexOf(searchResultData[i].identifier_value) === -1) {
+          vuetableData.data.push(searchResultData[i]);
+        }
+      }
+
+      self.$refs.vuetable.setData(vuetableData);
+      self.$refs.pagination.setPaginationData(vuetableData.pagination);
+      self.$refs.paginationInfo.setPaginationData(vuetableData.pagination);
+      self.vuetableData = vuetableData;
+
+      self.refresh();
     },
     onPaginationData (paginationData) {
       if(paginationData.pagination !== undefined) {
@@ -428,6 +502,19 @@ export default {
     onFilterReset () {
       delete this.appendParams.filter
       Vue.nextTick( () => this.$refs.vuetable.refresh() )
+    },
+
+    hasPermission(owner,subclass) {
+      if(subclass < 400) return true
+
+      var found = this.permissions.find(function(perm){ 
+        return ( 
+          perm.reporter==owner &&
+          perm.subclasses.find(function(subc){ return subc==subclass })
+        ) 
+      })
+      if(found) return true
+      return false
     }
   }
 }

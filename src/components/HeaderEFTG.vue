@@ -64,6 +64,9 @@
             <router-link to="/search.html" class="nav-item nav-link">Investor Portal</router-link>
           </li>
           <li class="nav-item">
+            <router-link to="/witnesses" class="nav-item nav-link">Witnesses</router-link>
+          </li>
+          <li class="nav-item">
             <router-link to="/faq" class="nav-item nav-link">FAQ</router-link>
           </li>
           <li class="nav-item">

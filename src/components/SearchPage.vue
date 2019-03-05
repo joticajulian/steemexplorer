@@ -1,6 +1,6 @@
 <template>
   <div>
-    <HeaderEFTG portal="Investor Portal" ref="headerEFTG"></HeaderEFTG>
+    <HeaderEFTG portal="Investor Portal" :showAuth="true" ref="headerEFTG"></HeaderEFTG>
     <div> <!--<form>-->
     <div class="container">
       <h2 class="text-center">European Financial Transparency Gateway</h2>
@@ -93,12 +93,17 @@
     >
       <template slot="actions" slot-scope="props">
         <div class="custom-actions">
-          <div class="row">
+          <div v-if="props.rowData.has_permission" class="row">
             <div class="col-md-6">
               <button class="btn ui basic button" @click="onAction('view-item', props.rowData, props.rowIndex)" v-b-modal.mdPdfPreview><font-awesome-icon :icon="faEye" /></button>
             </div>
             <div class="col-md-6">
               <button class="btn ui basic button" @click="onAction('download-item', props.rowData, props.rowIndex)"><font-awesome-icon :icon="faDownload" /></button>
+            </div>
+          </div>
+          <div v-else class="row">
+            <div class="col-12">
+              <button class="btn btn-secondary">Subscribe</button>
             </div>
           </div>
         </div>
