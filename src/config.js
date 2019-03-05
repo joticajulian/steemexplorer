@@ -13,8 +13,8 @@ const config = {
   },
   'development': {
     RPC_NODE : { url: "https://apidev.blkcc.xyz" },
-    IMAGE_HOSTER : { url: "https://cdn.blkcc.xyz" },
-    ELASTIC : { url: "https://api.blkcc.xyz/pulsar/" },
+    IMAGE_HOSTER : { url: "https://cdn.dev.blkcc.xyz" },
+    ELASTIC : { url: "https://apidev.blkcc.xyz/pulsar/" },
     CDN : { url: "https://cdn.blkcc.xyz/" }
   }
 }
