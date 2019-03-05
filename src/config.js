@@ -7,15 +7,15 @@ const config = {
   },
   'acceptance': {
     RPC_NODE : { url: "https://api.blkcc.xyz" },
-    IMAGE_HOSTER : { url: "https://cdn.blkcc.xyz" },
+    IMAGE_HOSTER : { url: "https://cdn.acc.blkcc.xyz" },
     ELASTIC : { url: "https://api.blkcc.xyz/pulsar/" },
-    CDN : { url: "https://cdn.blkcc.xyz/" }
+    CDN : { url: "https://cdn.acc.blkcc.xyz/" }
   },
   'development': {
     RPC_NODE : { url: "https://apidev.blkcc.xyz" },
     IMAGE_HOSTER : { url: "https://cdn.dev.blkcc.xyz" },
     ELASTIC : { url: "https://apidev.blkcc.xyz/pulsar/" },
-    CDN : { url: "https://cdn.blkcc.xyz/" }
+    CDN : { url: "https://cdn.dev.blkcc.xyz/" }
   }
 }
 
