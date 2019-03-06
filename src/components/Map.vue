@@ -127,23 +127,39 @@ export default {
   },
   
   mounted() {
-    this.fetchWitnesses()
-    .catch(function(error){
-      console.log('Error in fetchWitnesses')
-      console.log(error)
-    })
-    
-    //this.fetchState()
-    this.ints.blocks = setInterval(this.fetchBlocks, 3000);
-    //this.ints.state  = setInterval(this.fetchState, 12000);
+    this.initMap()
   },
   
   beforeDestroy() {
-    clearInterval(this.ints.blocks);
-    clearInterval(this.ints.state);
+    clearInterval(this.ints.blocks)
   },
 
   methods: {
+    initMap(i = 0) {
+      var fireFetchWitnesses = false
+
+      if( this.dictionary.loaded.homeMemberStates ){
+        fireFetchWitnesses = true
+      } else {
+        if( i < 30 ) {
+          let self = this
+          setTimeout( function(){self.initMap(i+1)} , 100 )
+        } else {
+          console.log('Problems loading home member states')
+          fireFetchWitnesses = true
+        }
+      }
+
+      if(fireFetchWitnesses){
+        this.fetchWitnesses()
+        .catch(function(error){
+          console.log('Error in fetchWitnesses')
+          console.log(error)
+        })
+
+        this.ints.blocks = setInterval(this.fetchBlocks, 3000);
+      }
+    },
   
     isOAM(wit) {
       if(wit.length < 8) return false

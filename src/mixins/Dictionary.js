@@ -28,6 +28,12 @@ export default {
           docClassTags: null,
           languages: null,
           identifiers: null
+        },
+        loaded:{
+          homeMemberStates: false,
+          docClasses: false,
+          languages: false,
+          identifiers: false
         }
       },
       serverConfig: {
@@ -45,6 +51,7 @@ export default {
     axios.get(Config.CDN.url + 'home_member_states.json').then(function(result){
       self.dictionary.homeMemberStates = result.data;
       self.dictionary.homeMemberStates.forEach(homeMemberState => homeMemberState.label = homeMemberState.code + ' - ' + homeMemberState.country);
+      self.dictionary.loaded.homeMemberStates = true
     }).catch(function(error){
       self.dictionary.error.homeMemberStates = error;    
     });
@@ -53,6 +60,7 @@ export default {
     // JSON Languages
     axios.get(Config.CDN.url + 'lang.json').then(function(result){
       self.dictionary.languages = result.data;
+      self.dictionary.loaded.languages = true
     }).catch(function(error){
       self.dictionary.error.languages = error;
     });      
@@ -60,7 +68,8 @@ export default {
     
     // JSON Identifiers
     axios.get(Config.CDN.url + 'identifier.json').then(function(result){
-      self.dictionary.identifiers = result.data;      
+      self.dictionary.identifiers = result.data;
+      self.dictionary.loaded.identifiers = true
     }).catch(function(error){
       self.dictionary.error.identifiers = error;              
     });
@@ -92,13 +101,14 @@ export default {
           self.dictionary.docClassLabels[subc.id+""] = subc.label; 
         }
       }
+      self.dictionary.loaded.docClasses = true
     }).catch(function(error){
       self.dictionary.error.docClasses = error;        
     });
     
     // JSON Server config
     axios.get(Config.CDN.url + 'server_config.json').then(function(result){
-      self.serverConfig = result.data;      
+      self.serverConfig = result.data;
     }).catch(function(error){
       console.log('error getting server config')
       console.log(error)              
