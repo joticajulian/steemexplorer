@@ -1,6 +1,6 @@
 <template>
   <div>
-    <HeaderEFTG portal="Investor Portal" :showAuth="true" ref="headerEFTG"></HeaderEFTG>
+    <HeaderEFTG portal="Investor Portal" :showAuth="true" ref="headerEFTG" v-on:login="onLogin" v-on:logout="onLogout"></HeaderEFTG>
     <div> <!--<form>-->
     <div class="container">
       <h2 class="text-center">European Financial Transparency Gateway</h2>
@@ -103,12 +103,21 @@
           </div>
           <div v-else class="row">
             <div class="col-12">
-              <button class="btn btn-secondary">Subscribe</button>
+              <button class="btn btn-secondary" @click="openSubscription(props.rowData.author, props.rowData.subclass)">Subscribe</button>
             </div>
           </div>
         </div>
       </template>
       </search-vuetable>
+      <b-modal ref="modalSubscribe" hide-footer title="Subscribe">
+        <p>In order to access this document, please contact your local OAM</p>
+        <div class="row">
+          <div class="form-group col-12 align-bottom mt-2">
+            <button class="btn btn-primary mr-2">Subscribe</button>
+            <button @click="closeSubscription" class="btn btn-secondary">Cancel</button>
+          </div>
+        </div>
+      </b-modal>
     </div>
     <div class="container">
       <div class="eftg-footnotes">
@@ -261,6 +270,22 @@ export default {
     },
     hideModal () {
       this.$root.$emit('bv::hide::modal','mdPdfPreview')
+    },
+
+    openSubscription(owner, subclass) {
+      this.$refs.modalSubscribe.show()
+    },
+
+    closeSubscription() {
+      this.$refs.modalSubscribe.hide()
+    },
+
+    onLogin () {
+      this.$refs.searchvuetable.onLogin()
+    },
+
+    onLogout () {
+      this.$refs.searchvuetable.onLogout()
     },
   }
 };

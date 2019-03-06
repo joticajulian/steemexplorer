@@ -60,7 +60,6 @@ export default {
     return {
       vuetableData: null,
       client: null,
-      subclassList: [],
       permissions: [],
     }
   },
@@ -368,60 +367,6 @@ export default {
       const dictionary = this.dictionary;
       const url = this.elasticApiUrl + '?pretty=true&size=100&q=*:*';
 
-      var account = null
-      if(Config.EFTG_HARDFORK_0_1) {
-        this.subclassList = []
-        this.dictionary.docClassSubclass.forEach(function(c){ self.subclassList.push(c.id) })
-        
-        if (this.$store.state.auth.logged) {
-          var username = self.$store.state.auth.user;
-          var accounts = await self.client.database.getAccounts([username])
-          var account = accounts[0]
-          var reporter_names = []
-          this.permissions = []
-
-          for(var i in account.subscriptions) {
-            if( !reporter_names.find(function(name){ return name == account.subscriptions[i].reporter }) )
-              reporter_names.push( account.subscriptions[i].reporter )
-          }
-
-          var owners = await self.client.database.call('get_owners',[reporter_names])
-          console.log('owners: ')
-          console.log(owners)
-
-          for(var i in account.subscriptions) {
-            var subscription = account.subscriptions[i]
-            for(var j in owners) {
-              var plan = owners[j].plans.find(function(p){ return p.owner==subscription.reporter && p.name==subscription.plan })
-              if( plan ) {
-                var permission = this.permissions.find( function(perm){ return perm.reporter==plan.owner } )
-                if( plan.id_items.length == 0 ) {
-                  // no id_items means right to access all subclasses
-                  if( permission ) {
-                    permission.subclasses = this.subclassList.slice()
-                  } else {
-                    this.permissions.push({
-                      reporter: plan.owner,
-                      subclasses: this.subclassList.slice()
-                    })
-                  }
-                } else {
-                  if( permission ) {
-                    permission.subclasses.push(...plan.id_items)
-                  } else {
-                    this.permissions.push({
-                      reporter: plan.owner,
-                      subclasses: plan.id_items.slice()
-                    })
-                  }
-                }
-                break
-              }
-            }
-          }
-        }
-      }
-
       var result = await axios.get(url)
 
       result.data.hits.hits.forEach((item) => {
@@ -441,14 +386,6 @@ export default {
           itemData.subclass_label = itemData.subclass;
           if(typeof dictionary.docClassLabels[itemData.subclass + ""] !== 'undefined') {
             itemData.subclass_label = dictionary.docClassLabels[itemData.subclass + ""];
-          }
-          itemData.has_permission = true
-          if(Config.EFTG_HARDFORK_0_1) {
-            if(!this.hasPermission(itemData.author, itemData.subclass)) {
-              itemData.document_url = ''
-              itemData.link = ''
-              itemData.has_permission = false
-            }
           }
           searchResultData.push(itemData);
         }
@@ -473,8 +410,11 @@ export default {
       self.$refs.paginationInfo.setPaginationData(vuetableData.pagination);
       self.vuetableData = vuetableData;
 
+      await this.onLogin()
+
       self.refresh();
     },
+
     onPaginationData (paginationData) {
       if(paginationData.pagination !== undefined) {
         //this.$refs.pagination.setPaginationData(paginationData.pagination)
@@ -502,6 +442,85 @@ export default {
     onFilterReset () {
       delete this.appendParams.filter
       Vue.nextTick( () => this.$refs.vuetable.refresh() )
+    },
+
+    async onLogin () {
+      await this.loadPermissions()
+      this.handlePermissions()
+      this.refresh()
+    },
+
+    onLogout () {
+      this.permissions = []
+      this.handlePermissions()
+      this.refresh()
+    },
+
+    async loadPermissions() {
+      if(!Config.EFTG_HARDFORK_0_1) return
+
+      this.permissions = []
+
+      if (!this.$store.state.auth.logged) return
+
+      var subclassList = []
+      this.dictionary.docClassSubclass.forEach(function(c){ subclassList.push(c.id) })
+
+      var username = this.$store.state.auth.user;
+      var accounts = await this.client.database.getAccounts([username])
+      var account = accounts[0]
+      var reporter_names = []
+        
+      for(var i in account.subscriptions) {
+        if( !reporter_names.find(function(name){ return name == account.subscriptions[i].reporter }) )
+          reporter_names.push( account.subscriptions[i].reporter )
+      }
+
+      var owners = await this.client.database.call('get_owners',[reporter_names])
+
+      for(var i in account.subscriptions) {
+        var subscription = account.subscriptions[i]
+        for(var j in owners) {
+          var plan = owners[j].plans.find(function(p){ return p.owner==subscription.reporter && p.name==subscription.plan })
+          if( !plan ) continue
+
+          var permission = this.permissions.find( function(perm){ return perm.reporter==plan.owner } )
+          if( plan.id_items.length == 0 ) {
+            // no id_items means right to access all subclasses
+            if( permission ) {
+              permission.subclasses = subclassList.slice()
+            } else {
+              this.permissions.push({
+                reporter: plan.owner,
+                subclasses: subclassList.slice()
+              })
+            }
+          } else {
+            if( permission ) {
+              permission.subclasses.push(...plan.id_items)
+            } else {
+              this.permissions.push({
+                reporter: plan.owner,
+                subclasses: plan.id_items.slice()
+              })
+            }
+          }
+          break
+        }
+      }
+    },
+    
+    handlePermissions () {
+      for (var i in this.vuetableData.data) {
+        var itemData = this.vuetableData.data[i]
+        itemData.has_permission = true
+        if(Config.EFTG_HARDFORK_0_1) {
+          if(!this.hasPermission(itemData.author, itemData.subclass)) {
+            itemData.has_permission = false
+          }
+        }
+        this.$set(this.vuetableData.data, i, itemData )
+      }
     },
 
     hasPermission(owner,subclass) {
