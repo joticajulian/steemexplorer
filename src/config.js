@@ -3,19 +3,22 @@ const config = {
     RPC_NODE : { url: "https://api.eftg.eu" },
     IMAGE_HOSTER : { url: "https://cdn.blkcc.xyz" },
     ELASTIC : { url: "https://api.eftg.eu/pulsar/" },
-    CDN : { url: "https://cdn.blkcc.xyz/" }
+    CDN : { url: "https://cdn.blkcc.xyz/" },
+    EFTG_HARDFORK_0_1 : false
   },
   'acceptance': {
     RPC_NODE : { url: "https://api.blkcc.xyz" },
     IMAGE_HOSTER : { url: "https://cdn.acc.blkcc.xyz" },
     ELASTIC : { url: "https://api.blkcc.xyz/pulsar/" },
-    CDN : { url: "https://cdn.acc.blkcc.xyz/" }
+    CDN : { url: "https://cdn.acc.blkcc.xyz/" },
+    EFTG_HARDFORK_0_1 : false
   },
   'development': {
     RPC_NODE : { url: "https://apidev.blkcc.xyz" },
     IMAGE_HOSTER : { url: "https://cdn.dev.blkcc.xyz" },
     ELASTIC : { url: "https://apidev.blkcc.xyz/pulsar/" },
-    CDN : { url: "https://cdn.dev.blkcc.xyz/" }
+    CDN : { url: "https://cdn.dev.blkcc.xyz/" },
+    EFTG_HARDFORK_0_1 : true
   }
 }
 
@@ -28,8 +31,6 @@ const SP = "SP";
 const VESTS = "VESTS";
 
 const HARDFORK = 19
-
-const EFTG_HARDFORK_0_1 = false
 
 const STEEM_ADDRESS_PREFIX = "EUR";
 const STEEM_100_PERCENT = 10000;
@@ -63,7 +64,7 @@ export default {
   VESTS: VESTS,
   HARDFORK: HARDFORK,
   
-  EFTG_HARDFORK_0_1,
+  EFTG_HARDFORK_0_1: finalConfig.EFTG_HARDFORK_0_1,
 
   STEEM_ADDRESS_PREFIX: STEEM_ADDRESS_PREFIX,
   STEEM_100_PERCENT: STEEM_100_PERCENT,

@@ -271,10 +271,10 @@ export default {
   ],
   
   created() {
-    let opts = {} ;
+    let opts = {}
     opts.addressPrefix = Config.STEEM_ADDRESS_PREFIX
-    if(Config.STEEM_CHAIN_ID) opts.chainId = Config.STEEM_CHAIN_ID
-    this.client = new Client(Config.RPC_NODE.url, opts);
+    if(process.env.VUE_APP_CHAIN_ID) opts.chainId = process.env.VUE_APP_CHAIN_ID
+    this.client = new Client(Config.RPC_NODE.url, opts)
   
     //validate fields while typing
     this.debounced_validateIssuerName       = debounce(this.validateIssuerName      , 300);

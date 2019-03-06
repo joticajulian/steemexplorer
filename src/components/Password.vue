@@ -136,7 +136,10 @@ export default {
   },
   
   created() {
-    this.client = new Client(Config.RPC_NODE.url);
+    let opts = {}
+    opts.addressPrefix = Config.STEEM_ADDRESS_PREFIX
+    if(process.env.VUE_APP_CHAIN_ID) opts.chainId = process.env.VUE_APP_CHAIN_ID
+    this.client = new Client(Config.RPC_NODE.url, opts)
    
     //validate current password
     this.debounced_validateCurrentPassword = debounce(this.validateCurrentPassword, 300);
