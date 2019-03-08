@@ -27,7 +27,7 @@ const finalConfig = config[environment];
 
 const SBD = "EUR";
 const STEEM = "EFTG";
-const SP = "SP";
+const SP = "EFTG-Power";
 const VESTS = "VESTS";
 
 const HARDFORK = 19
@@ -49,7 +49,7 @@ const MAP = {
   INI_ZOOM : 4 ,
 }
 
-const APP_VERSION = "pulsar/0.0.2";
+const APP_VERSION = "pulsar/1.0.0";
 
 export default {
 

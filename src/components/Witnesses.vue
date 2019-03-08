@@ -11,6 +11,7 @@
           <tr class="table-primary">
             <th scope="col">#</th>
             <th scope="col">Witness</th>
+            <th scope="col">EFTG Power</th>
             <th scope="col">Enabled</th>
             <th scope="col">Version</th>
             <th scope="col">Approval</th>
@@ -32,6 +33,7 @@
               ></div
               ><router-link :to="'/explorer/@'+wit.owner">{{ wit.owner }}</router-link>
             </td>
+            <td>{{ wit.steem_power }}</td>
             <td><div class="circle" :class="{enabled:wit.enabled, disabled:!wit.enabled}"></div></td>
             <td>{{ wit.running_version }}</td>
             <td>{{ wit.votes_mv }}</td>
@@ -67,12 +69,13 @@
 </template>
 
 <script>
-import debounce from "lodash.debounce";
+import debounce from 'lodash.debounce'
 import { Client } from 'eftg-dsteem'
 
-import Config from "@/config.js";
-import Utils from "@/js/utils.js";
-import HeaderEFTG from "@/components/HeaderEFTG";
+import Config from '@/config.js'
+import Utils from '@/js/utils.js'
+import ChainProperties from '@/mixins/ChainProperties.js'
+import HeaderEFTG from '@/components/HeaderEFTG'
 
 export default {
   name: "Witnesses",
@@ -110,6 +113,9 @@ export default {
   components: {
     HeaderEFTG    
   },
+  mixins: [
+    ChainProperties
+  ],
   
   created() {
     let opts = {}
@@ -219,6 +225,7 @@ export default {
           metadata = JSON.parse(accounts[i].json_metadata)
         }catch(error){}
         wit.imgUrl = Utils.extractUrlProfileImage(metadata)
+        wit.steem_power = this.vests2sp(accounts[i].vesting_shares)
         this.witnesses.push(wit)
       }
       this.witLoaded = true
