@@ -514,10 +514,8 @@ export default {
       for (var i in this.vuetableData.data) {
         var itemData = this.vuetableData.data[i]
         itemData.has_permission = true
-        if(Config.EFTG_HARDFORK_0_1) {
-          if(!this.hasPermission(itemData.author, itemData.subclass)) {
+        if(!this.hasPermission(itemData.author, itemData.subclass)) {
             itemData.has_permission = false
-          }
         }
         this.$set(this.vuetableData.data, i, itemData )
       }
@@ -526,13 +524,15 @@ export default {
     hasPermission(owner,subclass) {
       if(subclass < 400) return true
 
-      var found = this.permissions.find(function(perm){ 
-        return ( 
-          perm.reporter==owner &&
-          perm.subclasses.find(function(subc){ return subc==subclass })
-        ) 
-      })
-      if(found) return true
+      if(Config.EFTG_HARDFORK_0_1) {
+        var found = this.permissions.find(function(perm){ 
+          return ( 
+            perm.reporter==owner &&
+            perm.subclasses.find(function(subc){ return subc==subclass })
+          ) 
+        })
+        if(found) return true
+      }
       return false
     }
   }
