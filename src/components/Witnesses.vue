@@ -3,7 +3,7 @@
     <HeaderEFTG portal="OAM Portal" :showAuth="true" ref="headerEFTG" v-on:login="onLogin" v-on:logout="onLogout"></HeaderEFTG>
     <div class="container">
       <h2>Witnesses</h2>
-      <div v-if="EFTG_HARDFORK_0_1" class="text-right mb-3">
+      <div v-if="EFTG_HARDFORK_0_1 && this.$store.state.auth.logged" class="text-right mb-3">
         <button class="btn btn-primary" @click="toggleEdit">Edit</button>
       </div>
       <table class="table">
@@ -53,7 +53,7 @@
           </tr>
         </tbody>
       </table>
-      <div class="row mt-4">
+      <div v-if="this.$store.state.auth.logged" class="row mt-4">
         <div class="form-group col-12">
           <button @click="save" class="btn btn-primary btn-large mr-2" :disabled="saving"><div v-if="saving" class="mini loader"></div>Save</button>
           <button @click="reset" class="btn btn-secondary btn-large">Reset</button>
