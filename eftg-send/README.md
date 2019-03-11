@@ -34,7 +34,7 @@ For example:
     "filename":          "../../test_files/POST_RI2017.pdf",
     "issuer_name":       "Post Telecom PSF S.A.",
     "home_member_state": "LU", // Full list of countries at https://cdn.blkcc.xyz/home_member_states.json
-    "identifier_type":   "LEI",
+    "identifier_type":   "LEI",// Full list of types at https://cdn.blkcc.xyz/identifier.json
     "identifier_value":  "549300HODTJUIOVE3C26",
     "subclass":          101, // Full list of subclasses at https://cdn.blkcc.xyz/class_subclass_tree.json
     "disclosure_date":   "2013-12-31T12:00:00",
