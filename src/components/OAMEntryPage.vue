@@ -549,7 +549,7 @@ export default {
         //var result = await self.client.broadcast.send(signed_transaction);
         var result = await self.client.broadcast.comment(post, privKey);
         
-        self.showAlert(true,'Document published! <a href="/explorer/@'+username+'/'+permlink+'" class="alert-link" target="_blank">@'+username+'/'+permlink+'</a>');
+        self.showAlert(true,'Document published! <a href="'+Config.EXPLORER+'@'+username+'/'+permlink+'" class="alert-link" target="_blank">@'+username+'/'+permlink+'</a>');
         self.lastPermlink = permlink;
         
         console.log("document publised!");

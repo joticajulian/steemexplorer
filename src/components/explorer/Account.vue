@@ -60,7 +60,7 @@
         <div class="center">
           <div v-for="(p,key,index) in pages" class="page"
             ><span v-if="p.link"
-              ><router-link :to="p.link">{{p.text}}</router-link
+              ><router-link :to="EXPLORER+p.link">{{p.text}}</router-link
             ></span
             ><span v-else>{{p.text}}</span          
           ></div>
@@ -113,7 +113,8 @@ export default {
         witness_votes: false,
         voting_manabar: false,
         transactions: false,
-      },      
+      },
+      EXPLORER: Config.EXPLORER      
     }
   },
   
@@ -164,7 +165,7 @@ export default {
       result[0].profile_image = Utils.extractUrlProfileImage(result[0].json_metadata);
       result[0].cover_image = Utils.extractUrlCoverImage(result[0].json_metadata);
       for(var i=0;i<result[0].witness_votes.length;i++){
-        result[0].witness_votes[i] = {link:'/explorer/@'+result[0].witness_votes[i] , text:result[0].witness_votes[i]};
+        result[0].witness_votes[i] = {link:'@'+result[0].witness_votes[i] , text:result[0].witness_votes[i]};
       }
         
       this.account = result[0];
@@ -226,17 +227,17 @@ export default {
       }       
         
       if(ini > 1){
-        this.pages.push({text:'1',link:'#/explorer/@'+name+'?page=1'});
+        this.pages.push({text:'1',link:'@'+name+'?page=1'});
         this.pages.push({text:'...'});
       }
         
       for(var i=ini ; i<=end ; i++){
-        this.pages.push({text:i+'',link:'#/explorer/@'+name+'?page='+i});
+        this.pages.push({text:i+'',link:'@'+name+'?page='+i});
       }
         
       if(end < total_pages){
         this.pages.push({text:'...'});
-        this.pages.push({text:total_pages+'',link:'#/explorer/@'+name+'?page='+total_pages});          
+        this.pages.push({text:total_pages+'',link:'@'+name+'?page='+total_pages});          
       }
     
       var result = await this.client.database.call('get_account_history',[name,from,limit])
@@ -264,7 +265,7 @@ export default {
     arrayAuthorities: function(auth){
       var array = [];
       for(var i=0;i<auth.key_auths.length;i++) array.push( auth.key_auths[i][0] );
-      for(var i=0;i<auth.account_auths.length;i++) array.push( {link:'/explorer/@'+auth.account_auths[i][0] , text:auth.account_auths[i][0]} );
+      for(var i=0;i<auth.account_auths.length;i++) array.push( {link:'@'+auth.account_auths[i][0] , text:auth.account_auths[i][0]} );
       return array;
     }
   }

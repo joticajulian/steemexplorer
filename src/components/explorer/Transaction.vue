@@ -6,7 +6,7 @@
       <div class="row">
         <h1 class="col-12">Transaction</h1>
         <h2 class="col-12">{{$route.params.tx}}</h2>
-        <h3 class="col-12">(Block <router-link :to="'/explorer/b/'+$route.params.id">{{$route.params.id}}</router-link>)</h3>
+        <h3 class="col-12">(Block <router-link :to="EXPLORER+'b/'+$route.params.id">{{$route.params.id}}</router-link>)</h3>
         <trx :tx="tx" class="col-12"></trx>
         <h2 class="col-12">Raw</h2>
         <card-data :data="tx"></card-data>
@@ -38,7 +38,8 @@ export default {
       },
       tx:{        
       },
-      exists: false
+      exists: false,
+      EXPLORER: Config.EXPLORER
     }
   },
   

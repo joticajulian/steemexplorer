@@ -10,7 +10,7 @@
     <div class="data" v-for="(v,key,index) in votes">
       <div class="row"
         ><div class="voter">
-          <router-link :to="'/@'+v.voter">@{{v.voter}}</router-link>
+          <router-link :to="EXPLORER+'@'+v.voter">@{{v.voter}}</router-link>
           <span class="reputation">({{v.rep_log}})</span>
         </div
         ><div class="weight">{{v.vote_weight}}</div
@@ -37,6 +37,11 @@ export default {
       type: Object,
       required: true
     },    
+  },
+  data() {
+    return {
+      EXPLORER: Config.EXPLORER
+    }
   },
   
   computed: {

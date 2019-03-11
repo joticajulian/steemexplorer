@@ -63,7 +63,7 @@
           <transition-group name="list-blocks" tag="div" class="block-group">
             <div v-for="(b,key,index) in lastBlocks" :key="b.block_num" class="list-blocks-item">
               <div class="block-left">
-                <router-link :to="'/explorer/b/'+b.block_num">{{b.block_num}}</router-link>
+                <router-link :to="EXPLORER+'b/'+b.block_num">{{b.block_num}}</router-link>
                 <span v-if="b.loaded">
                   - {{b.size_txs}} transactions
                   <span v-if="b.size_posts>0">
@@ -75,7 +75,7 @@
                 </span>
               </div
               ><div class="block-right">
-                <span class="small">witness</span><br><router-link :to="'/explorer/@'+b.witness">{{b.witness}}</router-link>
+                <span class="small">witness</span><br><router-link :to="EXPLORER+'@'+b.witness">{{b.witness}}</router-link>
               </div>
             </div>
           </transition-group>
@@ -138,6 +138,7 @@ export default {
       ints: {},
       first_time: true,
       last_block_num: 0,
+      EXPLORER: Config.EXPLORER,
     }
   },
   
