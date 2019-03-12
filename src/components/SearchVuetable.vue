@@ -347,8 +347,8 @@ export default {
 
     async onLoadSuccess(data = null) {
       const self = this;
-      const ignoreList = ['Bogdan', 'Bogdan1'];
-      const appVersions = ['pulsar/0.0.1', 'pulsar/0.0.2', 'sendjs/0.0.1'];
+      // const ignoreList = ['Bogdan', 'Bogdan1'];
+      // const appVersions = ['pulsar/0.0.1', 'pulsar/0.0.2', 'sendjs/0.0.1'];
       const distinct = [];
       const searchResultData = [];
       const vuetableData = {
@@ -370,7 +370,7 @@ export default {
       var result = await axios.get(url)
 
       result.data.hits.hits.forEach((item) => {
-        if(appVersions.indexOf(item._source.app) !== -1 && ignoreList.indexOf(item._source.issuer_name) === -1) {
+        if(/^(pulsar|sendjs)\/[0-9]\.[0-9]\.[0-9]$/.test(item._source.app)) {
           const itemData = item._source;
           itemData._id = item._id;
           itemData.issuer_name_identifier = item._source.issuer_name + '<br/>' + item._source.identifier_value;
