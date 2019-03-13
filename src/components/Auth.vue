@@ -30,6 +30,7 @@
 import { Client, PrivateKey } from 'eftg-dsteem'
 import Config from "@/config.js";
 import Utils from "@/js/utils.js";
+import SteemClient from '@/mixins/SteemClient.js'
 
 export default {
   name: "Auth",
@@ -55,6 +56,10 @@ export default {
     };
   },
 
+  mixins: [
+    SteemClient
+  ],
+
   methods: {
     try_to_login() {
       let self = this;
@@ -78,6 +83,8 @@ export default {
           self.errorText = error.message;
         }else if(error.name == 'PasswordError'){
           self.errorText = error.message;
+        }else if(error.name === 'RPCError'){
+          self.errorText = error.message
         }else {
           self.errorText = 'Password format mismatch';        
         }                
@@ -96,9 +103,10 @@ export default {
       }
       
       // Check if the user exists      
-      var client = new Client(Config.RPC_NODE.url);
-      const accounts = await client.database.getAccounts([_username]);
-      if (accounts.length === 0){        
+      const accounts = await this.steem_database_call('get_accounts',[[_username]])
+      console.log('we continue after steem database call. response:')
+      console.log(accounts)
+      if (accounts.length == 0){        
         var e = new Error("User @" + _username + " does not exists");
         e.name = "UserError";
         throw e;

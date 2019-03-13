@@ -1,23 +1,29 @@
 const config = {
   'production': {
-    RPC_NODE : { url: "https://api.eftg.eu" },
-    IMAGE_HOSTER : { url: "https://cdn.blkcc.xyz" },
-    ELASTIC : { url: "https://api.eftg.eu/pulsar/" },
-    CDN : { url: "https://cdn.blkcc.xyz/" },
+    RPC_NODES : [
+      'https://api.eftg.eu'
+    ],
+    IMAGE_HOSTER : 'https://cdn.blkcc.xyz',
+    ELASTIC : 'https://api.eftg.eu/pulsar/',
+    CDN : 'https://cdn.blkcc.xyz/',
     EFTG_HARDFORK_0_1 : false
   },
   'acceptance': {
-    RPC_NODE : { url: "https://api.blkcc.xyz" },
-    IMAGE_HOSTER : { url: "https://cdn.acc.blkcc.xyz" },
-    ELASTIC : { url: "https://api.blkcc.xyz/pulsar/" },
-    CDN : { url: "https://cdn.acc.blkcc.xyz/" },
+    RPC_NODES : [
+      'https://api.blkcc.xyz'
+    ],
+    IMAGE_HOSTER : 'https://cdn.acc.blkcc.xyz',
+    ELASTIC : 'https://api.blkcc.xyz/pulsar/',
+    CDN : 'https://cdn.acc.blkcc.xyz/',
     EFTG_HARDFORK_0_1 : false
   },
   'development': {
-    RPC_NODE : { url: "https://apidev.blkcc.xyz" },
-    IMAGE_HOSTER : { url: "https://cdn.dev.blkcc.xyz" },
-    ELASTIC : { url: "https://apidev.blkcc.xyz/pulsar/" },
-    CDN : { url: "https://cdn.dev.blkcc.xyz/" },
+    RPC_NODES : [
+      'https://apidev.blkcc.xyz',
+    ],
+    IMAGE_HOSTER : 'https://cdn.dev.blkcc.xyz',
+    ELASTIC : 'https://apidev.blkcc.xyz/pulsar/',
+    CDN : 'https://cdn.dev.blkcc.xyz/',
     EFTG_HARDFORK_0_1 : true
   }
 }
@@ -25,16 +31,17 @@ const config = {
 const environment = process.env.NODE_ENV || 'development';
 const finalConfig = config[environment];
 
-const SBD = "EUR";
-const STEEM = "EFTG";
-const SP = "EFTG-Power";
-const VESTS = "VESTS";
+const SBD = 'EUR';
+const STEEM = 'EFTG';
+const SP = 'EFTG-Power';
+const VESTS = 'VESTS';
 
 const HARDFORK = 19
 
 const EXPLORER = '/explorer/'
+const DSTEEM_TIMEOUT = 5000 //ms
 
-const STEEM_ADDRESS_PREFIX = "EUR";
+const STEEM_ADDRESS_PREFIX = 'EUR';
 const STEEM_100_PERCENT = 10000;
 const STEEM_VOTE_REGENERATION_SECONDS = 5 * 24 * 60 * 60;
 const STEEM_INFLATION_RATE_START_PERCENT = 978;
@@ -51,11 +58,11 @@ const MAP = {
   INI_ZOOM : 4 ,
 }
 
-const APP_VERSION = "pulsar/1.0.0";
+const APP_VERSION = 'pulsar/1.2.0';
 
 export default {
 
-  RPC_NODE: finalConfig.RPC_NODE,
+  RPC_NODES: finalConfig.RPC_NODES,
   IMAGE_HOSTER: finalConfig.IMAGE_HOSTER,
   ELASTIC: finalConfig.ELASTIC,
   CDN: finalConfig.CDN,
@@ -69,6 +76,7 @@ export default {
   EFTG_HARDFORK_0_1: finalConfig.EFTG_HARDFORK_0_1,
 
   EXPLORER,
+  DSTEEM_TIMEOUT,
 
   STEEM_ADDRESS_PREFIX: STEEM_ADDRESS_PREFIX,
   STEEM_100_PERCENT: STEEM_100_PERCENT,

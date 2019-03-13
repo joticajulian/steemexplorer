@@ -184,6 +184,7 @@ import Config from "@/config.js";
 import Utils from "@/js/utils.js";
 import Validate from '@/js/validate.js'
 import Dictionary from "@/mixins/Dictionary.js";
+import SteemClient from '@/mixins/SteemClient.js'
 import HeaderEFTG from "@/components/HeaderEFTG";
 import FooterEFTG from "@/components/FooterEFTG";
 
@@ -192,8 +193,6 @@ export default {
   
   data() {
     return {
-      client: null,
-    
       issuer_name: "",
       home_member_state: "",
       identifier_type: "LEI",
@@ -256,15 +255,11 @@ export default {
   },
   
   mixins: [
-    Dictionary
+    Dictionary,
+    SteemClient
   ],
   
   created() {
-    let opts = {}
-    opts.addressPrefix = Config.STEEM_ADDRESS_PREFIX
-    if(process.env.VUE_APP_CHAIN_ID) opts.chainId = process.env.VUE_APP_CHAIN_ID
-    this.client = new Client(Config.RPC_NODE.url, opts)
-
     //validate fields while typing
     this.debounced_validateIssuerName       = debounce(this.validateIssuerName      , 300)
     this.debounced_validateHomeMemberState  = debounce(this.validateHomeMemberState , 300)
@@ -411,9 +406,9 @@ export default {
         
         while (true) {
           var permlink = Utils.createPermLink(self.title, addRandom);
-          var urlPost = "oam/@" + username + "/" + permlink;
-          var post = await self.client.database.getState(urlPost);
-          console.log(post);
+          //var urlPost = "oam/@" + username + "/" + permlink;
+          //var post = await self.client.database.getState(urlPost);
+          //console.log(post);
           //TODO: if the post exists, then addRandom=true and continue the while loop, else break
           break;
         }
@@ -445,7 +440,7 @@ export default {
         
         if(self.lastPermlink !== '') {
           try {          
-            var previous_post = await self.client.database.call('get_content',[username,self.lastPermlink])
+            var previous_post = await self.steem_database_call('get_content',[username,self.lastPermlink])
             var previous_json_metadata = JSON.parse(previous_post.json_metadata)
             var same_post = true
             for(var key in json_metadata){
@@ -489,7 +484,7 @@ export default {
         var formFile = new FormData();
         formFile.append("pdf", localFile);
         var urlWithSignature =
-          Config.IMAGE_HOSTER.url + "/" + username + "/" + signature;
+          Config.IMAGE_HOSTER + "/" + username + "/" + signature;
 
         // TODO: try - catch to check if the file size is too long and there is an error
         
@@ -547,7 +542,9 @@ export default {
         
         //var result = await self.client.broadcast.call("broadcast_transaction_synchronous", params);                              
         //var result = await self.client.broadcast.send(signed_transaction);
-        var result = await self.client.broadcast.comment(post, privKey);
+
+        //var result = await self.client.broadcast.comment(post, privKey);
+        var result = await self.steem_broadcast_comment(post, privKey)
         
         self.showAlert(true,'Document published! <a href="'+Config.EXPLORER+'@'+username+'/'+permlink+'" class="alert-link" target="_blank">@'+username+'/'+permlink+'</a>');
         self.lastPermlink = permlink;

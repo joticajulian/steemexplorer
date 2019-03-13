@@ -77,6 +77,7 @@
 
 <script>
 import { Client } from 'eftg-dsteem'
+import SteemClient from '@/mixins/SteemClient.js'
 
 import Utils from '@/js/utils.js'
 import Config from '@/config.js'
@@ -89,7 +90,6 @@ export default {
   name: 'Account',
   data () {
     return {
-      client: null,
       account: {
       },
       witness: {
@@ -125,11 +125,11 @@ export default {
   },
   
   mixins: [
-    ChainProperties
+    ChainProperties,
+    SteemClient
   ],
   
   created() {
-    this.client = new Client(Config.RPC_NODE.url);
     this.fetchData()    
   },
 
@@ -147,7 +147,8 @@ export default {
       this.exists.transactions = false;
       this.exists.witness = false;
       var self = this;
-      var result = await this.client.database.getAccounts([name])
+      //var result = await this.client.database.getAccounts([name])
+      var result = await this.steem_database_call('get_accounts',[[name]])
       
       this.exists.account = true;
         
@@ -194,7 +195,8 @@ export default {
         steem_power: this.vests2sp(this.account.vesting_shares) + ' (' + (delegated>0?'+':'') + this.vests2sp(delegated) + ')',
       }
       
-      var result = await this.client.database.call('get_account_history',[name,-1,1])
+      //var result = await this.client.database.call('get_account_history',[name,-1,1])
+      var result = await this.steem_database_call('get_account_history',[name,-1,1])
         
       var last_tx = result[0][0];
       var from = -1;
@@ -240,11 +242,13 @@ export default {
         this.pages.push({text:total_pages+'',link:'@'+name+'?page='+total_pages});          
       }
     
-      var result = await this.client.database.call('get_account_history',[name,from,limit])
+      //var result = await this.client.database.call('get_account_history',[name,from,limit])
+      var result = await this.steem_database_call('get_account_history',[name,from,limit])
       this.transactions = result.reverse();
       this.exists.transactions = true;
       
-      var result = await this.client.database.call('get_witness_by_account',[name])
+      //var result = await this.client.database.call('get_witness_by_account',[name])
+      var result = await this.steem_database_call('get_witness_by_account',[name])
       if(result == null) return; 
       
       this.witness = result;

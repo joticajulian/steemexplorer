@@ -100,6 +100,7 @@
 
 <script>
 import { Client, PrivateKey } from 'eftg-dsteem'
+import SteemClient from '@/mixins/SteemClient.js'
 
 import Config from '@/config.js'
 import Utils from '@/js/utils.js'
@@ -112,7 +113,6 @@ export default {
   name: 'Home',
   data () {
     return {
-      client: null,
       chainprops: {
         current_sbd_supply: '0.000',
         virtual_supply: '0.001',
@@ -149,13 +149,11 @@ export default {
   },
   
   mixins: [
-    ChainProperties
+    ChainProperties,
+    SteemClient
   ],
   
   created() {
-    let self = this     
-    this.client = new Client(Config.RPC_NODE.url);
-    
     this.getDynamicGlobalProperties();
     this.ints.globalprops = setInterval(this.getDynamicGlobalProperties, 12000);
     this.ints.blocks = setInterval(this.fetchBlocks, 3000);
@@ -185,7 +183,8 @@ export default {
   
     async getDynamicGlobalProperties() {
       var self = this;
-      var result = await this.client.database.call('get_reward_fund',['post'])
+      //var result = await this.client.database.call('get_reward_fund',['post'])
+      var result = await this.steem_database_call('get_reward_fund',['post'])
       
       this.chainprops.reward_balance = result.reward_balance;
       this.chainprops.recent_claims = result.recent_claims;
@@ -194,7 +193,8 @@ export default {
         
       this.exists.reward = true;
       
-      var result = await this.client.database.getState('')
+      //var result = await this.client.database.getState('')
+      var result = await this.steem_database_call('get_state',[''])
       //var result = await this.client.database.call('get_witness_schedule')
       
       //DYNAMIC GLOBAL PROPERTIES
@@ -274,7 +274,8 @@ export default {
         self.lastBlocks.unshift(b);
         if(self.lastBlocks.length > SIZE_BLOCKS) self.lastBlocks.pop();
           
-        self.client.database.getBlock(num).then(function(resultBlock){
+        //self.client.database.getBlock(num).then(function(resultBlock){
+        self.steem_database_call('get_block',[num]).then(function(resultBlock){
           b.size_txs = resultBlock.transactions.length;
           b.size_posts = resultBlock.transactions.filter(function(tx){
             return tx.operations[0][0]=='comment' && tx.operations[0][1].parent_author=='';

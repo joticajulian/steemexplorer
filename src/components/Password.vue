@@ -1,6 +1,6 @@
 <template>
   <div>
-    <HeaderEFTG :showAuth="true" ref="headerEFTG"></HeaderEFTG>
+    <HeaderEFTG :showAuth="true" ref="headerEFTG" v-on:login="onLogin" v-on:logout="onLogout"></HeaderEFTG>
     <div class="container">
       <h2>Change Password</h2>                            
       <div id="password-form" novalidate>      
@@ -84,6 +84,7 @@ import debounce from "lodash.debounce";
 import Config from "@/config.js";
 import Utils from "@/js/utils.js";
 import { Client, PrivateKey } from 'eftg-dsteem'
+import SteemClient from '@/mixins/SteemClient.js'
 //import dsteemExtra from "@/js/dsteem-extra.js";
 
 import HeaderEFTG from "@/components/HeaderEFTG";
@@ -93,7 +94,6 @@ export default {
   
   data() {
     return {
-      client: null,
       sending: false,
       
       account: null,
@@ -134,16 +134,16 @@ export default {
   components: {
     HeaderEFTG    
   },
+
+  mixins: [
+    SteemClient
+  ],
   
   created() {
-    let opts = {}
-    opts.addressPrefix = Config.STEEM_ADDRESS_PREFIX
-    if(process.env.VUE_APP_CHAIN_ID) opts.chainId = process.env.VUE_APP_CHAIN_ID
-    this.client = new Client(Config.RPC_NODE.url, opts)
-   
     //validate current password
     this.debounced_validateCurrentPassword = debounce(this.validateCurrentPassword, 300);
-    this.getUser()  
+
+    if(this.$store.state.auth.logged) this.getUser()  
   },
   
   watch: {
@@ -222,7 +222,8 @@ export default {
       this.showInfo('Updating password...')
       
       let self = this
-      this.client.broadcast.sendOperations([operation],privKey)
+      //this.client.broadcast.sendOperations([operation],privKey)
+      this.steem_broadcast_sendOperations([operation],privKey)
       .then(function(response){
         self.showSuccess('Password updated!')
         self.hideInfo()
@@ -235,24 +236,6 @@ export default {
         self.sending = false
         console.log(error)
       })
-      
-      /*let self = this
-      async function updatePassword_async() {
-        var trx = await dsteemExtra.newTransaction()
-        trx.operations.push(operation)
-        
-        var client = new dsteem.Client(Config.RPC_NODE.url);
-        var sgnTrx = await client.broadcast.sign(trx, privKey)
-        console.log('signed transaction')
-        console.log(sgnTrx)
-        var response = await client.broadcast.send(sgnTrx)
-        self.showSuccess('Password updated!')        
-      }      
-      
-      updatePassword_async().catch(function(error){
-        console.log(error);
-        self.showDanger(error.message);        
-      });*/
     },
     
     showInfo(msg){
@@ -284,15 +267,28 @@ export default {
       this.alert.danger = false
       this.alertText.danger = ''
     },
+
+    onLogin() { 
+      this.getUser()
+    },
+
+    onLogout() {
+      this.account = null
+    },
     
     async getUser(){
-      const accounts = await this.client.database.getAccounts([this.$store.state.auth.user])
+      //const accounts = await this.client.database.getAccounts([this.$store.state.auth.user])
+      const accounts = await this.steem_database_call('get_accounts',[[this.$store.state.auth.user]])
       this.account = accounts[0] 
     },
     
     //validation
     validateCurrentPassword() {
-      if(!this.account) return false
+      if(!this.account){
+        this.error.currentPassword = true
+        this.errorText.currentPassword = 'Please login.'
+        return false
+      }
 
       // validate if the input is the master key
       var privKey = PrivateKey.fromLogin(

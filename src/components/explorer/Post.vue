@@ -48,6 +48,7 @@
 
 <script>
 import { Client } from 'eftg-dsteem'
+import SteemClient from '@/mixins/SteemClient.js'
 
 import Config from '@/config.js'
 import Utils from '@/js/utils.js'
@@ -61,7 +62,6 @@ export default {
   name: 'post',
   data () {
     return {
-      client: null,
       post:{},
       payout:{total:'',card:{}},
       exists: false,
@@ -77,11 +77,11 @@ export default {
   },
   
   mixins: [
-    ChainProperties
+    ChainProperties,
+    SteemClient
   ],
   
   created() {
-    this.client = new Client(Config.RPC_NODE.url);
     this.fetchData()
   },
 
@@ -97,7 +97,8 @@ export default {
       var permlink = this.$route.params.permlink;
       console.log('Fetching data for '+author+'/'+permlink);
       var self = this;
-      var result = await this.client.database.call('get_content',[author,permlink])
+      //var result = await this.client.database.call('get_content',[author,permlink])
+      var result = await this.steem_database_call('get_content',[author,permlink])
       
       result.json_metadata = JSON.parse(result.json_metadata);
       this.post = result;

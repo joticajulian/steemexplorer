@@ -71,6 +71,7 @@
 <script>
 import debounce from 'lodash.debounce'
 import { Client } from 'eftg-dsteem'
+import SteemClient from '@/mixins/SteemClient.js'
 
 import Config from '@/config.js'
 import Utils from '@/js/utils.js'
@@ -82,8 +83,6 @@ export default {
   
   data() {
     return {
-      client: null,
-
       account: {vesting_shares: '0.000000 VESTS'},
       witnesses: [],
       witnesses2: [],
@@ -115,26 +114,14 @@ export default {
     HeaderEFTG    
   },
   mixins: [
-    ChainProperties
+    ChainProperties,
+    SteemClient
   ],
   
   created() {
-    let opts = {}
-    opts.addressPrefix = Config.STEEM_ADDRESS_PREFIX
-    if(process.env.VUE_APP_CHAIN_ID) opts.chainId = process.env.VUE_APP_CHAIN_ID
-    this.client = new Client(Config.RPC_NODE.url, opts)
-    
     this.loadWitnessesByVote()
-  
-    //changes in range sliders
-    if(Config.EFTG_HARDFORK_0_1) {
-      //this.debouncedSliderChange = debounce(this.sliderChange, 100);
-    }      
   },
-  
-  watch: {
-    //witnesses: function(){ this.debouncedSliderChange() }    
-  },
+
   methods: {
     toggleEdit() {
       this.editing = !this.editing
@@ -200,11 +187,13 @@ export default {
     },
 
     async loadWitnessesByVote() {
-      var witnessesByVote = await this.client.database.call('get_witnesses_by_vote',['',100])
+      //var witnessesByVote = await this.client.database.call('get_witnesses_by_vote',['',100])
+      var witnessesByVote = await this.steem_database_call('get_witnesses_by_vote',['',100])
       var names =[]
 
       for(var i in witnessesByVote) names.push(witnessesByVote[i].owner)
-      var accounts = await this.client.database.getAccounts(names)
+      //var accounts = await this.client.database.getAccounts(names)
+      var accounts = await this.steem_database_call('get_accounts',[names])
 
       this.witnesses = []
       for(var i in witnessesByVote) {
@@ -238,7 +227,8 @@ export default {
 
       var namesWitnessesNotTop = []
 
-      var accounts = await this.client.database.getAccounts([this.$store.state.auth.user])
+      //var accounts = await this.client.database.getAccounts([this.$store.state.auth.user])
+      var accounts = await this.steem_database_call('get_accounts',[[this.$store.state.auth.user]])
       this.account = accounts[0]
 
       this.clearVotes()
@@ -362,7 +352,8 @@ export default {
       this.hideInfo()
 
       let self = this
-      this.client.broadcast.sendOperations(ops,privKey)
+      //this.client.broadcast.sendOperations(ops,privKey)
+      this.steem_broadcast_sendOperations(ops,privKey)
       .then(function(result){
         self.saving = false
         var block = result.block_num

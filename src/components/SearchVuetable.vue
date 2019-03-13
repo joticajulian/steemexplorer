@@ -2,6 +2,7 @@
 import Config from "@/config.js";
 import axios from "axios";
 import { Client } from 'eftg-dsteem'
+import SteemClient from '@/mixins/SteemClient.js'
 import accounting from 'accounting';
 import moment from 'moment';
 import Vue from 'vue';
@@ -25,7 +26,8 @@ export default {
     VuetablePaginationInfo
   },
   mixins: [
-    Dictionary
+    Dictionary,
+    SteemClient
   ],
   props: {
     apiUrl: {
@@ -59,16 +61,8 @@ export default {
   data () {
     return {
       vuetableData: null,
-      client: null,
       permissions: [],
     }
-  },
-
-  created () {
-    let opts = {} ;
-    opts.addressPrefix = Config.STEEM_ADDRESS_PREFIX
-    if(Config.STEEM_CHAIN_ID) opts.chainId = Config.STEEM_CHAIN_ID
-    this.client = new Client(Config.RPC_NODE.url, opts)
   },
 
   mounted () {
@@ -467,7 +461,8 @@ export default {
       this.dictionary.docClassSubclass.forEach(function(c){ subclassList.push(c.id) })
 
       var username = this.$store.state.auth.user;
-      var accounts = await this.client.database.getAccounts([username])
+      //var accounts = await this.client.database.getAccounts([username])
+      var accounts = await this.steem_database_call('get_accounts',[[username]])
       var account = accounts[0]
       var reporter_names = []
         
@@ -476,7 +471,8 @@ export default {
           reporter_names.push( account.subscriptions[i].reporter )
       }
 
-      var owners = await this.client.database.call('get_owners',[reporter_names])
+      //var owners = await this.client.database.call('get_owners',[reporter_names])
+      var owners = await this.steem_database_call('get_owners',[reporter_names])
 
       for(var i in account.subscriptions) {
         var subscription = account.subscriptions[i]

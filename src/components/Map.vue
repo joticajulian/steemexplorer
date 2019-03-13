@@ -59,6 +59,7 @@
 <script>
 import Config from '@/config.js'
 import { Client, PrivateKey } from 'eftg-dsteem'
+import SteemClient from '@/mixins/SteemClient.js'
 
 // Leaflet library for OpenStreetMap
 import L from 'leaflet';
@@ -98,7 +99,6 @@ export default {
         visible_name: ''
       },    
       first_time: true,
-      client: null,
       icon: {
         green: greenIconUrl,
         blue:  blueIconUrl,
@@ -110,7 +110,8 @@ export default {
   },
   
   mixins: [
-    Dictionary
+    Dictionary,
+    SteemClient
   ],
   
   components: {
@@ -119,9 +120,9 @@ export default {
   },
   
   created() {
-    let self = this     
-    this.client = new Client(Config.RPC_NODE.url);
-    this.client.database.getDynamicGlobalProperties().then(function(result){
+    let self = this
+    //this.client.database.getDynamicGlobalProperties().then(function(result){
+    this.steem_database_call('get_dynamic_global_properties').then(function(result){
       self.last_block_num = result.head_block_number;
       self.first_time = false;
     })      
@@ -251,7 +252,8 @@ export default {
       });      
       
       // Taking the data from the blockchain (location stored in metadata)      
-      var result = await this.client.database.call('get_witnesses_by_vote', ['',Config.MAP.TOP_WITNESSES]);
+      //var result = await this.client.database.call('get_witnesses_by_vote', ['',Config.MAP.TOP_WITNESSES]);
+      var result = await this.steem_database_call('get_witnesses_by_vote', ['',Config.MAP.TOP_WITNESSES])
 
       var names = [];
 
@@ -293,7 +295,8 @@ export default {
       
       let self = this
     
-      var result = await this.client.database.call('get_accounts', [names]);
+      //var result = await this.client.database.call('get_accounts', [names]);
+      var result = await this.steem_database_call('get_accounts', [names])
       
       result.forEach(function(account){        
         var metadata;
@@ -431,7 +434,8 @@ export default {
         self.lastBlocks.unshift(b);
         if(self.lastBlocks.length > SIZE_BLOCKS) self.lastBlocks.pop();
         
-        self.client.database.getBlock(num).then(function(resultBlock){        
+        //self.client.database.getBlock(num).then(function(resultBlock){
+        self.steem_database_call('get_block',[num]).then(function(resultBlock){
           b.size_txs = resultBlock.transactions.length;
           b.size_posts = resultBlock.transactions.filter(
             function(tx){

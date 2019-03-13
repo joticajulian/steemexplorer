@@ -30,6 +30,7 @@
 
 <script>
 import { Client } from 'eftg-dsteem'
+import SteemClient from '@/mixins/SteemClient.js'
 import Config from '@/config.js'
 
 import CardData from '@/components/explorer/CardData'
@@ -42,7 +43,6 @@ export default {
   name: 'Block',
   data () {
     return {
-      client: null,
       block: {
       },
       blockGenerals:{
@@ -58,11 +58,11 @@ export default {
   },
   
   mixins: [
-    ChainProperties
+    ChainProperties,
+    SteemClient
   ], 
   
   created() {
-    this.client = new Client(Config.RPC_NODE.url);
     this.fetchData()
   },
 
@@ -77,7 +77,8 @@ export default {
             
       console.log('Fetching data for block '+blocknum);
       
-      var result = await this.client.database.getBlock(blocknum)
+      //var result = await this.client.database.getBlock(blocknum)
+      var result = await this.steem_database_call('get_block',[blocknum])
         
       for(var i=0;i<result.transactions.length;i++){
         if(!result.transactions[i].transaction_id){

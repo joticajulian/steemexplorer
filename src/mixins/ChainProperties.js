@@ -1,5 +1,6 @@
 import { Client } from 'eftg-dsteem'
 import Config from '@/config.js'
+import SteemClient from '@/mixins/SteemClient.js'
 
 export default {
   
@@ -23,11 +24,15 @@ export default {
       STEEM_SBD_STOP_PERCENT: Config.STEEM_SBD_STOP_PERCENT,
     }
   },
-  
+
+  mixins: [
+    SteemClient
+  ],
+
   created() {    
     this.getChainProperties()
   },
-  
+
   methods: {
     changeFeedPrice(price){      
     },
@@ -40,19 +45,20 @@ export default {
     getChainProperties() {
       var self = this;
       
-      var client = new Client(Config.RPC_NODE.url);
-      
-      client.database.call('get_reward_fund',['post']).then(function(result){  
+      //client.database.call('get_reward_fund',['post']).then(function(result){
+      this.steem_database_call('get_reward_fund',['post']).then(function(result){
         self.chain.reward_balance = parseFloat(result.reward_balance);
         self.chain.recent_claims = parseInt(result.recent_claims);
         self.updateRS();
       })
       
-      client.database.call('get_dynamic_global_properties').then(function(result){
+      //client.database.call('get_dynamic_global_properties').then(function(result){
+      this.steem_database_call('get_dynamic_global_properties').then(function(result){
         self.chain.steem_per_mvests = parseFloat(result.total_vesting_fund_steem)*1000000/parseFloat(result.total_vesting_shares);
       });
       
-      client.database.call('get_current_median_history_price').then(function(result){
+      //client.database.call('get_current_median_history_price').then(function(result){
+      this.steem_database_call('get_current_median_history_price').then(function(result){
         self.chain.feed_price = parseFloat(result.base)/parseFloat(result.quote);
         self.updateRS();
         self.changeFeedPrice(self.chain.feed_price)

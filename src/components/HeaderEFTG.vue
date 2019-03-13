@@ -29,7 +29,7 @@
                   </template>
                   <b-dropdown-header>{{$store.state.auth.user}}</b-dropdown-header>
                   <b-dropdown-divider></b-dropdown-divider>
-                  <b-dropdown-item href="#/password"><font-awesome-icon icon="key" class="mr-2"/>Change Password</b-dropdown-item>                  
+                  <b-dropdown-item><router-link to="/password"><font-awesome-icon icon="key" class="mr-2"/>Change Password</router-link></b-dropdown-item>     
                 </b-dropdown>  
   
                 <button class="btn btn-primary" @click="logout">Logout</button>

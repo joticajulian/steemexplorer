@@ -23,7 +23,7 @@ export default {
   created() {
     var debug = true
     if(debug){
-      console.log('RPC NODE: '+Config.RPC_NODE.url);
+      console.log('RPC NODE: '+this.$store.state.rpc_node.current);
     }
   }
 } 
