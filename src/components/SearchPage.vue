@@ -34,11 +34,11 @@
           <div class="form-row">
             <fieldset class="form-group col-md-9">
               <label class="eftg-label">DOCUMENT TYPE</label>
-              <multiselect v-model="subclass" class="eftg-multiselect" tag-placeholder="Select" placeholder="Search or choose" label="label" track-by="id" :options="dictionary.docClassSubclass" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
+              <multiselect v-model="subclass" class="eftg-multiselect" tag-placeholder="Select" placeholder="Search or choose" label="label" track-by="id" :options="dictionary.docClassSubclass" :multiple="true" :taggable="true" @tag="addTag" @input="onChangeDocClass"></multiselect>
             </fieldset>
             <fieldset class="form-group col-md-3">
               <label class="eftg-label">FINANCIAL YEAR</label>
-              <multiselect v-model="financialYear" class="eftg-multiselect" tag-placeholder="Select" placeholder="Select financial year" label="id" :showLabels="false" track-by="id" :options="optionsFinancialYear" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
+              <multiselect v-model="financialYear" class="eftg-multiselect" tag-placeholder="Select" placeholder="Select financial year" label="id" :showLabels="false" track-by="id" :options="optionsFinancialYear" :multiple="true"  :disabled="financialYearDisabled" :taggable="true" @tag="addTag"></multiselect>
             </fieldset>
           </div>
           <div class="form-row">
@@ -178,7 +178,8 @@ export default {
       disclosureDateTo: null,
       homeMemberState: [],
       legalIdentifier: [],
-      financialYear : [],
+      financialYear: [],
+      financialYearDisabled: false,
       optionsFinancialYear: [{
           id: "2018"
         }, {
@@ -223,6 +224,18 @@ export default {
         disclosureDateFrom: this.disclosureDateFrom,
         disclosureDateTo: this.disclosureDateTo
       }, 1);
+    },
+    onChangeDocClass() {
+      this.financialYearDisabled = false;
+      if(this.subclass.length > 0) {
+        this.financialYearDisabled = true;
+        for (var i = 0; i < this.subclass.length; i++) {
+          if(this.subclass[i].id < 200) {
+            this.financialYear = [];
+            this.financialYearDisabled = false;
+          }
+        }
+      }
     },
     clear() {
       this.legalIdentifier = [];
