@@ -8,7 +8,7 @@
     <div class="data" v-for="(b,key,index) in beneficiaries">
       <div class="row"
         ><div class="beneficiary">
-          <router-link :to="'/@'+b.account">@{{b.account}}</router-link>          
+          <router-link :to="EXPLORER+'@'+b.account">@{{b.account}}</router-link>          
         </div
         ><div class="weight">{{b.bene_weight}}</div
         ><div class="value">{{b.bene_value}}</div        
@@ -32,9 +32,10 @@ export default {
       required: true
     },    
   },
-  data: function(){
+  data(){
     return {
-      beneficiaries: []
+      beneficiaries: [],
+      EXPLORER: Config.EXPLORER
     }
   },
   created: function(){

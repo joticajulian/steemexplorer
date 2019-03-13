@@ -18,7 +18,7 @@
           valueA2: typeCard=='witnesses'}">        
           <div v-if="typeof item === 'object'">
             <div v-if="link==true && item.link">
-              <router-link :to="item.link">{{item.text}}</router-link>
+              <router-link :to="EXPLORER+item.link">{{item.text}}</router-link>
             </div>
             <div v-else>
               <card-data :data="item"></card-data>
@@ -34,6 +34,8 @@
 </template>
 
 <script>
+import Config from '@/config.js'
+
 export default {
   name: 'card-data',
   props: {
@@ -55,6 +57,11 @@ export default {
       type: Boolean,
       required: false,
       default: false
+    }
+  },
+  data() {
+    return {
+      EXPLORER: Config.EXPLORER
     }
   }
 }

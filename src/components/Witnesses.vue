@@ -31,7 +31,7 @@
             <td
               ><div v-bind:style="{ backgroundImage: 'url(' + wit.imgUrl + ')' }" class="image-profile mr-2"                  
               ></div
-              ><router-link :to="'/explorer/@'+wit.owner">{{ wit.owner }}</router-link>
+              ><router-link :to="EXPLORER+'@'+wit.owner">{{ wit.owner }}</router-link>
             </td>
             <td>{{ wit.steem_power }}</td>
             <td><div class="circle" :class="{enabled:wit.enabled, disabled:!wit.enabled}"></div></td>
@@ -94,6 +94,7 @@ export default {
       
       EFTG_HARDFORK_0_1: Config.EFTG_HARDFORK_0_1,
       MAX_VALUE_SLIDER: 10000,
+      EXPLORER: Config.EXPLORER,
 
       error: {},
       errorText: {},

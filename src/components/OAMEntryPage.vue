@@ -8,17 +8,17 @@
         <div class="row">
           <div class="col-md-6">
             <div class="form-group row">
-              <label for="inputIssuerName" class="col-md-5 col-form-label">ISSUER NAME</label>
+              <label for="input_issuer_name" class="col-md-5 col-form-label">ISSUER NAME</label>
               <div class="col-md-7">
-                <input class="form-control" type="text" id="inputIssuerName" 
+                <input class="form-control" type="text" id="input_issuer_name" 
                        v-model="issuer_name" placeholder="Company" :class="{'is-invalid': error.issuer_name }"/>
                 <div v-if="error.issuer_name" class="invalid-feedback">{{ errorText.issuer_name }}</div>
               </div>
             </div>
             <div class="form-group row">
-              <label for="inputHomeMemberState" class="col-md-5 col-form-label">ISSUER's HOME MEMBER STATE (HMS)</label>
+              <label for="input_home_member_state" class="col-md-5 col-form-label">ISSUER's HOME MEMBER STATE (HMS)</label>
               <div class="col-md-7">
-                <select class="form-control" id="inputHomeMemberState" v-model="home_member_state" :class="{'is-invalid': error.home_member_state }">
+                <select class="form-control" id="input_home_member_state" v-model="home_member_state" :class="{'is-invalid': error.home_member_state }">
                   <option disabled value="">Please select one</option>
                   <option
                     v-for="option in dictionary.homeMemberStates"
@@ -33,23 +33,23 @@
             </div>
             <div class="form-group row">
               <!-- TODO: Take identifiers from dictionary -->
-              <label for="inputLegalIdentifier" class="col-md-5 col-form-label">LEGAL IDENTIFIER</label>
+              <label for="input_identifier_value" class="col-md-5 col-form-label">LEGAL IDENTIFIER</label>
               <div class="col-md-7">
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                  <label class="btn btn-secondary" :class="{active: identifier_id==='1'}">
-                    <input type="radio" id="LEI" v-model="identifier_id" value="1" autocomplete="off" checked> LEI
+                  <label class="btn btn-secondary" :class="{active: identifier_type==='LEI'}">
+                    <input type="radio" id="LEI" v-model="identifier_type" value="LEI" autocomplete="off" checked> LEI
                   </label>
-                  <label class="btn btn-secondary" :class="{active: identifier_id==='4'}">
-                    <input type="radio" id="ISIN" v-model="identifier_id" value="4" autocomplete="off"> ISIN
+                  <label class="btn btn-secondary" :class="{active: identifier_type==='ISIN'}">
+                    <input type="radio" id="ISIN" v-model="identifier_type" value="ISIN" autocomplete="off"> ISIN
                   </label>
-                  <label class="btn btn-secondary" :class="{active: identifier_id==='2'}">
-                    <input type="radio" id="VAT" v-model="identifier_id" value="2" autocomplete="off"> VAT
+                  <label class="btn btn-secondary" :class="{active: identifier_type==='VAT'}">
+                    <input type="radio" id="VAT" v-model="identifier_type" value="VAT" autocomplete="off"> VAT
                   </label>
-                  <label class="btn btn-secondary" :class="{active: identifier_id==='3'}">
-                    <input type="radio" id="REG" v-model="identifier_id" value="3" autocomplete="off"> REG
+                  <label class="btn btn-secondary" :class="{active: identifier_type==='RegistrationNumber'}">
+                    <input type="radio" id="REG" v-model="identifier_type" value="RegistrationNumber" autocomplete="off"> REG
                   </label>
                 </div>
-                <input type="text" id="inputLegalIdentifier" 
+                <input type="text" id="input_identifier_value" 
                        v-model="identifier_value" placeholder="Please enter a valid value" 
                        class="form-control"
                        :class="{'is-invalid': error.identifier_value }"
@@ -58,9 +58,9 @@
               </div>
             </div>
             <div class="form-group row" id="formClass">
-              <label for="inputClass" class="col-md-5 col-form-label">DOCUMENT CLASS AND SUBCLASS</label>
+              <label for="input_subclass" class="col-md-5 col-form-label">DOCUMENT CLASS AND SUBCLASS</label>
               <div class="col-md-7">
-                <select class="form-control" id="inputClass" v-model="subclass" :class="{'is-invalid': error.subclass }">
+                <select class="form-control" id="input_subclass" v-model="subclass" :class="{'is-invalid': error.subclass }">
                   <option disabled value="">Please select one</option>
                   <option
                     v-for="option in dictionary.docClassSubclass"
@@ -75,18 +75,18 @@
               </div>
             </div>
             <div v-if="showFinancialYear" class="form-group row">
-              <label for="inputFinancialYear" class="col-md-5 col-form-label">DOCUMENT FINANCIAL YEAR</label>
+              <label for="input_financial_year" class="col-md-5 col-form-label">DOCUMENT FINANCIAL YEAR</label>
               <div class="col-md-7">
-                <input type="text" id="inputFinancialYear" v-model="financial_year" placeholder="" class="form-control" :class="{'is-invalid': error.financial_year }"/>
+                <input type="text" id="input_financial_year" v-model="financial_year" placeholder="" class="form-control" :class="{'is-invalid': error.financial_year }"/>
                 <div v-if="error.financial_year" class="invalid-feedback">{{ errorText.financial_year }}</div>
               </div>
             </div>                        
           </div>
           <div class="col-md-6">
             <div class="form-group row">
-              <label for="inputDocumentDisclosureDate" class="col-md-5 col-form-label">DOCUMENT DISCLOSURE DATE*</label>
+              <label for="input_disclosure_date" class="col-md-5 col-form-label">DOCUMENT DISCLOSURE DATE*</label>
               <div class="col-md-7">
-                <input type="text" id="inputDocumentDisclosureDate" 
+                <input type="text" id="input_disclosure_date" 
                    v-model="disclosure_date" placeholder="dd/mm/yyyy"
                    class="form-control" 
                    :class="{'is-invalid': error.disclosure_date }"
@@ -95,9 +95,9 @@
               </div>
             </div>
             <div class="form-group row">
-              <label for="inputDocumentLanguage" class="col-md-5 col-form-label">DOCUMENT LANGUAGE</label>
+              <label for="input_document_language" class="col-md-5 col-form-label">DOCUMENT LANGUAGE</label>
               <div class="col-md-7">
-                <select class="form-control" id="inputDocumentLanguage" v-model="document_language" :class="{'is-invalid': error.document_language }">
+                <select class="form-control" id="input_document_language" v-model="document_language" :class="{'is-invalid': error.document_language }">
                   <option disabled value="">Please select one</option>
                   <option
                     v-for="(option, code) in dictionary.languages"
@@ -111,16 +111,16 @@
               </div>
             </div>
             <div class="form-group row">
-              <label for="inputComment" class="col-md-5 col-form-label">DOCUMENT TITLE</label>
+              <label for="input_title" class="col-md-5 col-form-label">DOCUMENT TITLE</label>
               <div class="col-md-7">
-                <input type="text" id="inputComment" v-model="comment" placeholder="Please add a document title" class="form-control" :class="{'is-invalid': error.comment }"/>    
-                <div v-if="error.comment" class="invalid-feedback">{{ errorText.comment }}</div>
+                <input type="text" id="input_title" v-model="title" placeholder="Please add a document title" class="form-control" :class="{'is-invalid': error.title }"/>    
+                <div v-if="error.title" class="invalid-feedback">{{ errorText.title }}</div>
               </div>
             </div>            
             <div class="form-group row">
-              <label for="inputDocumentSubmissionDate" class="col-md-5 col-form-label">DOCUMENT SUBMISSION DATE**</label>
+              <label for="input_submission_date" class="col-md-5 col-form-label">DOCUMENT SUBMISSION DATE**</label>
               <div class="col-md-7">
-                <input type="text" id="inputDocumentSubmissionDate" 
+                <input type="text" id="input_submission_date" 
                    v-model="submission_date" placeholder="dd/mm/yyyy"
                    class="form-control" 
                    :class="{'is-invalid': error.submission_date }"
@@ -129,7 +129,7 @@
               </div>
             </div>
             <div class="form-group row">
-              <label for="inputDocumentStatus" class="col-md-5 col-form-label">DOCUMENT STATUS</label>
+              <label for="input_type_submission" class="col-md-5 col-form-label">DOCUMENT STATUS</label>
               <div class="col-md-7">
                 <label class="radio-inline form-check-label mr-4">
                   <input type="radio" value="first" v-model="type_submission" class="mr-1" checked
@@ -149,25 +149,13 @@
                 >**The submission date corresponds to the date at which the issuer gives the information to the OAM.
               </label>
             </div>                              
-          </div>            
-        </div>
-        <div class="row">
-          <!--<div class="form-group col-md-6" id="formTypeSubmission">
-            <label class="radio-inline form-check-label mr-4">
-              <input type="radio" value="first" v-model="type_submission" class="mr-1" checked
-              >First submission
-            </label>
-            <label class="radio-inline form-check-label">
-              <input type="radio" value="revised" v-model="type_submission" class="mr-1">
-              Revised submission
-            </label>
-          </div>-->          
+          </div>
         </div>
         <div class="row">          
           <div class="col-md-6">
           <div class="custom-file">            
-            <input type="file" class="custom-file-input" id="inputFile" @change="validateFile" :class="{'is-invalid': error.file }">
-            <label class="custom-file-label" for="inputFile">Choose file...</label>
+            <input type="file" class="custom-file-input" id="input_file" @change="validateFile" :class="{'is-invalid': error.file }">
+            <label class="custom-file-label" for="input_file">Choose file...</label>
             <div v-if="error.file" class="invalid-feedback">{{ errorText.file }}</div>          
           </div>
           </div>
@@ -194,6 +182,7 @@ import { Client } from 'eftg-dsteem'
 
 import Config from "@/config.js";
 import Utils from "@/js/utils.js";
+import Validate from '@/js/validate.js'
 import Dictionary from "@/mixins/Dictionary.js";
 import HeaderEFTG from "@/components/HeaderEFTG";
 import FooterEFTG from "@/components/FooterEFTG";
@@ -207,14 +196,14 @@ export default {
     
       issuer_name: "",
       home_member_state: "",
-      identifier_id: "1",
+      identifier_type: "LEI",
       identifier_value: "",
       subclass: "",
       subclassTag: "",
       disclosure_date: "",
       submission_date: "",
       document_language: "",
-      comment: "",
+      title: "",
       financial_year: "",
       type_submission: 'first',
       showFinancialYear: false,
@@ -225,26 +214,26 @@ export default {
       error: {
         issuer_name: false,
         home_member_state: false,
-        identifier_id: false,
+        identifier_type: false,
         identifier_value: false,
         subclass: false,
         disclosure_date: false,
         submission_date: false,
         document_language: false,
-        comment: false,
+        title: false,
         financial_year: false,
         file: false
       },
       errorText: {
         issuer_name: "No error",
         home_member_state: "No error",
-        identifier_id: "No error",
+        identifier_type: "No error",
         identifier_value: "No error",
         subclass: "No error",
         disclosure_date: "No error",
         submission_date: "No error",
         document_language: "No error",
-        comment: "No error",
+        title: "No error",
         financial_year: "No error",
         file: "No error"
       },
@@ -275,18 +264,19 @@ export default {
     opts.addressPrefix = Config.STEEM_ADDRESS_PREFIX
     if(process.env.VUE_APP_CHAIN_ID) opts.chainId = process.env.VUE_APP_CHAIN_ID
     this.client = new Client(Config.RPC_NODE.url, opts)
-  
+
     //validate fields while typing
-    this.debounced_validateIssuerName       = debounce(this.validateIssuerName      , 300);
-    this.debounced_validateHomeMemberState  = debounce(this.validateHomeMemberState , 300);
-    this.debounced_validateIdentifierId     = debounce(this.validateIdentifierId    , 300);
-    this.debounced_validateIdentifierValue  = debounce(this.validateIdentifierValue , 300);
-    this.debounced_validateSubclass         = debounce(this.validateSubclass        , 300);
-    this.debounced_validateDisclosureDate   = debounce(this.validateDisclosureDate  , 300);
-    this.debounced_validateSubmissionDate   = debounce(this.validateSubmissionDate  , 300);
-    this.debounced_validateDocumentLanguage = debounce(this.validateDocumentLanguage, 300);
-    this.debounced_validateComment          = debounce(this.validateComment         , 300);
-    this.debounced_validateFinancialYear    = debounce(this.validateFinancialYear   , 300);  
+    this.debounced_validateIssuerName       = debounce(this.validateIssuerName      , 300)
+    this.debounced_validateHomeMemberState  = debounce(this.validateHomeMemberState , 300)
+    this.debounced_validateIdentifierType   = debounce(this.validateIdentifierType  , 300)
+    this.debounced_validateIdentifierValue  = debounce(this.validateIdentifierValue , 300)
+    this.debounced_validateSubclass         = debounce(this.validateSubclass        , 300)
+    this.debounced_validateDisclosureDate   = debounce(this.validateDisclosureDate  , 300)
+    this.debounced_validateSubmissionDate   = debounce(this.validateSubmissionDate  , 300)
+    this.debounced_validateDocumentLanguage = debounce(this.validateDocumentLanguage, 300)
+    this.debounced_validateTitle            = debounce(this.validateTitle           , 300)
+    this.debounced_validateFinancialYear    = debounce(this.validateFinancialYear   , 300)
+    this.debounced_validateField            = debounce(this.validateField           , 300)     
   },
   mounted() {
     this.startEventListenerFile();
@@ -304,8 +294,8 @@ export default {
     home_member_state: function() {
       this.debounced_validateHomeMemberState();
     },
-    identifier_id: function() {
-      this.debounced_validateIdentifierId();
+    identifier_type: function() {
+      this.debounced_validateIdentifierType();
       this.debounced_validateIdentifierValue();
     },
     identifier_value: function() {
@@ -338,8 +328,8 @@ export default {
     document_language: function() {
       this.debounced_validateDocumentLanguage();
     },
-    comment: function() {
-      this.debounced_validateComment();
+    title: function() {
+      this.debounced_validateTitle();
     },
     financial_year: function() {
       this.debounced_validateFinancialYear()
@@ -361,20 +351,24 @@ export default {
         var valid = true;
         valid = self.validateIssuerName(true) && valid;
         valid = self.validateHomeMemberState(true) && valid;
-        valid = self.validateIdentifierId(true) && valid;
+        valid = self.validateIdentifierType(true) && valid;
         valid = self.validateIdentifierValue(true) && valid;
         valid = self.validateSubclass(true) && valid;
         valid = self.validateDisclosureDate(true) && valid;
         valid = self.validateSubmissionDate(true) && valid;
+        //valid = self.validateStorageDate(true) && valid
         valid = self.validateDocumentLanguage(true) && valid;
-        valid = self.validateComment(true) && valid;        
+        valid = self.validateTitle(true) && valid;        
         valid = self.validateFile(true) && valid;
+        //valid = self.validateTypeSubmission(true) && valid
         
         // Validate year in case subclass Annual or half-year Financial Report 
         if(self.subclass >= 100 && self.subclass < 200){         
           valid = self.validateFinancialYear(true) && valid;
+          var financial_year = parseInt(self.financial_year)
         }else{
           self.financial_year = '';
+          var financial_year = 0
         }
 
         var form = document.getElementById('eftg-form');
@@ -416,25 +410,27 @@ export default {
         var addRandom = true;
         
         while (true) {
-          var permlink = Utils.createPermLink(self.comment, addRandom);
+          var permlink = Utils.createPermLink(self.title, addRandom);
           var urlPost = "oam/@" + username + "/" + permlink;
           var post = await self.client.database.getState(urlPost);
           console.log(post);
-          //TODO: fix dsteem response problem... if the post exists, then addRandom=true and continue the while loop, else break
+          //TODO: if the post exists, then addRandom=true and continue the while loop, else break
           break;
         }
-        
+
+        var identifier = self.dictionary.identifiers.find( (ide)=>{return ide.type === self.identifier_type} )
+
         var json_metadata = {
           issuer_name: self.issuer_name,
           home_member_state: self.home_member_state,
-          identifier_id: parseInt(self.identifier_id),
+          identifier_id: identifier.id,
           identifier_value: self.identifier_value,
           subclass: self.subclass,
           disclosure_date: discDate,
           submission_date: submDate,
           document_language: self.document_language,
-          comment: self.comment,
-          financial_year: self.financial_year,
+          comment: self.title,
+          financial_year: financial_year,
           type_submission: self.type_submission,
           tags: [
             self.subclassTag,
@@ -457,7 +453,6 @@ export default {
               
               if(json_metadata[key] !== previous_json_metadata[key]){
                 same_post = false
-                console.log('different in key:' +key+': '+json_metadata[key])
                 break
               }
             }
@@ -474,7 +469,7 @@ export default {
         // read file, calculation of the hash, and signature with privkey
         // (format used in ImageHoster for uploading)
         self.showInfo('Reading file...')
-        var localFile = document.getElementById("inputFile").files[0];
+        var localFile = document.getElementById("input_file").files[0];
         var fileData = await self.readFileAsBuffer(localFile,{
           onProgress: function(progressEvent){
             var loaded = progressEvent.loaded
@@ -524,7 +519,7 @@ export default {
           parent_author: "",
           parent_permlink: "oam",
           permlink: permlink,
-          title: self.comment
+          title: self.title
         };
 
         console.log("post");
@@ -554,7 +549,7 @@ export default {
         //var result = await self.client.broadcast.send(signed_transaction);
         var result = await self.client.broadcast.comment(post, privKey);
         
-        self.showAlert(true,'Document published! <a href="/explorer/@'+username+'/'+permlink+'" class="alert-link" target="_blank">@'+username+'/'+permlink+'</a>');
+        self.showAlert(true,'Document published! <a href="'+Config.EXPLORER+'@'+username+'/'+permlink+'" class="alert-link" target="_blank">@'+username+'/'+permlink+'</a>');
         self.lastPermlink = permlink;
         
         console.log("document publised!");
@@ -597,10 +592,10 @@ export default {
     
       this.issuer_name = "";
       this.home_member_state = "";
-      this.identifier_id = "1";
+      this.identifier_type = "LEI";
       this.identifier_value = "";
       this.subclass = "";
-      this.comment = "";
+      this.title = "";
       this.clearFile()
       
       this.clearErrors()
@@ -617,13 +612,13 @@ export default {
     },
 
     clearFile() {
-      document.getElementById("inputFile").labels[0].childNodes[0].data = 'Choose file...'
-      document.getElementById('inputFile').setAttribute('type','')
-      document.getElementById('inputFile').setAttribute('type','file')
+      document.getElementById("input_file").labels[0].childNodes[0].data = 'Choose file...'
+      document.getElementById('input_file').setAttribute('type','')
+      document.getElementById('input_file').setAttribute('type','file')
     },
 
     startEventListenerFile() {
-      var input = document.getElementById("inputFile");
+      var input = document.getElementById("input_file");
       var label = input.nextElementSibling,
         labelVal = label.innerHTML;
 
@@ -682,7 +677,7 @@ export default {
         this.alertText.danger = message;
       }
     },
-    
+
     loadJSON(variable, url){
       let self = this;
       axios.get(url).then(function(result){
@@ -694,276 +689,129 @@ export default {
         console.log(error);
       });
     },
-    
+
+    showInvalid(field, message) {
+      this.error[field] = true
+      this.errorText[field] = message
+      document.getElementById('input_'+field).setCustomValidity('invalid')
+    },
+
+    hideInvalid(field) {
+      this.error[field] = false
+      this.errorText[field] = 'No error'
+      document.getElementById('input_'+field).setCustomValidity('')
+    },
+
+    validateField(field, submit, callback) {
+      if(!submit && this[field] === '') {
+        this.hideInvalid(field)
+        return true
+      }
+      try{
+        callback()
+        this.hideInvalid(field)
+      }catch(error){
+        this.showInvalid(field, error.message)
+        return false
+      }
+      return true
+    },
+
     //validation
     validateIssuerName(submit) {
-      if (submit && this.issuer_name === "") {
-        this.error.issuer_name = true;
-        this.errorText.issuer_name = "Issuer name is empty";
-        document.getElementById('inputIssuerName').setCustomValidity("invalid");
-        return false;
-      }
-      if (this.issuer_name.length > 200) {
-        this.error.issuer_name = true;
-        this.errorText.issuer_name = "The issuer name is too long";
-        document.getElementById('inputIssuerName').setCustomValidity("invalid");
-        return false;
-      }
-      this.error.issuer_name = false;
-      this.errorText.issuer_name = "No error";
-      document.getElementById('inputIssuerName').setCustomValidity("");
-      return true;
+      let self = this
+      return this.validateField('issuer_name', submit, function(){
+        Validate.validateIssuerName(self.issuer_name)
+      } )            
     },
 
     validateHomeMemberState(submit) {
-      if (submit && this.home_member_state === "") {
-        this.error.home_member_state = true;
-        this.errorText.home_member_state = "Please select a home member state";
-        document.getElementById('inputHomeMemberState').setCustomValidity("invalid");
-        return false;
-      }
-      this.error.home_member_state = false;
-      this.errorText.home_member_state = "No error";
-      document.getElementById('inputHomeMemberState').setCustomValidity("");
-      return true;
+      let self = this
+      return this.validateField('home_member_state', submit, function(){
+        Validate.validateHomeMemberState(self.home_member_state, self.dictionary.homeMemberStates)
+      } )
     },
 
-    validateIdentifierId(submit) {
-      //nothing to check
-      this.error.identifier_id = false;
-      this.errorText.identifier_id = "No error";      
-      return true;
+    validateIdentifierType(submit) {
+      return true
+      /*let self = this
+      return this.validateField('identifier_type', submit, function(){
+        Validate.validateIdentifierType(self.identifier_type, self.dictionary.identifiers)
+      } )*/
     },
 
     validateIdentifierValue(submit) {      
-      if (submit && this.identifier_value === "") {
-        this.error.identifier_value = true;
-        this.errorText.identifier_value = "The identifier value is empty";
-        document.getElementById('inputLegalIdentifier').setCustomValidity("invalid");
-        return false;
-      }
-      
-      if (this.identifier_value === "") {
-        this.error.identifier_value = false;
-        this.errorText.identifier_value = "No error";
-        document.getElementById('inputLegalIdentifier').setCustomValidity("");
-        return true;
-      }
-
-      if (this.identifier_value.length < 3) {
-        this.error.identifier_value = true;
-        this.errorText.identifier_value = "The identifier value is too short";
-        document.getElementById('inputLegalIdentifier').setCustomValidity("invalid");
-        return false;
-      }
-
-      switch (this.identifier_id) {
-        case "1": //LEI
-          if (this.identifier_value.length !== 20) {
-            this.error.identifier_value = true;
-            this.errorText.identifier_value = "Legal Entity Identifier must have 20 characters";
-            document.getElementById('inputLegalIdentifier').setCustomValidity("invalid");  
-            return false;
-          }
-        case "2": //VAT Number
-          break;
-        case "3": //Reg number
-          break;
-        case "4": //ISIN
-          if (this.identifier_value.length !== 12) {
-            this.error.identifier_value = true;
-            this.errorText.identifier_value = "ISIN number must have 12 characters";
-            document.getElementById('inputLegalIdentifier').setCustomValidity("invalid");
-            return false;
-          }
-          if (!Utils.hasCountryCode(this.identifier_value)) {
-            this.error.identifier_value = true;
-            this.errorText.identifier_value = "ISIN number must starts with the country code";
-            document.getElementById('inputLegalIdentifier').setCustomValidity("invalid");
-            return false;
-          }
-        default:
-      }
-
-      this.error.identifier_value = false;
-      this.errorText.identifier_value = "No error";
-      document.getElementById('inputLegalIdentifier').setCustomValidity("");
-      return true;
+      let self = this
+      return this.validateField('identifier_value', submit, function(){
+        Validate.validateIdentifierValue(self.identifier_value, self.identifier_type, self.dictionary.identifiers, self.dictionary.homeMemberStates)
+      } )
     },
 
     validateSubclass(submit) {
-      if (submit && this.subclass === "") {
-        this.error.subclass = true;
-        this.errorText.subclass = "Please select a subclass";
-        document.getElementById('inputClass').setCustomValidity("invalid");
-        return false;
-      }
-
-      this.error.subclass = false;
-      this.errorText.subclass = "No error";
-      document.getElementById('inputClass').setCustomValidity("");
-      return true;
+      let self = this
+      return this.validateField('subclass', submit, function(){
+        Validate.validateSubclass(self.subclass, self.dictionary.docClasses)
+      } )
     },
 
     validateDisclosureDate(submit) {
-      if (submit && this.disclosure_date === "") {
-        this.error.disclosure_date = true;
-        this.errorText.disclosure_date = "Please enter the disclosure date";                                 
-        document.getElementById('inputDocumentDisclosureDate').setCustomValidity("invalid");
-        return true;
-      }
-      try {
-        var date = Utils.ddmmyyyytoDate(this.disclosure_date)
-      } catch (e) {
-        this.error.disclosure_date = true;
-        this.errorText.disclosure_date = "Invalid date format, use dd/mm/yyyy";                                 
-        document.getElementById('inputDocumentDisclosureDate').setCustomValidity("invalid");
-        return false;
-      }
-      if(date > new Date()){ //prevent future dates
-        this.error.disclosure_date = true;
-        this.errorText.disclosure_date = "Disclosure date should be today or earlier";                                 
-        document.getElementById('inputDocumentDisclosureDate').setCustomValidity("invalid");
-        return false;
-      }
-      
-      var validation = this.crossValidationDisclosureDateFinancialYear('disclosure_date')
-      if(!validation.valid){
-        this.error.disclosure_date = true
-        this.errorText.disclosure_date = validation.message                                 
-        document.getElementById('inputDocumentDisclosureDate').setCustomValidity("invalid");
-        return false;
-      }
-      
-      var validation = this.crossValidationDisclosureDateSubmissionDate('disclosure_date')
-      if(!validation.valid){
-        this.error.disclosure_date = true
-        this.errorText.disclosure_date = validation.message                                 
-        document.getElementById('inputDocumentDisclosureDate').setCustomValidity("invalid");
-        return false;
-      }
-      
-      this.error.disclosure_date = false;
-      this.errorText.disclosure_date = "No error";
-      document.getElementById('inputDocumentDisclosureDate').setCustomValidity("");
-      return true;
+      let self = this
+      return this.validateField('disclosure_date', submit, function(){
+        var disclosure_date = Utils.ddmmyyyytoDate(self.disclosure_date).toISOString().slice(0, -5)
+        var submission_date = ''
+        var financial_year = parseInt(self.financial_year)
+        try{ submission_date = Utils.ddmmyyyytoDate(self.submission_date).toISOString().slice(0, -5) } catch(e) {}
+        if(self.showFinancialYear)       
+          Validate.validateDisclosureDate(disclosure_date, submission_date, financial_year)
+        else
+          Validate.validateDisclosureDate(disclosure_date, submission_date)
+      } )
     },
     
     validateSubmissionDate(submit) {
-      if (this.submission_date === "") {
-        this.error.submission_date = true;
-        this.errorText.submission_date = "Please enter the submission date";                                 
-        document.getElementById('inputDocumentSubmissionDate').setCustomValidity("invalid");
-        return true;
-      }
-
-      try {
-        var date = Utils.ddmmyyyytoDate(this.submission_date);
-      } catch (e) {
-        this.error.submission_date = true;
-        this.errorText.submission_date = "Invalid date format, use dd/mm/yyyy";                                 
-        document.getElementById('inputDocumentSubmissionDate').setCustomValidity("invalid");
-        return false;
-      }
-      
-      if(date > new Date()){ //prevent future dates
-        this.error.submission_date = true;
-        this.errorText.submission_date = "Submission should be today or earlier";                                 
-        document.getElementById('inputDocumentSubmissionDate').setCustomValidity("invalid");
-        return false;
-      }
-      
-      var validation = this.crossValidationDisclosureDateSubmissionDate('submission_date')
-      if(!validation.valid){
-        this.error.submission_date = true
-        this.errorText.submission_date = validation.message                                 
-        document.getElementById('inputDocumentSubmissionDate').setCustomValidity("invalid");
-        return false;
-      }
-      
-      this.error.submission_date = false;
-      this.errorText.submission_date = "No error";
-      document.getElementById('inputDocumentSubmissionDate').setCustomValidity("");
-      return true;
+      let self = this
+      return this.validateField('submission_date', submit, function(){
+        var submission_date = Utils.ddmmyyyytoDate(self.submission_date).toISOString().slice(0, -5)
+        var disclosure_date = ''
+        try{ disclosure_date = Utils.ddmmyyyytoDate(self.disclosure_date).toISOString().slice(0, -5) } catch(e) {}
+        Validate.validateSubmissionDate(submission_date, disclosure_date)
+      } )
     },
 
     validateDocumentLanguage(submit) {
-      if (submit && this.document_language === "") {
-        this.error.document_language = true;
-        this.errorText.document_language = "Please select a document language";
-        document.getElementById('inputDocumentLanguage').setCustomValidity("invalid");
-        return false;
-      }
-      this.error.document_language = false;
-      this.errorText.document_language = "No error";
-      document.getElementById('inputDocumentLanguage').setCustomValidity("");
-      return true;
+      let self = this
+      return this.validateField('document_language', submit, function(){
+        Validate.validateDocumentLanguage(self.document_language, self.dictionary.languages)
+      } )
     },
 
-    validateComment(submit) {
-      if (submit && this.comment === "") {
-        this.error.comment = true
-        this.errorText.comment = 'Please define a title'
-        document.getElementById('inputComment').setCustomValidity("invalid");
-        return false
-      }      
-      
-      this.error.comment = false;
-      this.errorText.comment = "No error";
-      document.getElementById('inputComment').setCustomValidity("");
-      return true;
+    validateTitle(submit) {
+      let self = this
+      return this.validateField('title', submit, function(){
+        Validate.validateTitle(self.title)
+      } )
     },
 
     validateFinancialYear(submit) {
       if(!this.showFinancialYear) return true;
-    
-      if (submit && this.financial_year === "") {
-        this.error.financial_year = true;
-        this.errorText.financial_year = "Insert the financial year";
-        document.getElementById('inputFinancialYear').setCustomValidity("invalid");
-        return false;
-      }
-
-      var number = this.financial_year;
-      if (number !== String(parseInt(number, 10))) {
-        this.error.financial_year = true;
-        this.errorText.financial_year = "Incorrect year";
-        document.getElementById('inputFinancialYear').setCustomValidity("invalid");
-        return false;
-      }
-      
-      if(parseInt(number,10) > (new Date()).getFullYear()){ //prevent future dates
-        this.error.financial_year = true;
-        this.errorText.financial_year = "Financial year should be current year or earlier";                                 
-        document.getElementById('inputFinancialYear').setCustomValidity("invalid");
-        return false;
-      }
-      
-      var validation = this.crossValidationDisclosureDateFinancialYear('financial_year')
-      if(!validation.valid){
-        this.error.financial_year = true
-        this.errorText.financial_year = validation.message
-        this.$nextTick(function () {
-          document.getElementById('inputFinancialYear').setCustomValidity("invalid");
-        })        
-        return false;
-      }     
-      
-      this.error.financial_year = false;
-      this.errorText.financial_year = "No error";
-      document.getElementById('inputFinancialYear').setCustomValidity("");
-      return true;
+      let self = this
+      return this.validateField('financial_year', submit, function(){
+        var disclosure_date = ''
+        var financial_year = parseInt(self.financial_year)
+        if (self.financial_year !== String(financial_year))
+          throw new Error('Incorrect year')
+        try{ disclosure_date = Utils.ddmmyyyytoDate(self.disclosure_date).toISOString().slice(0, -5) } catch(e) {}
+        Validate.validateFinancialYear(financial_year, disclosure_date)
+      } )
     },
 
     validateFile(submit) {
-      if (submit && document.getElementById("inputFile").files.length === 0) {
-        this.error.file = true;
-        this.errorText.file = "Please select a file";
-        document.getElementById('inputFile').setCustomValidity("invalid");
-        return false;
+      if (submit && document.getElementById('input_file').files.length === 0) {
+        this.showInvalid('file', 'Please select a file')
+        return false
       }
       
-      var f = document.getElementById("inputFile").files[0]
+      var f = document.getElementById('input_file').files[0]
       /*
        * f.lastModified: 1540809732971
        * f.lastModifiedDate: Mon Oct 29 2018 11:42:12 GMT+0100 (Central European Standard Time) {}
@@ -974,71 +822,13 @@ export default {
        */
       
       if(f.size > this.serverConfig.maximum_file_size) {
-        this.error.file = true;
-        this.errorText.file = 'Maximum upload file size: '+Utils.prettyFileSize(this.serverConfig.maximum_file_size);
-        document.getElementById('inputFile').setCustomValidity("invalid");        
-        return false;        
+        this.showInvalid('input_file', 'Maximum upload file size: '+Utils.prettyFileSize(this.serverConfig.maximum_file_size))
+        return false                
       }
-      this.error.file = false;
-      this.errorText.file = "No error";
-      document.getElementById('inputFile').setCustomValidity("");
+      this.hideInvalid('file')
       return true;
     },
-    
-    crossValidationDisclosureDateFinancialYear(who){
-      if(!this.showFinancialYear){
-        return { valid: true, message: 'No error'}
-      }
-      
-      try{
-        var discDate = Utils.ddmmyyyytoDate(this.disclosure_date)
-        var yearDisc = discDate.getFullYear()
-      }catch(error){
-        if(who == 'disclosure_date') return { valid: false, message: 'Invalid date format, use dd/mm/yyyy' }
-        if(who == 'financial_year') return { valid: true, message: 'No error' }
-      }
-      
-      var year = parseInt(this.financial_year, 10)
-      if (this.financial_year !== String(year)){
-        if(who == 'disclosure_date') return { valid: true, message: 'No error' }
-        if(who == 'financial_year') return { valid: false, message: 'Incorrect year' }
-      }
-      
-      if(year != yearDisc - 1 && year != yearDisc) {
-        return {
-          valid: false,
-          message: 'Please check financial year and disclosure date'
-        }        
-      }
-      
-      return { valid: true, message: 'No error'}      
-    },
-    
-    crossValidationDisclosureDateSubmissionDate(who){
-      try{
-        var discDate = Utils.ddmmyyyytoDate(this.disclosure_date)
-      }catch(error){
-        if(who == 'disclosure_date') return { valid: false, message: 'Invalid date format, use dd/mm/yyyy' }
-        if(who == 'submission_date') return { valid: true, message: 'No error' }
-      }
-      
-      try{
-        var submDate = Utils.ddmmyyyytoDate(this.submission_date)
-      }catch(error){
-        if(who == 'disclosure_date') return { valid: true, message: 'No error' }
-        if(who == 'submission_date') return { valid: false, message: 'Invalid date format, use dd/mm/yyyy' }
-      }
-        
-      if(discDate > submDate) {
-        return {
-          valid: false,
-          message: 'Submission date should be after disclosure date'
-        }          
-      }
-        
-      return {valid: true, message: 'No error'}
-    },
-    
+
     showInfo(msg){
       this.alert.info = true
       this.alertText.info = msg
