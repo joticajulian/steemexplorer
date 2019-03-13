@@ -300,7 +300,7 @@ export default {
           const id = initialData[i]._id;
           const value = initialData[i].comment;
           const inputValue = searchInputData['title'];
-          if (value.indexOf(inputValue) !== -1) {
+          if (value.toLowerCase().indexOf(inputValue.toLowerCase()) !== -1) {
             if (distinct.indexOf(id) === -1) {
               distinct.push(id);
               finalData.push(initialData[i]);
