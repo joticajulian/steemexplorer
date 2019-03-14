@@ -1,0 +1,17 @@
+{
+  "total": 2,
+  "per_page": 15,
+  "current_page": 1,
+  "last_page": 1,
+  "from": 1,
+  "to": 2,
+  "data": [
+    {
+      "id": "1",
+      "name": "Google S.A."
+    }, {
+      "id": "2",
+      "name": "Facebook S.A."
+    }
+ ]
+}
