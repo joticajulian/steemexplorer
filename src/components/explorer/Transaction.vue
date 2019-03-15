@@ -15,6 +15,9 @@
     <div v-else>
       <div class="loader"></div>
     </div>
+    <div v-if="alert.info" class="alert alert-info" role="alert">{{alert.infoText}}</div>
+    <div v-if="alert.success" class="alert alert-success" role="alert" v-html="alert.successText"></div>
+    <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alert.dangerText}}</div>
     </div>
   </div>
 </template>
@@ -55,7 +58,9 @@ export default {
   ],
   
   created() {
-    this.fetchData()
+    this.getChainProperties().then( ()=> {
+      this.fetchData()
+    })
   },
 
   watch: {
@@ -84,7 +89,11 @@ export default {
         this.tx = this.block.transactions[index]
         this.tx.block_num = blocknum
       } else {
-        this.tx = {};          
+        this.tx = {
+          operations: [],
+          transaction_id: this.$route.params.tx,
+          block_num: blocknum
+        };          
       }
       this.exists = true;      
     },

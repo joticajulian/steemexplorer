@@ -17,14 +17,17 @@ export default new Vuex.Store({
         memo: null
       }
     },
-    rpc_node: {
-      current: Config.RPC_NODES[0],
-      current_id: 0,
-      fails: 0,
-      fail_rounds: 0,
-      max_fails: 1,
-      max_fail_rounds: 1000000
+    chain: {
+      feed_price: null,
+      steem_per_mvests: null,
+      reward_balance: null,
+      recent_claims: null,
+      sbd_per_rshare: null,
+      steem_per_rshare: null,
     },
+    rpc_node: Config.RPC_NODES[0],
+    max_fails: 1,
+    max_fail_rounds: 1000000
   },
   mutations: {
 

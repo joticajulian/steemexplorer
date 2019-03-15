@@ -94,6 +94,9 @@
       </div>
     </div>
     </div>
+    <div v-if="alert.info" class="alert alert-info" role="alert">{{alert.infoText}}</div>
+    <div v-if="alert.success" class="alert alert-success" role="alert" v-html="alert.successText"></div>
+    <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alert.dangerText}}</div>
     </div>
   </div>
 </template>
@@ -154,9 +157,11 @@ export default {
   ],
   
   created() {
-    this.getDynamicGlobalProperties();
-    this.ints.globalprops = setInterval(this.getDynamicGlobalProperties, 12000);
-    this.ints.blocks = setInterval(this.fetchBlocks, 3000);
+    this.getChainProperties().then( ()=> {
+      this.getDynamicGlobalProperties();
+      this.ints.globalprops = setInterval(this.getDynamicGlobalProperties, 12000);
+      this.ints.blocks = setInterval(this.fetchBlocks, 3000);
+    })
   },
   
   beforeDestroy() {

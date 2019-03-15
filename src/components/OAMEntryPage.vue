@@ -153,43 +153,45 @@
         </div>
         <div class="row">          
           <div class="col-md-6">
-          <div class="custom-file">            
-            <input type="file" class="custom-file-input" id="input_file" @change="validateFile" :class="{'is-invalid': error.file }">
-            <label class="custom-file-label" for="input_file">Choose file...</label>
-            <div v-if="error.file" class="invalid-feedback">{{ errorText.file }}</div>          
-          </div>
+            <div class="custom-file">            
+              <input type="file" class="custom-file-input" id="input_file" @change="validateFile" :class="{'is-invalid': error.file }">
+              <label class="custom-file-label" for="input_file">Choose file...</label>
+              <div v-if="error.file" class="invalid-feedback">{{ errorText.file }}</div>          
+            </div>
           </div>
         </div>
         <div class="row mt-4">
-          <div class="form-group col-md-6 align-bottom" style="padding-top: 8px;">
+          <div class="form-group col-12 align-bottom" style="padding-top: 8px;">
             <button v-on:click="submit" class="btn btn-primary btn-large mr-2" :disabled="sending"><div v-if="sending" class="mini loader"></div>Submit</button>
+            <div v-if="sending" class="btn">
+              <button v-on:click="abort" class="btn btn-secondary mr-2" :disabled="aborting"><div v-if="aborting" class="mini loader"></div>Abort</button>
+            </div>  
             <button v-on:click="clear"  class="btn btn-secondary btn-large">Clear</button>
           </div>            
         </div>
-        <div v-if="alert.info" class="alert alert-info" role="alert">{{alertText.info}}</div>
-        <div v-if="alert.success" class="alert alert-success" role="alert" v-html="alertText.success"></div>
-        <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alertText.danger}}</div>
+        <div v-if="alert.info" class="alert alert-info" role="alert">{{alert.infoText}}</div>
+        <div v-if="alert.success" class="alert alert-success" role="alert" v-html="alert.successText"></div>
+        <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alert.dangerText}}</div>
       </div>
     </div>    
   </div>
 </template>
 
 <script>
-import debounce from "lodash.debounce";
-import axios from "axios";
-import Crypto from "crypto";
+import debounce from 'lodash.debounce'
+import axios from 'axios'
+import Crypto from 'crypto'
 import { Client } from 'eftg-dsteem'
 
-import Config from "@/config.js";
-import Utils from "@/js/utils.js";
+import Config from '@/config.js'
+import Utils from '@/js/utils.js'
 import Validate from '@/js/validate.js'
-import Dictionary from "@/mixins/Dictionary.js";
+import Dictionary from '@/mixins/Dictionary.js'
 import SteemClient from '@/mixins/SteemClient.js'
-import HeaderEFTG from "@/components/HeaderEFTG";
-import FooterEFTG from "@/components/FooterEFTG";
+import HeaderEFTG from '@/components/HeaderEFTG'
 
 export default {
-  name: "OAMEntryPage",
+  name: 'OAMEntryPage',
   
   data() {
     return {
@@ -235,23 +237,12 @@ export default {
         title: "No error",
         financial_year: "No error",
         file: "No error"
-      },
-      alert: {
-        success: false,
-        danger: false,
-        info: false,
-      },
-      alertText: {
-        success: '',
-        danger: '',
-        info: ''
-      },
+      }
     };
   },
   
   components: {
-    HeaderEFTG,
-    FooterEFTG
+    HeaderEFTG
   },
   
   mixins: [
@@ -271,7 +262,7 @@ export default {
     this.debounced_validateDocumentLanguage = debounce(this.validateDocumentLanguage, 300)
     this.debounced_validateTitle            = debounce(this.validateTitle           , 300)
     this.debounced_validateFinancialYear    = debounce(this.validateFinancialYear   , 300)
-    this.debounced_validateField            = debounce(this.validateField           , 300)     
+    this.debounced_validateField            = debounce(this.validateField           , 300)
   },
   mounted() {
     this.startEventListenerFile();
@@ -342,6 +333,9 @@ export default {
       
       //Principal function to submit the file and data
       async function submit_async() {
+        self.RPCnode_setMaxFails(1)
+        self.RPCnode_setMaxFailRounds(2)
+
         //Validation of data
         var valid = true;
         valid = self.validateIssuerName(true) && valid;
@@ -457,7 +451,7 @@ export default {
             }
           } catch (error) {
             console.log('It was not possible to load the previous post: ')
-            console.log(error)
+            throw error
           }
         }
         
@@ -477,14 +471,13 @@ export default {
           .update(fileData)
           .digest();
         const signature = privKey.sign(imageHash).toString();
-        console.log("signature:" + signature);
-
+        
         // Uploading the file
 
         var formFile = new FormData();
         formFile.append("pdf", localFile);
         var urlWithSignature =
-          Config.IMAGE_HOSTER + "/" + username + "/" + signature;
+          Config.CDN + username + '/' + signature;
 
         // TODO: try - catch to check if the file size is too long and there is an error
         
@@ -501,9 +494,11 @@ export default {
             var total = progressEvent.total
             self.showInfo('Uploading file '+Math.floor(loaded*100/total)+'%')                        
           },          
-        })        
+        })
         
-        var pdfUrl = response.data.url;
+        var pdfUrl = response.data.url
+        console.log('Document uploaded to CDN')
+        console.log(response.data.url)
         
         var body = "[[pdf link]](" + pdfUrl + ")";
 
@@ -517,39 +512,15 @@ export default {
           title: self.title
         };
 
-        console.log("post");
-        console.log(post);
-        
-        // new Date(Date.now() + expireTime).toISOString().slice(0, -5),
-        /*var head_block_number = 2854535; 
-        var head_block_id = "002b8e87b878c726a2f4c21a799d35cd576e890c"     
-        var prefix = Buffer.from(head_block_id, 'hex')
-        var prefix2 = prefix.readUInt32LE(4);
-          
-        var op = {
-            "ref_block_num": head_block_number,
-            "ref_block_prefix": prefix2,
-            "expiration": "2018-12-19T19:20:15",
-            "operations": [["comment", post ]],
-            "extensions": []            
-          };
-          
-        var signed_transaction = self.client.broadcast.sign(op , privKey);
-        
-        var params = [signed_transaction];*/ 
-        
         self.showInfo('Sending to the blockchain...')
-        
-        //var result = await self.client.broadcast.call("broadcast_transaction_synchronous", params);                              
-        //var result = await self.client.broadcast.send(signed_transaction);
 
         //var result = await self.client.broadcast.comment(post, privKey);
         var result = await self.steem_broadcast_comment(post, privKey)
         
-        self.showAlert(true,'Document published! <a href="'+Config.EXPLORER+'@'+username+'/'+permlink+'" class="alert-link" target="_blank">@'+username+'/'+permlink+'</a>');
+        self.showSuccess('Document published! <a href="'+Config.EXPLORER+'@'+username+'/'+permlink+'" class="alert-link" target="_blank">@'+username+'/'+permlink+'</a>');
         self.lastPermlink = permlink;
         
-        console.log("document publised!");
+        console.log('Document publised in the blockchain!');
         console.log(result);
       }
       
@@ -566,8 +537,14 @@ export default {
         self.hideInfo()
         
         console.log(error);
-        self.showAlert(false,error.message);              
+        //self.showAlert(false,error.message);
+        self.showDanger(error.message)              
       });
+    },
+
+    abort() {
+      this.abortNodeConnection = true
+      if(this.sending) this.aborting = true
     },
     
     onLogin() {
@@ -609,7 +586,8 @@ export default {
     },
 
     clearFile() {
-      document.getElementById("input_file").labels[0].childNodes[0].data = 'Choose file...'
+      //document.getElementById("input_file").labels[0].childNodes[0].data = 'Choose file...'
+      document.getElementById('input_file').nextElementSibling.innerHTML = 'Choose file...'
       document.getElementById('input_file').setAttribute('type','')
       document.getElementById('input_file').setAttribute('type','file')
     },
@@ -659,22 +637,6 @@ export default {
       });
     },
     
-    showAlert(success, message){
-      if(success) {
-        this.alert.success = true;
-        this.alertText.success = message;
-        
-        this.alert.danger = false;
-        this.alertText.danger = '';
-      }else{
-        this.alert.success = false;
-        this.alertText.success = '';
-        
-        this.alert.danger = true;
-        this.alertText.danger = message;
-      }
-    },
-
     loadJSON(variable, url){
       let self = this;
       axios.get(url).then(function(result){
@@ -819,41 +781,11 @@ export default {
        */
       
       if(f.size > this.serverConfig.maximum_file_size) {
-        this.showInvalid('input_file', 'Maximum upload file size: '+Utils.prettyFileSize(this.serverConfig.maximum_file_size))
+        this.showInvalid('file', 'Maximum upload file size: '+Utils.prettyFileSize(this.serverConfig.maximum_file_size))
         return false                
       }
       this.hideInvalid('file')
       return true;
-    },
-
-    showInfo(msg){
-      this.alert.info = true
-      this.alertText.info = msg
-    },
-    
-    hideInfo(){
-      this.alert.info = false
-      this.alertText.info = ''
-    },
-    
-    showSuccess(msg) {
-      this.alert.success = true
-      this.alertText.success = msg
-    },
-    
-    hideSuccess() {
-      this.alert.success = false
-      this.alertText.success = ''
-    },
-    
-    showDanger(msg) {
-      this.alert.danger = true
-      this.alertText.danger = msg
-    },
-    
-    hideDanger() {
-      this.alert.danger = false
-      this.alertText.danger = ''
     }
   }
 };

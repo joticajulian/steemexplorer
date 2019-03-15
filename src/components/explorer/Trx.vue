@@ -5,10 +5,10 @@
     </div
     ><span class="operation break-word">
       <div v-if="typeOp == 'curation_reward'">
-        <router-link :to="EXPLORER+'@'+op.curator">{{op.curator}}</router-link> curation reward: {{this.vests2sp(op.reward)}} for <router-link :to="link(op.comment_author,op.comment_permlink)">{{linkCut(op.comment_author,op.comment_permlink)}}</router-link>
+        <router-link :to="EXPLORER+'@'+op.curator">{{op.curator}}</router-link> curation reward: {{this.vests2sp(op.reward)}} for <router-link :to="EXPLORER+link(op.comment_author,op.comment_permlink)">{{linkCut(op.comment_author,op.comment_permlink)}}</router-link>
       </div>
       <div v-else-if="typeOp == 'vote'">
-        <router-link :to="EXPLORER+'@'+op.voter">{{op.voter}}</router-link> upvote <router-link :to="link(op.author,op.permlink)">{{linkCut(op.author, op.permlink)}}</router-link> ({{(op.weight/100).toFixed(2)}}%)
+        <router-link :to="EXPLORER+'@'+op.voter">{{op.voter}}</router-link> upvote <router-link :to="EXPLORER+link(op.author,op.permlink)">{{linkCut(op.author, op.permlink)}}</router-link> ({{(op.weight/100).toFixed(2)}}%)
       </div>
       <div v-else-if="typeOp == 'transfer'">
         <router-link :to="EXPLORER+'@'+op.from">{{op.from}}</router-link> transfer {{op.amount}} to <router-link :to="EXPLORER+'@'+op.to">{{op.to}}</router-link>. Memo: <span class="memo">{{op.memo}}</span>
@@ -17,10 +17,10 @@
         <router-link :to="EXPLORER+'@'+op.delegator">{{op.delegator}}</router-link> delegate <router-link :to="EXPLORER+'@'+op.delegatee">{{op.delegatee}}</router-link> {{this.vests2sp(op.vesting_shares)}}
       </div>
       <div v-else-if="typeOp == 'comment' && op.parent_author != ''">
-        <router-link :to="EXPLORER+'@'+op.author">{{op.author}}</router-link> replied to <router-link :to="link(op.parent_author,op.parent_permlink)">{{linkCut(op.parent_author,op.parent_permlink)}}</router-link>. <span class="memo">{{op.body.substring(0,140)}}{{op.body.length>140?'...':''}}</span>
+        <router-link :to="EXPLORER+'@'+op.author">{{op.author}}</router-link> replied to <router-link :to="EXPLORER+link(op.parent_author,op.parent_permlink)">{{linkCut(op.parent_author,op.parent_permlink)}}</router-link>. <span class="memo">{{op.body.substring(0,140)}}{{op.body.length>140?'...':''}}</span>
       </div>
       <div v-else-if="typeOp == 'comment' && op.parent_author == ''">
-        <router-link :to="EXPLORER+'@'+op.author">{{op.author}}</router-link> authored a post: <router-link :to="link(op.author,op.permlink)">{{linkCut(op.author,op.permlink)}}</router-link>
+        <router-link :to="EXPLORER+'@'+op.author">{{op.author}}</router-link> authored a post: <router-link :to="EXPLORER+link(op.author,op.permlink)">{{linkCut(op.author,op.permlink)}}</router-link>
       </div>
       <div v-else-if="typeOp == 'transfer_to_vesting'">
         <router-link :to="EXPLORER+'@'+op.from">{{op.from}}</router-link> power up {{op.amount}} to <router-link :to="EXPLORER+'@'+op.to">{{op.to}}</router-link>
@@ -62,16 +62,16 @@
         <router-link :to="EXPLORER+'@'+op.account">{{op.account}}</router-link> claim reward: {{op.reward_sbd}}, {{op.reward_steem}}, {{this.vests2sp(op.reward_vests)}}
       </div>
       <div v-else-if="typeOp == 'comment_benefactor_reward'">
-        <router-link :to="EXPLORER+'@'+op.benefactor">{{op.benefactor}}</router-link> benefactor reward: {{op.sbd_payout}}, {{op.steem_payout}}, {{this.vests2sp(op.vesting_payout)}} for <router-link :to="link(op.author,op.permlink)">{{linkCut(op.author,op.permlink)}}</router-link>
+        <router-link :to="EXPLORER+'@'+op.benefactor">{{op.benefactor}}</router-link> benefactor reward: {{op.sbd_payout}}, {{op.steem_payout}}, {{this.vests2sp(op.vesting_payout)}} for <router-link :to="EXPLORER+link(op.author,op.permlink)">{{linkCut(op.author,op.permlink)}}</router-link>
       </div>
       <div v-else-if="typeOp == 'author_reward'">
-        <router-link :to="EXPLORER+'@'+op.author">{{op.author}}</router-link> author reward: {{op.sbd_payout}}, {{op.steem_payout}}, {{this.vests2sp(op.vesting_payout)}} for <router-link :to="link(op.author,op.permlink)">{{linkCut(op.author,op.permlink)}}</router-link>
+        <router-link :to="EXPLORER+'@'+op.author">{{op.author}}</router-link> author reward: {{op.sbd_payout}}, {{op.steem_payout}}, {{this.vests2sp(op.vesting_payout)}} for <router-link :to="EXPLORER+link(op.author,op.permlink)">{{linkCut(op.author,op.permlink)}}</router-link>
       </div>
       <div v-else-if="typeOp == 'custom_json' && op.id == 'sm_price_feed'">
         SteemMonsters feed price: Steem ${{op.json.steem}}. SBD ${{op.json.sbd}}
       </div>
       <div v-else-if="typeOp == 'custom_json' && op.id == 'follow' && op.json[0] == 'reblog'">
-        <router-link :to="EXPLORER+'@'+op.json[1].account">{{op.json[1].account}}</router-link> reblog <router-link :to="link(op.json[1].author,op.json[1].permlink)">{{linkCut(op.json[1].author, op.json[1].permlink)}}</router-link>
+        <router-link :to="EXPLORER+'@'+op.json[1].account">{{op.json[1].account}}</router-link> reblog <router-link :to="EXPLORER+link(op.json[1].author,op.json[1].permlink)">{{linkCut(op.json[1].author, op.json[1].permlink)}}</router-link>
       </div>
       <div v-else-if="typeOp == 'custom_json' && op.id == 'follow' && op.json[0] == 'follow'">
         <router-link :to="EXPLORER+'@'+op.json[1].follower">{{op.json[1].follower}}</router-link> 
@@ -117,7 +117,9 @@ export default {
   ],
   
   created: function(){
-    this.processTx(this.tx);
+    this.getChainProperties().then( ()=> {
+      this.processTx(this.tx);
+    })
   },
   
   watch: {
@@ -149,10 +151,17 @@ export default {
         this.blockNum = newTx[1].block;
         ope = newTx[1].op[1];        
       }else{ //block
-        this.typeOp = newTx.operations[0][0];
-        this.trx_id = newTx.transaction_id;        
-        this.blockNum = newTx.block_num;
-        ope = newTx.operations[0][1];        
+        if(newTx.operations.length > 0){
+          this.typeOp = newTx.operations[0][0];
+          this.trx_id = newTx.transaction_id;        
+          this.blockNum = newTx.block_num;
+          ope = newTx.operations[0][1];
+        }else{
+          this.typeOp = 'No operations'
+          this.trx_id = newTx.transaction_id;
+          this.blockNum = newTx.block_num;
+          ope = {}
+        }        
       }
       
       if(this.typeOp == 'custom_json'){ 

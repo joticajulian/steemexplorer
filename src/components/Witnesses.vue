@@ -6,6 +6,7 @@
       <div v-if="EFTG_HARDFORK_0_1 && this.$store.state.auth.logged" class="text-right mb-3">
         <button class="btn btn-primary" @click="toggleEdit">Edit</button>
       </div>
+      <div v-if="witnesses.length > 0">
       <table class="table">
         <thead>
           <tr class="table-primary">
@@ -55,15 +56,19 @@
           </tr>
         </tbody>
       </table>
+      </div>
+      <div v-else>
+        <div class="loader"></div>
+      </div>
       <div v-if="this.$store.state.auth.logged" class="row mt-4">
         <div class="form-group col-12">
           <button @click="save" class="btn btn-primary btn-large mr-2" :disabled="saving"><div v-if="saving" class="mini loader"></div>Save</button>
           <button @click="reset" class="btn btn-secondary btn-large">Reset</button>
         </div>            
       </div>
-      <div v-if="alert.info" class="alert alert-info" role="alert">{{alertText.info}}</div>
-      <div v-if="alert.success" class="alert alert-success" role="alert" v-html="alertText.success"></div>
-      <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alertText.danger}}</div>
+      <div v-if="alert.info" class="alert alert-info" role="alert">{{alert.infoText}}</div>
+      <div v-if="alert.success" class="alert alert-success" role="alert" v-html="alert.successText"></div>
+      <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alert.dangerText}}</div>
     </div>    
   </div>
 </template>
@@ -94,19 +99,6 @@ export default {
       EFTG_HARDFORK_0_1: Config.EFTG_HARDFORK_0_1,
       MAX_VALUE_SLIDER: 10000,
       EXPLORER: Config.EXPLORER,
-
-      error: {},
-      errorText: {},
-      alert: {
-        success: false,
-        danger: false,
-        info: false,
-      },
-      alertText: {
-        success: '',
-        danger: '',
-        info: ''
-      },
     };
   },
   
@@ -119,7 +111,9 @@ export default {
   ],
   
   created() {
-    this.loadWitnessesByVote()
+    this.getChainProperties().then( ()=> {
+      this.loadWitnessesByVote()
+    })
   },
 
   methods: {
@@ -392,56 +386,6 @@ export default {
         
         this.$set(this.witnesses, i, wit)
       }      
-    },
-    
-    //validation
-    /*validateIssuerName(submit) {
-      if (submit && this.issuer_name === "") {
-        this.error.issuer_name = true;
-        this.errorText.issuer_name = "Issuer name is empty";
-        document.getElementById('inputIssuerName').setCustomValidity("invalid");
-        return false;
-      }
-      if (this.issuer_name.length > 200) {
-        this.error.issuer_name = true;
-        this.errorText.issuer_name = "The issuer name is too long";
-        document.getElementById('inputIssuerName').setCustomValidity("invalid");
-        return false;
-      }
-      this.error.issuer_name = false;
-      this.errorText.issuer_name = "No error";
-      document.getElementById('inputIssuerName').setCustomValidity("");
-      return true;
-    },*/
-
-    showInfo(msg){
-      this.alert.info = true
-      this.alertText.info = msg
-    },
-    
-    hideInfo(){
-      this.alert.info = false
-      this.alertText.info = ''
-    },
-    
-    showSuccess(msg) {
-      this.alert.success = true
-      this.alertText.success = msg
-    },
-    
-    hideSuccess() {
-      this.alert.success = false
-      this.alertText.success = ''
-    },
-    
-    showDanger(msg) {
-      this.alert.danger = true
-      this.alertText.danger = msg
-    },
-    
-    hideDanger() {
-      this.alert.danger = false
-      this.alertText.danger = ''
     }
   }
 };

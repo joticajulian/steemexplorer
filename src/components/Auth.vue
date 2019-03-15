@@ -17,11 +17,13 @@
       </div>
       <div class="row">
         <div class="form-group col-md-12 align-bottom" style="padding-top: 8px;">
-          <button @click="try_to_login" class="btn btn-primary mr-2">Login</button>
-          <button @click="close"  class="btn btn-secondary">Cancel</button>
+          <button @click="try_to_login" class="btn btn-primary mr-2" :disabled="sending"><div v-if="sending" class="mini loader"></div>Login</button>
+          <button @click="close"  class="btn btn-secondary" :disabled="aborting"><div v-if="aborting" class="mini loader"></div>Cancel</button>
         </div>
       </div>
-      <div v-if="error"  class="alert alert-danger" role="alert">{{errorText}}</div>   
+      <div v-if="alert.info" class="alert alert-info" role="alert">{{alert.infoText}}</div>
+      <div v-if="alert.success" class="alert alert-success" role="alert" v-html="alert.successText"></div>
+      <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alert.dangerText}}</div>
     </div>
   </div>  
 </template>
@@ -39,7 +41,6 @@ export default {
     return {
       username: "",
       password: "",
-      //savePassword: false,
       auth: {
         user: "",
         logged: false,
@@ -50,9 +51,7 @@ export default {
           posting: null,
           memo: null
         }
-      },
-      error: false,
-      errorText: "No error"
+      }
     };
   },
 
@@ -64,30 +63,26 @@ export default {
     try_to_login() {
       let self = this;
       async function main() {
+        self.sending = true
+        self.hideDanger()
+        self.hideInfo()
         var auth = await self.login(self.username, self.password);
         if (auth.logged) {
           self.$store.state.auth = auth
-          self.$emit("login");
-          
-          //save password in the browser if the user asks for it
-          /*if (self.savePassword) {
-            localStorage.username = self.username;
-            localStorage.password = self.password;
-          }*/
+          self.$emit("login")
         }
+        self.sending = false
       }
       main().catch(function(error) {
-        self.error = true;
         console.log(error);
-        if(error.name == 'UserError') {
-          self.errorText = error.message;
-        }else if(error.name == 'PasswordError'){
-          self.errorText = error.message;
-        }else if(error.name === 'RPCError'){
-          self.errorText = error.message
+        if(error.name === 'UserError' || error.name === 'PasswordError' || 
+           error.name === 'RPCError'  || error.name === 'RPCFailRounds' || error.name === 'Abort'
+        ) {
+          self.showDanger(error.message)
         }else {
-          self.errorText = 'Password format mismatch';        
-        }                
+          self.showDanger('Password format mismatch')        
+        }
+        self.sending = false
       });
     },
 
@@ -101,11 +96,11 @@ export default {
         e.name = "UserError";
         throw e;
       }
-      
+      this.RPCnode_setMaxFails(1)
+      this.RPCnode_setMaxFailRounds(2)
+
       // Check if the user exists      
       const accounts = await this.steem_database_call('get_accounts',[[_username]])
-      console.log('we continue after steem database call. response:')
-      console.log(accounts)
       if (accounts.length == 0){        
         var e = new Error("User @" + _username + " does not exists");
         e.name = "UserError";
@@ -205,13 +200,14 @@ export default {
 
       console.log("Correct " + typeOfPassword + " key");
       console.log("Welcome @" + _username);
-      this.error = false;
-      this.errorText = "No error";
+      this.hideDanger()
 
       return auth;
     },
 
     close() {
+      this.abortNodeConnection = true
+      if(this.sending) this.aborting = true
       this.$emit("close");
     },
 

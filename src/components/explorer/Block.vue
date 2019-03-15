@@ -24,6 +24,9 @@
     <div v-else>
       <div class="loader"></div>
     </div>
+    <div v-if="alert.info" class="alert alert-info" role="alert">{{alert.infoText}}</div>
+    <div v-if="alert.success" class="alert alert-success" role="alert" v-html="alert.successText"></div>
+    <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alert.dangerText}}</div>
     </div>        
   </div>
 </template>
@@ -63,7 +66,9 @@ export default {
   ], 
   
   created() {
-    this.fetchData()
+    this.getChainProperties().then( ()=> {
+      this.fetchData()
+    })
   },
 
   watch: {

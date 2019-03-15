@@ -69,9 +69,9 @@
               </button>
             </div>            
           </div>
-          <div v-if="alert.info" class="alert alert-info" role="alert">{{alertText.info}}</div>
-          <div v-if="alert.success" class="alert alert-success" role="alert">{{alertText.success}}</div>
-          <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alertText.danger}}</div>
+          <div v-if="alert.info" class="alert alert-info" role="alert">{{alert.infoText}}</div>
+          <div v-if="alert.success" class="alert alert-success" role="alert" v-html="alert.successText"></div>
+          <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alert.dangerText}}</div>
         </div>
       
     </div>    
@@ -117,18 +117,8 @@ export default {
         reNewPassword: 'No error',
         warning1: 'No error',
         warning2: 'No error',
-      },      
-      alert: {
-        success: false,
-        danger: false,
-        info: false,
-      },
-      alertText: {
-        success: '',
-        danger: '',
-        info: '',
-      },
-    };
+      }
+    }
   },
   
   components: {
@@ -236,36 +226,6 @@ export default {
         self.sending = false
         console.log(error)
       })
-    },
-    
-    showInfo(msg){
-      this.alert.info = true
-      this.alertText.info = msg
-    },
-    
-    hideInfo(){
-      this.alert.info = false
-      this.alertText.info = ''
-    },
-    
-    showSuccess(msg) {
-      this.alert.success = true
-      this.alertText.success = msg
-    },
-    
-    hideSuccess() {
-      this.alert.success = false
-      this.alertText.success = ''
-    },
-    
-    showDanger(msg) {
-      this.alert.danger = true
-      this.alertText.danger = msg
-    },
-    
-    hideDanger() {
-      this.alert.danger = false
-      this.alertText.danger = ''
     },
 
     onLogin() { 
