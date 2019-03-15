@@ -192,8 +192,8 @@ export default {
       ],
       subclass: [],
       title: "",
-      searchApiUrl: Config.CDN.url + 'search.json',
-      elasticApiUrl: Config.ELASTIC.url
+      searchApiUrl: Config.CDN + 'search.json',
+      elasticApiUrl: Config.ELASTIC
     };
   },
   components: {
