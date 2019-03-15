@@ -163,7 +163,6 @@ export default {
     },
 
     async steem_database_call( method, params ) {
-      console.log('----call-----')
       return this.RPCnode_request( async function(client){
         return await client.database.call(method, params)
       }, this.onNodeProgress)
