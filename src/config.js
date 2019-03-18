@@ -1,7 +1,10 @@
 const config = {
   'production': {
     RPC_NODES : [
-      'https://api.eftg.eu'
+      'https://api.eftg.eu',
+      'https://rpc-germany.eftg.eu',
+      'https://rpc-luxembourg.eftg.eu',
+      'https://rpc-romania.eftg.eu'
     ],
     IMAGE_HOSTER : 'https://cdn.blkcc.xyz',
     ELASTIC : 'https://api.eftg.eu/pulsar/',
@@ -58,7 +61,7 @@ const MAP = {
   INI_ZOOM : 4 ,
 }
 
-const APP_VERSION = 'pulsar/1.2.0';
+const APP_VERSION = 'pulsar/1.3.0';
 
 export default {
 
