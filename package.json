@@ -20,6 +20,7 @@
     "eftg-dsteem": "2.0.4",
     "leaflet.icon.glyph": "^0.2.0",
     "lodash.debounce": "4.0.8",
+    "marked": "^0.6.1",
     "moment": "^2.22.2",
     "pdfobject": "^2.1.1",
     "vue": "^2.6.7",
@@ -36,6 +37,7 @@
     "babel-eslint": "^10.0.1",
     "eslint": "^5.8.0",
     "eslint-plugin-vue": "^5.0.0",
+    "raw-loader": "^1.0.0",
     "vue-template-compiler": "^2.5.21",
     "vuetable-2": "^1.7.5"
   }
