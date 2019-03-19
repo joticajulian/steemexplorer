@@ -96,7 +96,7 @@ Besides, the European Commission (EC) encourages all actors (including OAMs) to 
 #### <span id="7" type="question">7. What does the solution architecture looks like?</span>
 
 A high level functional architecture diagram is being provided in the figure below.
-<div style="text-align: center;"><img src="/images/architecture.png" width="80%"/></div>
+<div style="text-align: center;"><img src="/images/architecture.png" style="width:100%; max-width: 30rem;"/></div>
 
 EFTG functional architecture diagram depicting interactions between the Blockchain-Based solution and the main two user roles (OAMs and Investors) as found at Business-as-Usual (BaU).
 
