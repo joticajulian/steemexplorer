@@ -2,7 +2,7 @@
   <div>
     <HeaderEFTG ref="headerEFTG"></HeaderEFTG>
     <div class="container">
-      <h2 class="mb-4">Frequently Asked Questions - EFTG</h2>              
+      <h2 class="mb-4">{{title}}</h2>
       <div role="tablist">
         <b-card no-body class="mb-1" v-for="(question, index) in questions">
           <b-card-header header-tag="header" role="tab">
@@ -30,6 +30,7 @@ export default {
   
   data() {
     return {
+      title: 'Frequently Asked Questions - EFTG',
       questions: {}
     }
   },
@@ -42,7 +43,10 @@ export default {
     var q = -1
     for(var i=0 ; i<xmlDoc.children.length ; i++) {
       var el = xmlDoc.children[i]
-      if(this.getType(el) === 'toc') continue
+      if(this.getType(el) === 'toc') {
+        this.title = el.textContent
+        continue
+      }
       if(this.getType(el) === 'question') {
         q++
         this.questions[q] = {}
