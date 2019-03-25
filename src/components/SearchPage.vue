@@ -63,7 +63,10 @@
     <div>
       <!-- Modal Component -->
       <b-modal id="mdPdfPreview" v-bind:title="docName" size="lg" centered>
-        <div id="pdfPreview" style="min-height: 600px !important; height: 600px !important;"></div>
+        <div v-if="fileExtension !== 'pdf'">This file is not a PDF. Extension detected: {{fileExtension}}</div>
+        <div v-else>
+          <div id="pdfPreview" style="min-height: 600px !important; height: 600px !important;"></div>
+        </div>
         <div slot="modal-footer" class="w-100">
           <div class="text-right">
             <button size="sm" class="btn ui basic button" @click="hideModal">
@@ -159,6 +162,7 @@ export default {
   data() {
     return {
       docName: 'PDF Download',
+      fileExtension: 'pdf',
       tempData: '',
       tempIndex: '',
       showModal: false,
@@ -263,7 +267,8 @@ export default {
         this.docName = data.comment + ' - ' + data.financial_year ;
         this.tempData = data;
         this.tempIndex = index;
-        this.viewPdf(data.document_url);
+        this.fileExtension = data.document_url.split('.').pop().toLowerCase()
+        if(this.fileExtension === 'pdf') this.viewPdf(data.document_url);
       } else if(action === "download-item") {
         this.hideModal();
         window.open(data.document_url, '_blank'); return false;
