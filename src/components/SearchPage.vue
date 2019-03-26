@@ -268,7 +268,7 @@ export default {
         this.tempData = data;
         this.tempIndex = index;
         this.fileExtension = data.document_url.split('.').pop().toLowerCase()
-        if(this.fileExtension === 'pdf') this.viewPdf(data.document_url);
+        if(this.fileExtension === 'pdf') this.$nextTick( ()=> { this.viewPdf(data.document_url) })
       } else if(action === "download-item") {
         this.hideModal();
         window.open(data.document_url, '_blank'); return false;
