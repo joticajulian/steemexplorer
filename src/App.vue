@@ -57,12 +57,12 @@ body {
   color: #AEAEAE;
 }
 
-#app .card-body{
+#app .card-body2{
   padding: 0.4rem;
 }
 
-#app .card-text{
-  min-height: 7rem;
+#app .card-text2{
+  min-height: 5rem;
 }
 
 #app .btn{
