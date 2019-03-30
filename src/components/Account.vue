@@ -181,7 +181,7 @@ export default {
         }
       });
       
-      steem.api.getAccountHistory(name,-1,0, function(err, result) {
+      steem.api.getAccountHistory(name,-1,1, function(err, result) {
         if (err || !result || result.length == 0) {
           console.log(err, result);
           //Update UI
