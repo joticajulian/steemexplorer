@@ -1,61 +1,51 @@
 <template>
   <div>
-    <HeaderEFTG ref="headerEFTG"></HeaderEFTG>
-    <div class="info0">
-      <h2 style="display: inline-block;">Witnesses Monitor Map</h2>
-      <div style="display: inline-block; float: right; padding-top: 4px;"><h3>Last validated blocks</h3></div>      
-    </div>
-    <div class="map">
-      <div id="map"></div>
-      <div class="last-witness">
+    <div class="row">
+      <div :class="{'col-md-6':showBlocks,'col-12':!showBlocks}">
+        <h2 v-if="showTitles">Witnesses Monitor Map</h2>
+        <div id="map" class="fixed-height"></div>
+        <div class="last-witness">
+          <div v-if="showLegend && lastBlocks.length > 0">
+            <div><img :src="icon.green" width="10px" class="mr-2"/>Current Witness: <router-link :to="'/explorer/@'+current_witness.witness">{{current_witness.visible_name}}</router-link> {{current_location}}</div>
+            <div><img :src="icon.blue"   width="10px" class="mr-2"/>OAM witness online</div>
+            <div><img :src="icon.yellow" width="10px" class="mr-2"/>European Commission witness online</div>
+            <div><img :src="icon.red" width="10px" class="mr-2"/>witness offline</div>
+          </div>
+        </div>
+      </div>
+      <div v-if="showBlocks" class="col-md-6 fixed-height">
+        <div v-if="showTitles" style="text-align: end; padding-top: 4px;"><h3>Last validated blocks</h3></div>
         <div v-if="lastBlocks.length > 0">
-          <div><img :src="icon.green" width="10px" class="mr-2"/>Current Witness: <router-link :to="'/explorer/@'+current_witness.witness">{{current_witness.visible_name}}</router-link> {{current_location}}</div>
-          <div><img :src="icon.blue"   width="10px" class="mr-2"/>OAM witness online</div>
-          <div><img :src="icon.yellow" width="10px" class="mr-2"/>European Commission witness online</div>
-          <div><img :src="icon.red" width="10px" class="mr-2"/>witness offline</div>
-        </div>
-      </div>
-    </div
-    ><div class="info-block">
-      <div v-if="lastBlocks.length > 0">
-        <div class="last-blocks">
-          <!--<h2>Blocks</h2>-->
-          <transition-group name="list-blocks" tag="div">
-            <div v-for="(b,key,index) in lastBlocks" :key="b.block_num" class="list-blocks-item">
-              <div class="block-left">
-                <router-link :to="EXPLORER+'b/'+b.block_num">{{b.block_num}}</router-link>
-                <span v-if="b.loaded">
-                  - {{b.size_txs}} transactions
-                  <span v-if="b.size_posts>0">
-                    ({{b.size_posts}} posts)
+          <div class="last-blocks">
+            <transition-group name="list-blocks" tag="div">
+              <div v-for="(b,key,index) in lastBlocks" :key="b.block_num" class="list-blocks-item">
+                <div class="block-left">
+                  <router-link :to="EXPLORER+'b/'+b.block_num">{{b.block_num}}</router-link>
+                  <span v-if="b.loaded">
+                    - {{b.size_txs}} transactions
+                    <span v-if="b.size_posts>0">
+                      ({{b.size_posts}} posts)
+                    </span>
                   </span>
-                </span>
-                <span v-else>
-                  loading...
-                </span>
-              </div
-              ><div class="block-right">
-                <span class="small">witness</span><br><router-link :to="EXPLORER+'@'+b.witness">{{b.witness_visible_name}}</router-link>
+                  <span v-else>
+                    loading...
+                  </span>
+                </div
+                ><div class="block-right">
+                  <span class="small">witness</span><br><router-link :to="EXPLORER+'@'+b.witness">{{b.witness_visible_name}}</router-link>
+                </div>
               </div>
-            </div>
-          </transition-group>
+            </transition-group>
+          </div>
         </div>
+        <div v-else>
+          <div class="loader"></div>
+        </div>
+        <div v-if="alert.info" class="alert alert-info" role="alert">{{alert.infoText}}</div>
+        <div v-if="alert.success" class="alert alert-success" role="alert" v-html="alert.successText"></div>
+        <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alert.dangerText}}</div>
       </div>
-      <div v-else>
-        <div class="loader"></div>
-      </div>
-      <div v-if="alert.info" class="alert alert-info" role="alert">{{alert.infoText}}</div>
-      <div v-if="alert.success" class="alert alert-success" role="alert" v-html="alert.successText"></div>
-      <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alert.dangerText}}</div>
     </div>
-    <div class="container">
-      <div class="row">
-        <div class="col-12">
-          <h2>What is a witness</h2>
-          <p>A witness is a node in the network (a server) that produces and seals 'blocks' and add them to the blockchain. These blocks contain information about the documents, reports, and user data. The witnesses are selected by approval voting.</p>
-        </div>
-      </div>
-    </div>    
   </div>
 </template>
 
@@ -87,6 +77,22 @@ import seednodes from '@/assets/seednodes.json';
 
 export default {
   name: 'Map',
+
+  props: {
+    showBlocks: {
+      type: Boolean,
+      default: true
+    },
+    showLegend: {
+      type: Boolean,
+      default: true
+    },
+    showTitles: {
+      type: Boolean,
+      default: true
+    }
+  },
+
   data () {
     return {
       witnesses: [],
@@ -116,12 +122,7 @@ export default {
     Dictionary,
     SteemClient
   ],
-  
-  components: {
-    HeaderEFTG,
-    FooterEFTG
-  },
-  
+
   created() {
     let self = this
     //this.client.database.getDynamicGlobalProperties().then(function(result){
@@ -548,17 +549,6 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 
-.info0{
-  display: block;
-  margin: 15px 50px;
-}
-
-.info-block{
-  display: block;
-  margin: 15px 50px;
-  height: 400px;
-}
-
 .map{
   display: block;
   margin: 15px 50px;  
@@ -566,8 +556,10 @@ export default {
 
 #map {
   width: 100%;
+}
+
+.fixed-height {
   height: 400px;
-  margin: 10px auto;  
 }
 
 .last-blocks{
