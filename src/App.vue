@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <router-view style="min-height:90vh;">
+    <router-view style="min-height:calc(100vh - 2.5rem);">
     </router-view>
     <FooterEFTG></FooterEFTG>
   </div>
@@ -38,7 +38,7 @@ body {
 #app .navbar{
   padding: 0 14px;
   background-color: #0F5494 !important;
-  margin-bottom: 2rem;  
+  margin-bottom: 1rem;
 }
 
 #app .navbar a{

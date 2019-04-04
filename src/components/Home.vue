@@ -4,17 +4,7 @@
     <div class="container">
       <h2 class="text-center mb-4">European Financial Transparency Gateway</h2>
       <div class="row">
-        <div class="col-md-8">
-          <div class="card">
-            <div class="card-body">
-              <Map :showBlocks="false" :showLegend="false" :showTitles="false"></Map>
-              <div class="text-center mt-2">
-                <router-link to="/mappage" class="btn btn-primary">Open</router-link>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
+        <div class="offset-md-1 col-md-4">
           <div class="card mb-4">
             <img class="card-img-top" src="">
             <div class="card-body row">
@@ -24,7 +14,6 @@
               <div class="col-8">
                 <h5 class="card-title">OAM Portal</h5>
                 <p class="card-text">For Official Appointed Mechanism that handle the financial documents received from European companies.</p>
-                <router-link to="/oam-portal" class="btn btn-primary">Open</router-link>
               </div>
             </div>
           </div>        
@@ -36,8 +25,14 @@
               <div class="col-8">
                 <h5 class="card-title">Investor Portal</h5>
                 <p class="card-text">For investor that wants to search details and financial data of the European companies.</p>
-                <router-link to="/search.html" class="btn btn-primary">Open</router-link>              
               </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-body">
+              <Map :showBlocks="false" :showLegend="false" :showTitles="false"></Map>
             </div>
           </div>
         </div>

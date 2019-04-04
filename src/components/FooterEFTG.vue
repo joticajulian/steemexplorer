@@ -1,5 +1,5 @@
 <template>
-  <footer class="footer bg-primary text-light">
+  <footer class="footer bg-primary text-light" style="min-height:2.5rem;">
     <div class="container-fluid">
       <div class="row pt-2 pb-2">
         <div class="col-6 text-left"><small>Pulsar version {{version}}</small></div>

@@ -559,7 +559,7 @@ export default {
 }
 
 .fixed-height {
-  height: 400px;
+  height: 350px;
 }
 
 .last-blocks{
