@@ -45,12 +45,16 @@
         </div>
       </div>
     </div>
-    <nav class="navbar navbar-expand">
-      <div class="collapse navbar-collapse">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
-            <router-link to="/" class="nav-item nav-link"><font-awesome-icon icon="home" /></router-link>
-          </li>
+    <b-navbar toggleable="lg" type="dark" variant="primary">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <router-link to="/" class="nav-item nav-link"><font-awesome-icon icon="home" /></router-link>
+        </li>
+      </ul>
+
+      <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+      <b-collapse id="nav-collapse" is-nav>
+        <ul class="navbar-nav">
           <li class="nav-item">
             <router-link to="/oam-portal" class="nav-item nav-link">OAM Portal</router-link>
           </li>
@@ -73,13 +77,13 @@
             <router-link to="/contact" class="nav-item nav-link">Contact</router-link>
           </li>
         </ul>
-        <ul class="navbar-nav">
+        <ul class="navbar-nav ml-auto">
           <li class="nav-item">
             <a class="nav-item nav-link" target="_blank" href="https://ec.europa.eu/info/legal-notice_en">Legal Notice</a>
           </li>
         </ul>
-      </div>
-    </nav>        
+      </b-collapse>
+    </b-navbar>
   </div>
 </template>
 

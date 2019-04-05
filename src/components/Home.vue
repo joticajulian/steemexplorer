@@ -5,7 +5,7 @@
       <h2 class="text-center mb-4">European Financial Transparency Gateway</h2>
       <div class="row">
         <div class="offset-md-1 col-md-4">
-          <div class="card mb-4">
+          <router-link to="/oam-portal" class="card no-a mb-3">
             <img class="card-img-top" src="">
             <div class="card-body row">
               <div class="col-4 text-center">
@@ -16,8 +16,8 @@
                 <p class="card-text">For Official Appointed Mechanism that handle the financial documents received from European companies.</p>
               </div>
             </div>
-          </div>        
-          <div class="card">
+          </router-link>
+          <router-link to="/search.html" class="card no-a mb-3">
             <div class="card-body row">
               <div class="col-4 text-center">
                 <router-link to="/search.html" class="text-primary"><font-awesome-icon icon="business-time" size="4x"/></router-link>              
@@ -27,7 +27,7 @@
                 <p class="card-text">For investor that wants to search details and financial data of the European companies.</p>
               </div>
             </div>
-          </div>
+          </router-link>
         </div>
         <div class="col-md-6">
           <div class="card">
@@ -58,3 +58,13 @@ export default {
   },
 } 
 </script>
+
+<style>
+.no-a{
+  color: #2c3e50;
+}
+.no-a:hover{
+  text-decoration: none;
+  color: #0F5494;
+}
+</style>
