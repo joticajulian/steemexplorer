@@ -4,14 +4,16 @@
       <div class="form-group row">
         <label for="inputUsername" class="col-md-4 col-form-label">USERNAME</label>
         <div class="col-md-8">
-          <input class="form-control" type="text" id="inputUsername" 
+          <input class="form-control" type="text" id="inputUsername"
+             @keyup.enter="try_to_login" 
              v-model="username" placeholder="Enter your username"/>        
         </div>
       </div>
       <div class="form-group row">
         <label for="inputPassword" class="col-md-4 col-form-label">PASSWORD</label>
         <div class="col-md-8">
-          <input class="form-control" type="password" id="inputPassword" 
+          <input class="form-control" type="password" id="inputPassword"
+             @keyup.enter="try_to_login"
              v-model="password" placeholder="Password or WIF"/>        
         </div>
       </div>
@@ -83,6 +85,7 @@ export default {
           self.showDanger('Password format mismatch')        
         }
         self.sending = false
+        self.$emit('error')
       });
     },
 
@@ -91,11 +94,6 @@ export default {
      */
     async login(_username, _password) {
     
-      if (_username === ''){
-        var e = new Error("Please insert your username");
-        e.name = "UserError";
-        throw e;
-      }
       this.RPCnode_setMaxFails(1)
       this.RPCnode_setMaxFailRounds(2)
 

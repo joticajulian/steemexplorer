@@ -43,7 +43,6 @@ body {
 
 #app .navbar a{
   border-bottom: 3px solid #0F5494;
-  color: white;  
 }
 
 #app .navbar a:hover{
@@ -51,6 +50,15 @@ body {
   color: #ffeb3b;
   border-bottom: 3px solid #ffeb3b;  
 }
+
+#app .navbar-dark .navbar-nav .nav-link {
+    color: white;
+}
+
+/*#app .nav-link{
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}*/
 
 #app .col-form-label{
   font-size: 12px;
@@ -165,6 +173,15 @@ body {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+.no-a{
+  text-decoration: none;
+  color: #2c3e50;
+}
+.no-a:hover{
+  text-decoration: none;
+  color: #0F5494;
 }
 
 </style>

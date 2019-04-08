@@ -3,7 +3,7 @@
     <div class="container-fluid bg-info">
       <div class="row pt-2 pb-2">
         <div class="col-12 text-center">
-          EFTG is a pilot project to explore and test the capabilities of the Blockchain technology for sharing financial data in Europe. Materials listed on this portal are provided "as is", without warranty of any kind.     
+          EFTG is a pilot project to explore and test the capabilities of the Blockchain technology for sharing financial data in Europe. Materials listed on this portal are provided "as is", without warranty of any kind. <a href="https://ec.europa.eu/info/legal-notice_en">Legal Notice</a>  
         </div>                
       </div>
     </div>
@@ -17,69 +17,80 @@
             <div id="logo-eftg" class="ml-2"><router-link to="/"><img src="../assets/logo-eftg.png" /></router-link></div>            
           </div>  
         </div>
-        <div v-if="showAuth" class="col d-flex justify-content-end">
-          <div class="d-flex align-items-end"> 
-            <div>           
-              <div v-if="$store.state.auth.logged">
-                <b-dropdown variant="link" size="lg" no-caret>
-                  <template slot="button-content">
-                    <div id="image-profile" 
-                         v-bind:style="{ backgroundImage: 'url(' + $store.state.auth.imgUrl + ')' }"                  
-                    ></div>
-                  </template>
-                  <b-dropdown-header>{{$store.state.auth.user}}</b-dropdown-header>
-                  <b-dropdown-divider></b-dropdown-divider>
-                  <b-dropdown-item><router-link to="/password"><font-awesome-icon icon="key" class="mr-2"/>Change Password</router-link></b-dropdown-item>     
-                </b-dropdown>  
-  
-                <button class="btn btn-primary" @click="logout">Logout</button>
-              </div>
-              <div v-else>
-                <button class="btn btn-primary" @click="login">Login</button>
-                <b-modal ref="modalAuth" hide-footer title="Login">
-                  <AuthComponent ref="auth" v-on:login="$emit('login')"></AuthComponent>
-                </b-modal>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
+    <b-modal ref="modalAuth" hide-footer title="Login">
+      <AuthComponent ref="auth" v-on:login="onLogin" v-on:close="closeModalAuth"></AuthComponent>
+    </b-modal>
     <b-navbar toggleable="lg" type="dark" variant="primary">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <router-link to="/" class="nav-item nav-link"><font-awesome-icon icon="home" /></router-link>
+          <router-link to="/" class="nav-item nav-link"><div class="extra-padding"><font-awesome-icon icon="home" /></div></router-link>
         </li>
       </ul>
+      <b-navbar v-if="$store.state.auth.logged" class="ml-auto d-lg-none" style="margin:0;">
+        <ul class="navbar-nav">
+          <b-nav-item-dropdown variant="link" size="lg" no-caret right>
+            <template slot="button-content">
+              <div id="image-profile" 
+                v-bind:style="{ backgroundImage: 'url(' + $store.state.auth.imgUrl + ')' }"                  
+              ></div>
+            </template>
+            <b-dropdown-header>{{$store.state.auth.user}}</b-dropdown-header>
+            <b-dropdown-divider></b-dropdown-divider>
+            <b-dropdown-item><router-link to="/password" class="no-a" style="border-bottom:0px;"><font-awesome-icon icon="key" class="mr-2"/>Change Password</router-link></b-dropdown-item>     
+            <b-dropdown-item @click="logout">Logout</b-dropdown-item>
+          </b-nav-item-dropdown>
+        </ul>
+      </b-navbar>
+      <b-navbar-nav v-else class="nav-link ml-auto d-lg-none">
+        <button class="btn btn-primary" @click="login">Login</button>
+      </b-navbar-nav>
 
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
         <ul class="navbar-nav">
           <li class="nav-item">
-            <router-link to="/oam-portal" class="nav-item nav-link">OAM Portal</router-link>
+            <router-link to="/oam-portal" class="nav-item nav-link"><div class="extra-padding">OAM Portal</div></router-link>
           </li>
           <li class="nav-item">
-            <router-link to="/explorer" class="nav-item nav-link">Explorer</router-link>
+            <router-link to="/explorer" class="nav-item nav-link"><div class="extra-padding">Explorer</div></router-link>
           </li>
           <li class="nav-item">
-            <router-link to="/map" class="nav-item nav-link">Map</router-link>
+            <router-link to="/map" class="nav-item nav-link"><div class="extra-padding">Map</div></router-link>
           </li>
           <li class="nav-item">
-            <router-link to="/search.html" class="nav-item nav-link">Investor Portal</router-link>
+            <router-link to="/search.html" class="nav-item nav-link"><div class="extra-padding">Investor Portal</div></router-link>
           </li>
           <li class="nav-item">
-            <router-link to="/witnesses" class="nav-item nav-link">Witnesses</router-link>
+            <router-link to="/witnesses" class="nav-item nav-link"><div class="extra-padding">Witnesses</div></router-link>
           </li>
           <li class="nav-item">
-            <router-link to="/faq" class="nav-item nav-link">FAQ</router-link>
+            <router-link to="/faq" class="nav-item nav-link"><div class="extra-padding">FAQ</div></router-link>
           </li>
           <li class="nav-item">
-            <router-link to="/contact" class="nav-item nav-link">Contact</router-link>
+            <router-link to="/contact" class="nav-item nav-link"><div class="extra-padding">Contact</div></router-link>
           </li>
         </ul>
         <ul class="navbar-nav ml-auto">
-          <li class="nav-item">
-            <a class="nav-item nav-link" target="_blank" href="https://ec.europa.eu/info/legal-notice_en">Legal Notice</a>
+          <li class="nav-item d-lg-block d-none">
+            <div v-if="$store.state.auth.logged">
+              <b-nav-item-dropdown size="lg" variant="link" no-caret right>
+                <template slot="button-content">
+                  <div id="image-profile" 
+                    v-bind:style="{ backgroundImage: 'url(' + $store.state.auth.imgUrl + ')' }"                  
+                  ></div>
+                </template>
+                <b-dropdown-header>{{$store.state.auth.user}}</b-dropdown-header>
+                <b-dropdown-divider></b-dropdown-divider>
+                <b-dropdown-item><router-link :to="EXPLORER+'@'+$store.state.auth.user" class="no-a" style="border-bottom:0px;"><font-awesome-icon icon="user" class="mr-2"/>Profile</router-link></b-dropdown-item>
+                <b-dropdown-item><router-link to="/password" class="no-a" style="border-bottom:0px;"><font-awesome-icon icon="key" class="mr-2"/>Change Password</router-link></b-dropdown-item>
+                <b-dropdown-item @click="logout">Logout</b-dropdown-item>
+              </b-nav-item-dropdown>
+            </div>
+            <div v-else>
+              <button class="btn btn-primary" @click="login">Login</button>
+            </div>
           </li>
         </ul>
       </b-collapse>
@@ -88,7 +99,8 @@
 </template>
 
 <script>
-import AuthComponent from "@/components/Auth"
+import AuthComponent from '@/components/Auth'
+import Config from '@/config.js'
 
 export default {
   name: "HeaderEFTG",
@@ -98,7 +110,8 @@ export default {
   },
   data() {
     return {
-      showModal: false
+      showModal: false,
+      EXPLORER: Config.EXPLORER
     };
   },
   
@@ -122,6 +135,15 @@ export default {
     
     login() {
       this.$refs.modalAuth.show()
+    },
+
+    onLogin() {
+      this.closeModalAuth()
+      this.$emit('login')    
+    },
+
+    closeModalAuth() {
+      this.$refs.modalAuth.hide()    
     },
     
     logout() {
@@ -189,6 +211,11 @@ export default {
   background-position: center center;
   border-radius: 50%;
   vertical-align: middle;
+}
+
+.extra-padding {
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
 }
 
 </style>
