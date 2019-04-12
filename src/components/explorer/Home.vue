@@ -141,6 +141,7 @@ export default {
       ints: {},
       first_time: true,
       last_block_num: 0,
+      wait_more_time: false,
       EXPLORER: Config.EXPLORER,
     }
   },
@@ -244,7 +245,11 @@ export default {
     },
   
     fetchBlocks() {
-      if(this.last_block_num == 0) return;      
+      if(this.last_block_num == 0) return;
+      if(this.wait_more_time) {
+        this.wait_more_time = false
+        return
+      }
       
       var SIZE_BLOCKS = 10;
       var last_block_recorded = {}
@@ -278,23 +283,36 @@ export default {
           
         self.lastBlocks.unshift(b);
         if(self.lastBlocks.length > SIZE_BLOCKS) self.lastBlocks.pop();
-          
-        //self.client.database.getBlock(num).then(function(resultBlock){
-        self.steem_database_call('get_block',[num]).then(function(resultBlock){
-          b.size_txs = resultBlock.transactions.length;
-          b.size_posts = resultBlock.transactions.filter(function(tx){
-            return tx.operations[0][0]=='comment' && tx.operations[0][1].parent_author=='';
-          }).length;
-          b.timestamp_milis = (new Date(resultBlock.timestamp+'Z')).getTime();
-          b.witness = resultBlock.witness;
-          b.loaded = true;
-          var pos = self.lastBlocks.findIndex(function(blk){return blk.block_num == num});
-          if(pos >= 0){
-            self.$set(self.lastBlocks, pos, b);
-            if(pos == 0 && b.witness == self.schedule[0]) self.schedule.shift()
-          }
-        });  
-      });       
+
+        self.getBlock(b)
+      })
+    },
+
+    getBlock(b) {
+      let self = this          
+      self.steem_database_call('get_block',[b.block_num]).then(function(resultBlock){
+        if(!resultBlock) { //Block still does not exist.
+          self.wait_more_time = true
+          console.log('Block does not exist yet. Waiting 3 seconds')
+          setTimeout( ()=>{ self.getBlock(b) }, 3000)
+          return
+        }
+
+        b.size_txs = resultBlock.transactions.length;
+        b.size_posts = resultBlock.transactions.filter(function(tx){
+          return tx.operations[0][0]=='comment' && tx.operations[0][1].parent_author=='';
+        }).length;
+        b.timestamp_milis = (new Date(resultBlock.timestamp+'Z')).getTime();
+        b.witness = resultBlock.witness;
+        b.loaded = true;
+        var pos = self.lastBlocks.findIndex(function(blk){return blk.block_num == b.block_num});
+        if(pos >= 0){
+          self.$set(self.lastBlocks, pos, b);
+          if(pos == 0 && b.witness == self.schedule[0]) self.schedule.shift()
+        }
+      }).catch(function(error){
+        console.log(error)
+      })
     },
   }
 }

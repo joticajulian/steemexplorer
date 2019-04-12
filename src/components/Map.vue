@@ -114,6 +114,7 @@ export default {
         red:   redIconUrl,
         yellow:yellowIconUrl
       },
+      wait_more_time: false,
       EXPLORER: Config.EXPLORER
     }
   },
@@ -404,7 +405,11 @@ export default {
      */
     fetchBlocks() {
       if(this.last_block_num == 0) return;
-      
+      if(this.wait_more_time) {
+        this.wait_more_time = false
+        return
+      }
+
       var SIZE_BLOCKS = 5;
       var last_block_recorded = {}
       if(this.lastBlocks.length > 0){
@@ -438,58 +443,69 @@ export default {
         self.lastBlocks.unshift(b);
         if(self.lastBlocks.length > SIZE_BLOCKS) self.lastBlocks.pop();
         
-        //self.client.database.getBlock(num).then(function(resultBlock){
-        self.steem_database_call('get_block',[num]).then(function(resultBlock){
-          b.size_txs = resultBlock.transactions.length;
-          b.size_posts = resultBlock.transactions.filter(
-            function(tx){
-              return tx.operations[0][0]=='comment' && tx.operations[0][1].parent_author=='';
-          }).length;
-          b.timestamp_milis = (new Date(resultBlock.timestamp+'Z')).getTime();
-        
-          b.witness = resultBlock.witness;
-          var id = self.witnesses.findIndex(function(wit){return wit.owner == b.witness});
-          if(id >= 0) b.witness_visible_name = self.witnesses[id].visible_name;
-          else b.witness_visible_name = b.witness
-          b.loaded = true;
-        
-          // calculate the position and update the front-end (lastBlocks)
-          var pos = self.lastBlocks.findIndex(function(blk){return blk.block_num == num});
-          if(pos >= 0){
-          
-            self.$set(self.lastBlocks, pos, b);      
-          
-            if(pos == 0){
-              if(b.witness == self.schedule[0]) self.schedule.shift()
-        
-              //search the previous witness to change the color to blue
-              id = self.witnesses.findIndex(function(wit){return wit.owner == self.last_witness});
-              if(id >= 0) self.setMarkerColor(id, 'online')
+        self.getBlock(b)
+      }) 
+    },
+
+    getBlock(b) {
+      let self = this
+      this.steem_database_call('get_block',[b.block_num]).then(function(resultBlock){
+        if(!resultBlock) { //Block still does not exist.
+          self.wait_more_time = true
+          console.log('Block does not exist yet. Waiting 3 seconds')
+          setTimeout( ()=>{ self.getBlock(b) }, 3000)
+          return
+        }
+
+        b.size_txs = resultBlock.transactions.length;
+        b.size_posts = resultBlock.transactions.filter(
+          function(tx){
+            return tx.operations[0][0]=='comment' && tx.operations[0][1].parent_author=='';
+        }).length;
+        b.timestamp_milis = (new Date(resultBlock.timestamp+'Z')).getTime();
+  
+        b.witness = resultBlock.witness;
+        var id = self.witnesses.findIndex(function(wit){return wit.owner == b.witness});
+        if(id >= 0) b.witness_visible_name = self.witnesses[id].visible_name;
+        else b.witness_visible_name = b.witness
+        b.loaded = true;
       
-              //print green the actual witness
-              var aliasText = ''; 
-              if(b.witness !== b.witness_visible_name) aliasText = ' (alias @'+b.witness_visible_name+')'
-              console.log('Block '+num+ ' by @'+b.witness+ aliasText);
-              self.current_witness.visible_name = b.witness_visible_name;
-              self.current_witness.witness = b.witness;
-              
-              id = self.witnesses.findIndex(function(wit){return wit.owner == b.witness});
-              if(id >= 0){
-                self.setMarkerColor(id, 'live')
-                self.last_witness = b.witness;        
-              }else{
-                console.log('Witness @'+b.witness+' is not in the list. Adding him to the map');
-                // self.current_location = '(Unknown location)';
-                self.addWitnessesToMap([b.witness])
-              }
+        // calculate the position and update the front-end (lastBlocks)
+        var pos = self.lastBlocks.findIndex(function(blk){return blk.block_num == b.block_num});
+        if(pos >= 0){
+        
+          self.$set(self.lastBlocks, pos, b);      
+        
+          if(pos == 0){
+            if(b.witness == self.schedule[0]) self.schedule.shift()
+      
+            //search the previous witness to change the color to blue
+            id = self.witnesses.findIndex(function(wit){return wit.owner == self.last_witness});
+            if(id >= 0) self.setMarkerColor(id, 'online')
+    
+            //print green the actual witness
+            var aliasText = ''; 
+            if(b.witness !== b.witness_visible_name) aliasText = ' (alias @'+b.witness_visible_name+')'
+            console.log('Block '+b.block_num+ ' by @'+b.witness+ aliasText);
+            self.current_witness.visible_name = b.witness_visible_name;
+            self.current_witness.witness = b.witness;
+            
+            id = self.witnesses.findIndex(function(wit){return wit.owner == b.witness});
+            if(id >= 0){
+              self.setMarkerColor(id, 'live')
+              self.last_witness = b.witness;        
+            }else{
+              console.log('Witness @'+b.witness+' is not in the list. Adding him to the map');
+              // self.current_location = '(Unknown location)';
+              self.addWitnessesToMap([b.witness])
             }
           }
-        }).catch(function(error){
-          console.log(error)
-        })
-      })  
+        }
+      }).catch(function(error){
+        console.log(error)
+      })
     },
-  
+
     // Change the color of a marker in the map
     setMarkerColor(id, status){
       var isOAM = this.isOAM(this.witnesses[id].owner)
