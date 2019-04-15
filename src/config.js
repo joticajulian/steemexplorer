@@ -7,9 +7,9 @@ const config = {
       'https://rpc-luxembourg.eftg.eu',
       'https://rpc-romania.eftg.eu'
     ],
-    IMAGE_HOSTER : 'https://cdn.blkcc.xyz',
+    IMAGE_HOSTER : 'https://cdn.eftg.eu',
     ELASTIC : 'https://api.eftg.eu/pulsar/',
-    CDN : 'https://cdn.blkcc.xyz/',
+    CDN : 'https://cdn.eftg.eu/',
     EFTG_HARDFORK_0_1 : false
   },
   'acceptance': {
@@ -62,7 +62,7 @@ const MAP = {
   INI_ZOOM : 4 ,
 }
 
-const APP_VERSION = 'pulsar/1.5.1';
+const APP_VERSION = 'pulsar/1.5.2';
 
 export default {
 
