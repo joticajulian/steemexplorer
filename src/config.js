@@ -62,7 +62,7 @@ const MAP = {
   INI_ZOOM : 4 ,
 }
 
-const APP_VERSION = 'pulsar/1.5.2';
+const APP_VERSION = 'pulsar/1.5.3';
 
 export default {
 

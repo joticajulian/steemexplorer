@@ -20,7 +20,7 @@ export default {
     // const ignoreList = ['Bogdan', 'Bogdan1'];
     // const appVersions = ['pulsar/0.0.1', 'pulsar/0.0.2', 'sendjs/0.0.1'];
     const self = this;
-    const url = Config.ELASTIC + '?pretty=true&size=100&q=*:*';
+    const url = Config.ELASTIC + '?pretty=true&size=10000&q=*:*';
     axios.get(url).then(function(result){
       result.data.hits.hits.forEach((item) => {
         if(/^(pulsar|sendjs)\/[0-9]\.[0-9]\.[0-9]$/.test(item._source.app)) {

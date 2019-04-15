@@ -359,7 +359,7 @@ export default {
         data: []
       };
       const dictionary = this.dictionary;
-      const url = this.elasticApiUrl + '?pretty=true&size=100&q=*:*';
+      const url = this.elasticApiUrl + '?pretty=true&size=10000&q=*:*';
 
       var result = await axios.get(url)
 
