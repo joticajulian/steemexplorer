@@ -132,8 +132,11 @@ export default {
     }
     return date;
   },
-  
   datetoddmmyyyy(date) {
+    return this.dateFormat(date)
+  },
+  
+  dateFormat(date) {
     return (
       this.pad0(date.getDate()) +
       "/" +

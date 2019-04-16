@@ -79,6 +79,16 @@ export default new Router({
       component: Witnesses
     },
     {
+      path: "/issue",
+      name: "IssueCredential",
+      component: () => import('./views/IssueCredentialPage.vue')
+    },
+    {
+      path: "/keymanagement",
+      name: "KeyManagement",
+      component: () => import('./views/KeyManagementPage.vue')
+    },
+    {
       path: "/explorer",
       name: "Explorer",
       component: HomeExplorer
