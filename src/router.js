@@ -89,6 +89,11 @@ export default new Router({
       component: () => import('./views/KeyManagementPage.vue')
     },
     {
+      path: "/adminstudents",
+      name: "AdminStudents",
+      component: () => import('./views/AdminStudentsPage.vue')
+    },
+    {
       path: "/explorer",
       name: "Explorer",
       component: HomeExplorer
