@@ -10,6 +10,7 @@ const config = {
     IMAGE_HOSTER : 'https://cdn.eftg.eu',
     ELASTIC : 'https://api.eftg.eu/pulsar/',
     CDN : 'https://cdn.eftg.eu/',
+    SERVER_API: '/api/',
     EFTG_HARDFORK_0_1 : false
   },
   'acceptance': {
@@ -19,6 +20,7 @@ const config = {
     IMAGE_HOSTER : 'https://cdn.acc.blkcc.xyz',
     ELASTIC : 'https://api.blkcc.xyz/pulsar/',
     CDN : 'https://cdn.acc.blkcc.xyz/',
+    SERVER_API: 'http://40.113.101.44:8084/api/',
     EFTG_HARDFORK_0_1 : false
   },
   'development': {
@@ -28,6 +30,7 @@ const config = {
     IMAGE_HOSTER : 'https://cdn.dev.blkcc.xyz',
     ELASTIC : 'https://apidev.blkcc.xyz/pulsar/',
     CDN : 'https://cdn.dev.blkcc.xyz/',
+    SERVER_API: 'http://pulsar.dev.blkcc.xyz:8084/api/',
     EFTG_HARDFORK_0_1 : true
   }
 }
@@ -70,6 +73,7 @@ export default {
   IMAGE_HOSTER: finalConfig.IMAGE_HOSTER,
   ELASTIC: finalConfig.ELASTIC,
   CDN: finalConfig.CDN,
+  SERVER_API: finalConfig.SERVER_API,
   
   SBD: SBD,
   STEEM: STEEM,
