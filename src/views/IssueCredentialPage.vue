@@ -3,7 +3,7 @@
     <HeaderEFTG ref="headerEFTG" v-on:login="onLogin" v-on:logout="onLogout"></HeaderEFTG>
     <div class="container">
       <h2 class="text-center">Issue Credentials</h2>
-      <div id="eftg-form" novalidate>
+      <div :class="{'was-validated':was_validated}" novalidate>
         <div class="form-group row">
           <label for="input_degree" class="col-md-2 col-form-label">DEGREE</label>
           <div class="col-md-10">
@@ -74,7 +74,9 @@ export default {
         degree: '',
         date: '',
         graduates: ''
-      }
+      },
+      was_validated: false,
+
     }
   },
 
@@ -102,21 +104,110 @@ export default {
   },
 
   methods: {
-    issue() {
-      this.showSuccess('Sent')
+    async issue() {
+      this.sending = true
+      this.hideSuccess()
+      this.hideDanger()
+
+      try{
+        if(!this.$store.state.auth.logged)
+          throw new Error('Please login')
+
+        var valid = true;
+        valid = this.validateDegree(true) && valid
+        valid = this.validateDate(true) && valid
+        valid = this.validateGraduates(true) && valid
+
+        this.was_validated = true
+        if (!valid) {
+          throw new Error("Error validating fields!");
+        }
+
+        var username = this.$store.state.auth.user
+        var postingKey = this.$store.state.auth.keys.posting
+
+        var date = Utils.dateToString( Utils.ddmmyyyytoDate(this.date) ) //.toISOString().slice(0, -5)
+        var graduatePubKeys = this.getGraduatePublicKeys()
+        var claim = this.createDiplomas( username, postingKey, this.degree, date, graduatePubKeys )
+
+        var operation = [
+          'custom_json',
+          {
+            required_auths: [],
+            required_posting_auths: [username],
+            id: 'credential',
+            json: JSON.stringify(claim)
+          }
+        ]
+
+        var result = await this.steem_broadcast_sendOperations([operation], postingKey)
+        this.showSuccess('<a href="'+Config.EXPLORER+'b/'+result.block_num+'/'+result.id+'" class="alert-link" target="_blank">New diplomas issued!</a>')
+
+      }catch(error){
+        console.log(error)
+        this.showDanger(error.message)
+      }
+
+      this.sending = false
+      this.hideInfo()
     },
+
     clear() {
       var d = new Date()
       this.date = Utils.dateFormat(d)
       this.degree = ''
       this.graduates = ''
 
+      this.was_validated = false
+
       this.hideSuccess()
       this.hideDanger()
       this.hideInfo()
     },
+
+    getGraduatePublicKeys() {
+      var lines = this.graduates.split(/\r?\n/)
+      var pubKeys = []
+      for(var i in lines){
+        var pubKeyString = lines[i].replace(/\s/g,'')
+        if(pubKeyString === '') continue
+        try{
+          var pubKey = PublicKey.fromString(pubKeyString)
+        }catch(error){
+          throw new Error('Error with public key '+pubKeyString+': '+error.message)
+        }
+        pubKeys.push(pubKeyString)
+      }
+      return pubKeys
+    },
+
+    createDiplomas( issuer, postingKey, degree, date, graduatePubKeys ) {
+      var claim = {
+        context: [
+          'https://www.w3.org/2018/credentials/v1',
+          'https://www.w3.org/2018/credentials/examples/v1'
+        ],
+
+        id: 'http://example.edu/credentials/1872',
+        type: ['DiplomaCredential'],
+        issuer: issuer,
+        issuanceDate: date,
+        credentialSubject: {
+          id: 'did:diploma:'+issuer,
+          pubKeys: graduatePubKeys
+        }
+      }
+
+      return claim
+    },
+
     onLogin() {},
     onLogout() {},
+
+    abort() {
+      this.abortNodeConnection = true
+      if(this.sending) this.aborting = true
+    },
 
     showInvalid(field, message) {
       this.error[field] = true
@@ -163,16 +254,7 @@ export default {
     validateGraduates(submit) {
       let self = this
       return this.validateField('graduates', submit, function(){
-        var pubKeys = self.graduates.split(/\r?\n/)
-        for(var i in pubKeys){
-          var pubKeyString = pubKeys[i].replace(/\s/g,'')
-          if(pubKeyString === '') continue
-          try{
-            var pubKey = PublicKey.fromString(pubKeyString)
-          }catch(error){
-            throw new Error('Error with public key '+pubKeyString+': '+error.message)
-          }
-        }
+        self.getGraduatePublicKeys()
       })
     },
   },
