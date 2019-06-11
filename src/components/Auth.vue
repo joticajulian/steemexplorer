@@ -92,7 +92,7 @@ export default {
     async login(_username, _password) {
     
       let data = {
-        email: _username,
+        username: _username,
         password: _password
       }
       var auth = {}
