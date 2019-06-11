@@ -29,11 +29,27 @@
                   </div>
                 </div>
                 <div class="form-group row">
-                  <label for="input_email" class="col-md-2 col-form-label">EMAIL</label>
+                  <label for="input_family_name" class="col-md-2 col-form-label">FAMILY NAME</label>
                   <div class="col-md-10">
-                    <input class="form-control" type="text" id="input_email"
-                      v-model="email" placeholder="" :class="{'is-invalid': error.email }"/>
-                    <div v-if="error.email" class="invalid-feedback">{{ errorText.email }}</div>
+                    <input class="form-control" type="text" id="input_family_name"
+                      v-model="family_name" placeholder="Family Name" :class="{'is-invalid': error.family_name }"/>
+                    <div v-if="error.family_name" class="invalid-feedback">{{ errorText.family_name }}</div>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="input_address" class="col-md-2 col-form-label">ADDRESS</label>
+                  <div class="col-md-10">
+                    <input class="form-control" type="text" id="input_address"
+                      v-model="address" placeholder="Address" :class="{'is-invalid': error.address }"/>
+                    <div v-if="error.address" class="invalid-feedback">{{ errorText.address }}</div>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="input_username" class="col-md-2 col-form-label">USERNAME</label>
+                  <div class="col-md-10">
+                    <input class="form-control" type="text" id="input_username"
+                      v-model="username" placeholder="" :class="{'is-invalid': error.username }"/>
+                    <div v-if="error.username" class="invalid-feedback">{{ errorText.username }}</div>
                   </div>
                 </div>
                 <div class="form-group row">
@@ -49,28 +65,57 @@
               </div>
             </div>
             <div v-else>
-              <h3>Student</h3>
               <div v-if="current">
-                <div class="row">
-                  <div class="col-3"><strong>Name</strong></div>
-                  <div class="col">{{current.name}}</div>
+                <h4>{{current.name}} {{current.family_name}}</h4>
+                <h5>{{current.address}}</h5>
+                <h4 class="mt-4">Keys</h4>
+                <div class="card">
+                  <ul class="list-group list-group-flush">
+                    <li v-for="(key,index) in current.keys" class="list-group-item" @click="selectKey(index)">
+                      <div class="row">
+                        <div class="col-11">
+                          {{key.key}}
+                          <div class="row">
+                            <div class="col-3">{{key.course}}</div>
+                            <div class="col-9">{{key.start_date}}</div>
+                          </div>
+                        </div>
+                        <div class="col-1">
+                          <button v-if="selectedKey == index" class="btn btn-primary" @click="removeKey(index)">Remove</button>
+                        </div>                        
+                      </div>
+                    </li>
+                  </ul>
                 </div>
-                <div class="row">
-                  <div class="col-3"><strong>email</strong></div>
-                  <div class="col">{{current.email}}</div>
-                </div>
-                <div class="row mb-2">
-                  <div class="col-3"><strong>Keys</strong></div>
-                  <div class="col">
-                    <div v-for="(key,index) in current.keys" class="row">
-                      <div class="col-4">{{key.subject}}</div>
-                      <div class="col">{{key.key}}</div>
-                    </div>
-                    <button class="btn btn-primary" @click="addKey">Add key</button>
+                <div v-if="addingKey" class="form-group row mt-2">
+                  <div class="col-md-3">
+                    <select class="form-control" id="input_course" v-model="course" :class="{'is-invalid': error.course }">
+                      <option disabled value="">Please select one</option>
+                      <option
+                        v-for="option in courses"
+                        v-bind:key="option.name"
+                        v-bind:value="option.name"
+                      >
+                        {{ option.name }}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="col-md-3">
+                    <input class="form-control" type="text" id="input_start_date"
+                      v-model="start_date" placeholder="yyyy-mm-dd" :class="{'is-invalid': error.start_date }"/>
+                    <div v-if="error.start_date" class="invalid-feedback">{{ errorText.start_date }}</div>
+                  </div>
+                  <div class="col-md-6">
+                    <input class="form-control" type="text" id="input_newkey"
+                      v-model="newkey" placeholder="Key" :class="{'is-invalid': error.newkey }"/>
+                    <div v-if="error.newkey" class="invalid-feedback">{{ errorText.newkey }}</div>
                   </div>
                 </div>
-                <button class="btn btn-primary mr-2" @click="removeStudent">Remove student</button>
-                <button class="btn btn-primary" @click="editStudent">Edit student</button>
+                <button class="btn btn-primary mt-2" @click="addKey">Add key</button>
+                <div class="mt-3">
+                  <button class="btn btn-primary mr-2" @click="editStudent">Edit student</button>
+                  <button class="btn btn-primary" @click="removeStudent">Remove student</button>
+                </div>
               </div>
             </div>
           </div>
@@ -107,24 +152,45 @@ export default {
 
       students: [],
       current: null,
+      selectedKey: -1,
 
       name: '',
-      email: '',
+      family_name: '',
+      address: '',
+      username: '',
       password: '',
+
+      courses: [],
+      newkey: '',
+      course: '',
+      start_date: '',
 
       editing: false,
       addingNew: false,
+      addingKey: false,
 
       was_validated: false,
       error:{
         name: false,
-        email: false,
-        password: false
+        family_name: false,
+        address: false,
+        username: false,
+        password: false,
+
+        newkey: false,
+        course: false,
+        start_date: false
       },
       errorText:{
         name: '',
-        email: '',
-        password: ''
+        family_name: '',
+        address: '',
+        username: '',
+        password: '',
+
+        newkey: '',
+        course: '',
+        start_date: ''
       }
     }
   },
@@ -139,6 +205,7 @@ export default {
 
   created() {
     this.loadStudents()
+    this.loadCourses()
   },
 
   methods: {
@@ -159,6 +226,19 @@ export default {
         console.log(error)
       }
       this.loadingAdmin = false
+    },
+
+    async loadCourses() {
+      try{
+        var response = await axios.get(Config.SERVER_API + "courses")
+        console.log(response.data.length)
+        this.courses = response.data
+
+        console.log('load courses')
+        console.log(this.courses)
+      }catch(error){
+        console.log(error)
+      }
     },
 
     selectStudent(id) {
@@ -190,7 +270,9 @@ export default {
 
     fillForm() {
       this.name = this.current.name
-      this.email = this.current.email
+      this.family_name = this.current.family_name
+      this.address = this.current.address
+      this.username = this.current.username
       this.password = this.current.password
     },
 
@@ -205,7 +287,9 @@ export default {
         if(this.addingNew){
           var student = {
             name: this.name,
-            email: this.email,
+            family_name: this.family_name,
+            address: this.address,
+            username: this.username,
             password: this.password,
             role: 'student',
             keys: []
@@ -221,9 +305,13 @@ export default {
               _id: this.current._id
             },
             update: {
-              name: this.name,
-              email: this.email,
-              password: this.password
+              $set:{
+                name: this.name,
+                family_name: this.family_name,
+                address: this.address,
+                username: this.username,
+                password: this.password
+              }
             }
           }
           console.log(data)
@@ -242,9 +330,67 @@ export default {
     closeUpdate() {
       this.editing = false
       this.addingNew = false
+      this.addingKey = false
     },
 
-    addKey() {},
+    async addKey() {
+      if(!this.addingKey){
+        this.addingKey = true
+        this.start_date = new Date().toISOString().slice(0, -14)
+        this.course = ''
+        this.newkey = ''
+        return
+      }
+      try{
+        var data = {
+          filter: {
+            _id: this.current._id
+          },
+          update: {
+            $push:{
+              keys:{
+                key: this.newkey,
+                course: this.course,
+                start_date: this.start_date
+              }
+            }
+          }
+        }
+        await axios.post(Config.SERVER_API + 'update_user', data)
+        this.showSuccess('Key added')
+        this.addingKey = false
+      }catch(error){
+        console.log(error)
+        this.showDanger(error.message)
+      }
+    },
+
+    selectKey(index) {
+      this.selectedKey = index
+    },
+
+    async removeKey(index) {
+      try{
+        var data = {
+          filter: {
+            _id: this.current._id
+          },
+          update: {
+            $pull:{
+              keys:{
+                key: this.current.keys[index].key
+              }
+            }
+          }
+        }
+        await axios.post(Config.SERVER_API + 'update_user', data)
+        this.showSuccess('Key removed')
+      }catch(error){
+        console.log(error)
+        this.showDanger(error.message)
+      }
+    },
+
     onLogin() {},
     onLogout() {},
 
