@@ -1,5 +1,7 @@
 const express = require('express')
 const Utils = require('./utils')
+const Config = require('./config')
+const { Client, PrivateKey } = require('eftg-dsteem')
 
 // creating an express instance
 const app = express()
@@ -42,21 +44,31 @@ var MongoClient = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectId;
 var url = 'mongodb://localhost:27017/univ';
 
-var client;
+var _mongoClient;
 var db;
-async function connectDB() { 
-  if (!client){
-    client = await MongoClient.connect(url);
-    db = client.db('univ')
+async function connectDB(url) { 
+  if (!_mongoClient){
+    _mongoClient = await MongoClient.connect(url);
+    db = _mongoClient.db('univ')
   }
 
   return { 
-    db: client.db('univ'),
-    client: client
+    db: _mongoClient.db('univ'),
+    client: _mongoClient
   };
 }
 
-connectDB()
+function RPCnode_initClient(address = Config.RPC_NODES[0]) {
+  let opts = {}
+  opts.addressPrefix = Config.STEEM_ADDRESS_PREFIX
+  opts.timeout = Config.DSTEEM_TIMEOUT
+  if(process.env.VUE_APP_CHAIN_ID) opts.chainId = process.env.VUE_APP_CHAIN_ID
+  opts.chainId = 'a118feb47e63e942c55e4bc991e74f9e2e2d4d099e32f2ae7d55a66f6b415f14'
+  return new Client(address, opts)
+}
+
+connectDB(url)
+var steemClient = RPCnode_initClient()
 
 async function isRole(id,role) {
   //const { db, client } = await connectDB()
@@ -155,8 +167,14 @@ app.get("/api/getuser/:user", (req, res) => { //todo: remove
 app.get("/api/students", authMiddleware, isAdminMiddleware, async (req, res, next) => {
   //const { db, client } = await connectDB()
   console.log('starting to get students')
-  var students = await db.collection('users').find({}).toArray()
+  var students = await db.collection('students').find({}).toArray()
   console.log('get students')
+  res.send(students)
+})
+
+app.post("/api/students", authMiddleware, isAdminMiddleware, async (req, res, next) => {
+  var students = await db.collection('students').find(req.body).toArray()
+  console.log('get students post')
   res.send(students)
 })
 
@@ -198,36 +216,51 @@ app.post("/api/update_user", authMiddleware, isAdminMiddleware, async (req, res,
   //const { db, client } = await connectDB()
   //TODO: input validation
   if(req.body.filter._id) req.body.filter._id = ObjectId(req.body.filter._id) 
-  await db.collection('users').updateOne(req.body.filter, {$set: req.body.update})
-  await db.collection('students').updateOne(req.body.filter, {$set: req.body.update})
-  await db.collection('admins').updateOne(req.body.filter, {$set: req.body.update})
+  await db.collection('users').updateOne(req.body.filter, req.body.update)
+  await db.collection('students').updateOne(req.body.filter, req.body.update)
+  await db.collection('admins').updateOne(req.body.filter, req.body.update)
   res.send("User updated")
   console.log("User updated")
 })
 
-app.post('/api/add_subject', authMiddleware, isAdminMiddleware, async (req, res, next) => {
+app.get("/api/courses", async (req, res, next) => {
   //const { db, client } = await connectDB()
-  try {
-    var newSubject = Utils.validateSubject(req.body)
-  } catch(err) {
-    res.status(400).send('Error validating subject. '+err.message)
-    return
-  }
-  if( await db.collection('subjects').findOne(newSubject) ){
-    res.status(400).send('This subject already exists')
-    return
-  }
-  await db.collection('subjects').insertOne(newSubject)
-  res.send('Subject added')
-  console.log('Subject added')
+  var courses = await db.collection('courses').find({}).toArray()
+  console.log('get courses')
+  res.send(courses)
 })
 
-app.post('/api/remove_subject', authMiddleware, isAdminMiddleware, async (req, res, next) => {
+app.post('/api/add_course', authMiddleware, isAdminMiddleware, async (req, res, next) => {
+  //const { db, client } = await connectDB()
+  try {
+    var newcourse = Utils.validateCourse(req.body)
+  } catch(err) {
+    res.status(400).send('Error validating course. '+err.message)
+    return
+  }
+  if( await db.collection('courses').findOne(newcourse) ){
+    res.status(400).send('This course already exists')
+    return
+  }
+  await db.collection('courses').insertOne(newcourse)
+  res.send('course added')
+  console.log('course added')
+})
+
+app.post('/api/remove_course', authMiddleware, isAdminMiddleware, async (req, res, next) => {
   //const { db, client } = await connectDB()
   //TODO: input validation
-  await db.collection('subjects').remove(req.body)
-  res.send('Subject removed')
-  console.log('Subject removed')
+  await db.collection('courses').remove(req.body)
+  res.send('course removed')
+  console.log('course removed')
+})
+
+app.post("/api/update_course", authMiddleware, isAdminMiddleware, async (req, res, next) => {
+  //TODO: input validation
+  if(req.body.filter._id) req.body.filter._id = ObjectId(req.body.filter._id) 
+  await db.collection('courses').updateOne(req.body.filter, req.body.update)
+  res.send("course updated")
+  console.log("course updated")
 })
 
 passport.use(new LocalStrategy({
@@ -258,6 +291,103 @@ passport.deserializeUser((_id, done) => {
     done(null, user)
   })()
 })
+
+
+// Blockchain transactions
+
+app.post("/api/create_badge", authMiddleware, isAdminMiddleware, async (req, res, next) => {
+  console.log('Creating a new badge in the blockchain: '+JSON.stringify(req.body))
+  var course = req.body
+  var badge = {
+    image: course.image,
+    id: course.id,
+    tags: [],
+    related: [],
+    name: course.name,
+    criteria: {
+      narrative: course.description,
+      preconditions: course.preconditions,
+      id: course.id
+    },
+    alignment: [],
+    issuer: Config.ACCOUNT,
+    description: course.description,
+    type: 'BadgeClass',
+    '@context': 'https://w3id.org/openbadges/v2',
+    '@language': 'en'
+  }
+
+  var operation = [
+    'custom_json',
+    {
+      required_auths: [],
+      required_posting_auths: [Config.ACCOUNT],
+      id: 'badge',
+      json: JSON.stringify(badge)
+    }
+  ]
+
+  try{
+    var postingKey = PrivateKey.fromString(Config.POSTING_KEY)
+    var result = await steemClient.broadcast.sendOperations([operation], postingKey)
+  }catch(err) {
+    res.status(400).send('Error broadcasting operation: '+err.message)
+    console.log(err)
+    return
+  }
+  res.send(result)
+})
+
+app.post("/api/create_assertions", authMiddleware, isAdminMiddleware, async (req, res, next) => {
+  console.log('Creating a assertions:')
+  var operations = []
+
+  req.body.forEach( (graduate)=>{
+    var assertion = {
+      issuedOn: graduate.award_time,
+      start_date: graduate.start_date,
+      award_date: graduate.award_date,
+      expiration_date: graduate.expiration_date,
+      type: 'Assertion',
+      verification: {
+        type:'HostedBadge'
+      },
+      '@context': 'https://w3id.org/openbadges/v2',
+      badge: graduate.badge,
+      id:'',
+      recipient:{
+        hashed:false,
+        salt:'',
+        identity: graduate.key,
+        type: 'base58'
+      }
+    }
+
+    var operation = [
+      'custom_json',
+      {
+        required_auths: [],
+        required_posting_auths: [Config.ACCOUNT],
+        id: 'assertion',
+        json: JSON.stringify(assertion)
+      }
+    ]
+
+    operations.push(operation)
+  })
+
+  try{
+    var postingKey = PrivateKey.fromString(Config.POSTING_KEY)
+    var result = await steemClient.broadcast.sendOperations(operations, postingKey)
+  }catch(err) {
+    res.status(400).send('Error broadcasting operation: '+err.message)
+    console.log(err)
+    return
+  }
+  res.send(result)
+})
+
+
 
 app.listen(port, () => {
   console.log("Example app listening on port "+port)
