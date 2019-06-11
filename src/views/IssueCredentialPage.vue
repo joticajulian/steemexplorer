@@ -2,35 +2,85 @@
   <div>
     <HeaderEFTG ref="headerEFTG" v-on:login="onLogin" v-on:logout="onLogout"></HeaderEFTG>
     <div class="container">
-      <h2 class="text-center">Issue Credentials</h2>
+      <h2 class="text-center">Issue Bagdes</h2>
       <div :class="{'was-validated':was_validated}" novalidate>
         <div class="form-group row">
-          <label for="input_degree" class="col-md-2 col-form-label">DEGREE</label>
+          <label for="input_course" class="col-md-2 col-form-label">COURSE</label>
           <div class="col-md-10">
-            <input class="form-control" type="text" id="input_degree"
-              v-model="degree" placeholder="Degree" :class="{'is-invalid': error.degree }"/>
-            <div v-if="error.degree" class="invalid-feedback">{{ errorText.degree }}</div>
+            <select class="form-control" id="input_course" v-model="course" :class="{'is-invalid': error.course }">
+              <option disabled value="">Please select one</option>
+              <option
+                v-for="option in courses"
+                v-bind:key="option.name"
+                v-bind:value="option.name"
+              >
+                {{ option.name }}
+              </option>
+            </select>
+            <div v-if="error.course" class="invalid-feedback">{{ errorText.course }}</div>
           </div>
         </div>
         <div class="form-group row">
-          <label for="input_date" class="col-md-2 col-form-label">DATE</label>
+          <label for="input_award_date" class="col-md-2 col-form-label">AWARD DATE</label>
           <div class="col-md-10">
-            <input class="form-control" type="text" id="input_date"
-              v-model="date" placeholder="dd/mm/yyyy" :class="{'is-invalid': error.date }"/>
-            <div v-if="error.date" class="invalid-feedback">{{ errorText.date }}</div>
+            <input class="form-control" type="text" id="input_award_date"
+              v-model="award_date" placeholder="yyyy-mm-dd" :class="{'is-invalid': error.award_date }"/>
+            <div v-if="error.award_date" class="invalid-feedback">{{ errorText.award_date }}</div>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="input_expiration_date" class="col-md-2 col-form-label">EXPIRATION DATE</label>
+          <div class="col-md-10">
+            <input class="form-control" type="text" id="input_expiration_date"
+              v-model="expiration_date" placeholder="yyyy-mm-dd" :class="{'is-invalid': error.expiration_date }"/>
+            <div v-if="error.expiration_date" class="invalid-feedback">{{ errorText.expiration_date }}</div>
           </div>
         </div>
         <div class="form-group row">
           <label for="input_graduates" class="col-md-2 col-form-label">GRADUATES</label>
           <div class="col-md-10">
-            <textarea class="form-control" type="text" id="input_graduates" rows="10"
-              v-model="graduates" :class="{'is-invalid': error.graduates }"/>
-            <div v-if="error.graduates" class="invalid-feedback">{{ errorText.graduates }}</div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="card">
+                  <ul class="list-group list-group-flush">
+                    <li v-for="(student,index) in no_graduates" class="list-group-item" @click="selectStudent(index, 'no_graduates')">
+                      <div>{{student.family_name}}, {{student.name}}</div>
+                      <div><small>{{student.course_key.key}}</small></div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="card">
+                  <ul class="list-group list-group-flush">
+                    <li v-for="(student,index) in graduates" class="list-group-item" @click="selectStudent(index, 'graduates')">
+                      <div>{{student.family_name}}, {{student.name}}</div>
+                      <div><small>{{student.course_key.key}}</small></div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="row mt-4">
+        <div class="form-group row">
+          <label for="input_badge" class="col-md-2 col-form-label">BADGE</label>
+          <div class="col-md-2">
+            <input class="form-control" type="text" id="input_badge_block"
+             v-model="badge_block" placeholder="Block number" :class="{'is-invalid': error.badge_block }"/>
+            <div v-if="error.badge_block" class="invalid-feedback">{{ errorText.badge_block }}</div>
+          </div>
+          <div class="col-md-6">
+            <input class="form-control" type="text" id="input_badge_tx"
+             v-model="badge_tx" placeholder="Transaction ID" :class="{'is-invalid': error.badge_tx }"/>
+            <div v-if="error.badge_tx" class="invalid-feedback">{{ errorText.badge_tx }}</div>
+          </div>
+          <button v-if="new_badge"  @click="issue_badge" class="btn btn-primary col-md-2" :disabled="sending"><div v-if="sending" class="mini loader"></div>New badge</button>
+          <router-link v-if="!new_badge" :to="EXPLORER+'b/'+badge_block+'/'+badge_tx" class="btn btn-secondary col-md-2">Check</router-link>
+        </div>
+        <div v-if="!new_badge" class="row mt-4">
           <div class="form-group col-12 align-bottom" style="padding-top: 8px;">
-            <button @click="issue" class="btn btn-primary btn-large mr-2" :disabled="sending"><div v-if="sending" class="mini loader"></div>Issue</button>
+            <button @click="issue_assertions" class="btn btn-primary btn-large mr-2" :disabled="sending"><div v-if="sending" class="mini loader"></div>Issue</button>
             <div v-if="sending" class="btn">
               <button v-on:click="abort" class="btn btn-secondary mr-2" :disabled="aborting"><div v-if="aborting" class="mini loader"></div>Abort</button>
             </div>  
@@ -47,6 +97,7 @@
 
 <script>
 import debounce from 'lodash.debounce'
+import axios from 'axios'
 import { PublicKey } from 'eftg-dsteem'
 
 import Config from '@/config.js'
@@ -59,24 +110,38 @@ export default {
 
   data() {
     return {
+      courses: [],
+      isAdmin: false,
+      loadingAdmin: true,
 
-      degree: '',
-      date: '',
-      graduates: '',
+      course: '',
+      award_date: '',
+      expiration_date: '',
+
+      graduates: [],
+      no_graduates: [],
+
+      badge_block: '',
+      badge_tx: '',
+      new_badge: true,
 
       sending: false,
       error: {
-        degree: false,
+        course: false,
         date: false,
-        graduates: false
+        graduates: false,
+        badge_block: false,
+        badge_tx: false,
       },
       errorText: {
-        degree: '',
+        course: '',
         date: '',
-        graduates: ''
+        graduates: '',
+        badge_block: '',
+        badge_tx: '',
       },
       was_validated: false,
-
+      EXPLORER: Config.EXPLORER,
     }
   },
 
@@ -90,59 +155,90 @@ export default {
 
   created() {
     this.clear()
+    this.loadCourses()
 
     //validate fields while typing
-    this.debounced_validateDegree           = debounce(this.validateDegree          , 300)
-    this.debounced_validateDate             = debounce(this.validateDate            , 300)
-    this.debounced_validateGraduates        = debounce(this.validateGraduates       , 300)
+    this.debounced_validateAwardDate        = debounce(this.validateAwardDate       , 300)
+    this.debounced_validateExpirationDate   = debounce(this.validateExpirationDate  , 300)
+    this.debounced_validateBadgeBlock       = debounce(this.validateBadgeBlock      , 300)
+    this.debounced_validateBadgeTx          = debounce(this.validateBadgeTx         , 300)
+    this.debounced_loadStudents             = debounce(this.loadStudents            , 300)
   },
 
   watch: {
-    degree: function() { this.debounced_validateDegree() },
-    date: function() { this.debounced_validateDate() },
-    graduates: function() { this.debounced_validateGraduates() },
+    award_date: function() { this.debounced_validateAwardDate() },
+    expiration_date: function() { this.debounced_validateExpirationDate() },
+    badge_block: function() {
+      if(this.badge_block === '' && this.badge_tx === '') this.new_badge = true
+      else this.new_badge = false
+      this.debounced_validateBadgeBlock()
+    }, 
+    badge_tx: function() {
+      if(this.badge_block === '' && this.badge_tx === '') this.new_badge = true
+      else this.new_badge = false
+      this.debounced_validateBadgeTx()
+    }, 
+    course: function() { this.debounced_loadStudents() }
   },
 
   methods: {
-    async issue() {
+    async issue_badge() {
       this.sending = true
       this.hideSuccess()
       this.hideDanger()
 
       try{
-        if(!this.$store.state.auth.logged)
-          throw new Error('Please login')
+        var course = this.courses.find( (c)=>{return c.name === this.course} )
+        var response = await axios.post(Config.SERVER_API + "create_badge", course)
+        console.log(response.data)
+        this.badge_block = response.data.block_num
+        this.badge_tx = response.data.id
 
+        this.showSuccess('Badge created.')
+      }catch(error){
+        console.log(error)
+        this.showDanger(error.message)
+      }
+
+      this.sending = false
+      this.hideInfo()
+    },
+
+    async issue_assertions() {
+      this.sending = true
+      this.hideSuccess()
+      this.hideDanger()
+
+      try{
         var valid = true;
-        valid = this.validateDegree(true) && valid
-        valid = this.validateDate(true) && valid
-        valid = this.validateGraduates(true) && valid
+        valid = this.validateAwardDate(true) && valid
+        valid = this.validateExpirationDate(true) && valid
+        valid = this.validateBadgeBlock(true) && valid
+        valid = this.validateBadgeTx(true) && valid
 
         this.was_validated = true
         if (!valid) {
           throw new Error("Error validating fields!");
         }
 
-        var username = this.$store.state.auth.user
-        var postingKey = this.$store.state.auth.keys.posting
+        var award_date = new Date(this.award_date + 'Z').toISOString().slice(0, -5)
+        var expiration_date = new Date(this.expiration_date + 'Z').toISOString().slice(0, -5)
+        var badge = {
+          block: this.badge_block,
+          tx: this.badge_tx
+        }
 
-        var date = Utils.dateToString( Utils.ddmmyyyytoDate(this.date) ) //.toISOString().slice(0, -5)
-        var graduatePubKeys = this.getGraduatePublicKeys()
-        var claim = this.createDiplomas( username, postingKey, this.degree, date, graduatePubKeys )
-
-        var operation = [
-          'custom_json',
-          {
-            required_auths: [],
-            required_posting_auths: [username],
-            id: 'credential',
-            json: JSON.stringify(claim)
-          }
-        ]
-
-        var result = await this.steem_broadcast_sendOperations([operation], postingKey)
-        this.showSuccess('<a href="'+Config.EXPLORER+'b/'+result.block_num+'/'+result.id+'" class="alert-link" target="_blank">New diplomas issued!</a>')
-
+        this.graduates.forEach( (graduate)=>{
+          graduate.start_date = new Date(graduate.course_key.start_date + 'Z').toISOString().slice(0, -5)
+          graduate.award_date = award_date
+          graduate.expiration_date = expiration_date
+          graduate.badge = badge
+          graduate.key = graduate.course_key.key
+        })
+        
+        var response = await axios.post(Config.SERVER_API + "create_assertions", this.graduates)
+        console.log(response.data)
+        this.showSuccess('<a href="'+Config.EXPLORER+'b/'+response.data.block_num+'/'+response.data.id+'" class="alert-link" target="_blank">New diplomas issued!</a>')
       }catch(error){
         console.log(error)
         this.showDanger(error.message)
@@ -153,11 +249,10 @@ export default {
     },
 
     clear() {
-      var d = new Date()
-      this.date = Utils.dateFormat(d)
-      this.degree = ''
-      this.graduates = ''
-
+      this.award_date = new Date().toISOString().slice(0,-14)
+      this.expiration_date = new Date(Date.now() + 365*24*60*60*1000).toISOString().slice(0,-14)
+      this.course = ''
+      
       this.was_validated = false
 
       this.hideSuccess()
@@ -181,7 +276,7 @@ export default {
       return pubKeys
     },
 
-    createDiplomas( issuer, postingKey, degree, date, graduatePubKeys ) {
+    createDiplomas( issuer, postingKey, course, date, graduatePubKeys ) {
       var claim = {
         context: [
           'https://www.w3.org/2018/credentials/v1',
@@ -192,13 +287,62 @@ export default {
         type: ['DiplomaCredential'],
         issuer: issuer,
         issuanceDate: date,
-        credentialSubject: {
+        credentialCourse: {
           id: 'did:diploma:'+issuer,
           pubKeys: graduatePubKeys
         }
       }
 
       return claim
+    },
+
+    async loadCourses() {
+      try{
+        var response = await axios.get(Config.SERVER_API + "courses")
+        console.log(response.data.length)
+        this.courses = response.data
+
+        console.log('load courses')
+        console.log(this.courses)
+      }catch(error){
+        console.log(error)
+      }
+      this.loadingAdmin = false
+    },
+
+    async loadStudents() {
+      try{
+        var filter = {keys:{$all:[{$elemMatch:{course:this.course}}]}}
+        var response = await axios.post(Config.SERVER_API + "students", filter)
+        console.log(response.data.length)
+        var students = response.data
+        students.forEach( (s)=>{
+          s.course_key = s.keys.find( (k)=>{return k.course === this.course} )
+        })
+        this.no_graduates = response.data
+        this.graduates = []
+
+        console.log('load students')
+        this.isAdmin = true
+      }catch(error){
+        console.log(error)
+      }
+      this.loadingAdmin = false
+    },
+
+    selectStudent(index, clickOn) {
+      if(clickOn === 'graduates') {
+        var from = 'graduates'
+        var to =   'no_graduates'
+      }else{
+        var from = 'no_graduates'
+        var to =   'graduates'
+      }
+      var students = this[from].splice(index, 1)
+      var student = students[0]
+      if(student) {
+        this[to].push( student )
+      }
     },
 
     onLogin() {},
@@ -237,24 +381,31 @@ export default {
     },
 
     // validation
-    validateDegree(submit) {
+    validateAwardDate(submit) {
       let self = this
-      return this.validateField('degree', submit, function(){
-        // validation
-      } )
+      return this.validateField('award_date', submit, function(){
+        var d = new Date(self.award_date + 'Z').toISOString().slice(0, -14)
+        if(d !== self.award_date) throw new Error('Incorrect date')
+      })
     },
 
-    validateDate(submit) {
+    validateExpirationDate(submit) {
       let self = this
-      return this.validateField('date', submit, function(){
-        Utils.ddmmyyyytoDate(self.date).toISOString().slice(0, -5)
-      } )
+      return this.validateField('expiration_date', submit, function(){
+        var d = new Date(self.expiration_date + 'Z').toISOString().slice(0, -14)
+        if(d !== self.expiration_date) throw new Error('Incorrect date')
+      })
     },
 
-    validateGraduates(submit) {
+    validateBadgeBlock(submit) {
       let self = this
-      return this.validateField('graduates', submit, function(){
-        self.getGraduatePublicKeys()
+      return this.validateField('badge_block', submit, function(){
+      })
+    },
+
+    validateBadgeTx(submit) {
+      let self = this
+      return this.validateField('badge_block', submit, function(){
       })
     },
   },
