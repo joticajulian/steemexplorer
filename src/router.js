@@ -94,6 +94,11 @@ export default new Router({
       component: () => import('./views/AdminStudentsPage.vue')
     },
     {
+      path: "/courses",
+      name: "Courses",
+      component: () => import('./views/CoursesPage.vue')
+    },
+    {
       path: "/explorer",
       name: "Explorer",
       component: HomeExplorer
