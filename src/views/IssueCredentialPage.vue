@@ -63,24 +63,9 @@
             </div>
           </div>
         </div>
-        <div class="form-group row">
-          <label for="input_badge" class="col-md-2 col-form-label">BADGE</label>
-          <div class="col-md-2">
-            <input class="form-control" type="text" id="input_badge_block"
-             v-model="badge_block" placeholder="Block number" :class="{'is-invalid': error.badge_block }"/>
-            <div v-if="error.badge_block" class="invalid-feedback">{{ errorText.badge_block }}</div>
-          </div>
-          <div class="col-md-6">
-            <input class="form-control" type="text" id="input_badge_tx"
-             v-model="badge_tx" placeholder="Transaction ID" :class="{'is-invalid': error.badge_tx }"/>
-            <div v-if="error.badge_tx" class="invalid-feedback">{{ errorText.badge_tx }}</div>
-          </div>
-          <button v-if="new_badge"  @click="issue_badge" class="btn btn-primary col-md-2" :disabled="sending"><div v-if="sending" class="mini loader"></div>New badge</button>
-          <router-link v-if="!new_badge" :to="EXPLORER+'b/'+badge_block+'/'+badge_tx" class="btn btn-secondary col-md-2">Check</router-link>
-        </div>
-        <div v-if="!new_badge" class="row mt-4">
+        <div class="row mt-4">
           <div class="form-group col-12 align-bottom" style="padding-top: 8px;">
-            <button @click="issue_assertions" class="btn btn-primary btn-large mr-2" :disabled="sending"><div v-if="sending" class="mini loader"></div>Issue</button>
+            <button @click="issue_badges" class="btn btn-primary btn-large mr-2" :disabled="sending"><div v-if="sending" class="mini loader"></div>Issue</button>
             <div v-if="sending" class="btn">
               <button v-on:click="abort" class="btn btn-secondary mr-2" :disabled="aborting"><div v-if="aborting" class="mini loader"></div>Abort</button>
             </div>  
@@ -121,24 +106,16 @@ export default {
       graduates: [],
       no_graduates: [],
 
-      badge_block: '',
-      badge_tx: '',
-      new_badge: true,
-
       sending: false,
       error: {
         course: false,
         date: false,
         graduates: false,
-        badge_block: false,
-        badge_tx: false,
       },
       errorText: {
         course: '',
         date: '',
         graduates: '',
-        badge_block: '',
-        badge_tx: '',
       },
       was_validated: false,
       EXPLORER: Config.EXPLORER,
@@ -160,61 +137,27 @@ export default {
     //validate fields while typing
     this.debounced_validateAwardDate        = debounce(this.validateAwardDate       , 300)
     this.debounced_validateExpirationDate   = debounce(this.validateExpirationDate  , 300)
-    this.debounced_validateBadgeBlock       = debounce(this.validateBadgeBlock      , 300)
-    this.debounced_validateBadgeTx          = debounce(this.validateBadgeTx         , 300)
     this.debounced_loadStudents             = debounce(this.loadStudents            , 300)
   },
 
   watch: {
     award_date: function() { this.debounced_validateAwardDate() },
     expiration_date: function() { this.debounced_validateExpirationDate() },
-    badge_block: function() {
-      if(this.badge_block === '' && this.badge_tx === '') this.new_badge = true
-      else this.new_badge = false
-      this.debounced_validateBadgeBlock()
-    }, 
-    badge_tx: function() {
-      if(this.badge_block === '' && this.badge_tx === '') this.new_badge = true
-      else this.new_badge = false
-      this.debounced_validateBadgeTx()
-    }, 
     course: function() { this.debounced_loadStudents() }
   },
 
   methods: {
-    async issue_badge() {
+    async issue_badges() {
       this.sending = true
       this.hideSuccess()
       this.hideDanger()
 
       try{
         var course = this.courses.find( (c)=>{return c.name === this.course} )
-        var response = await axios.post(Config.SERVER_API + "create_badge", course)
-        console.log(response.data)
-        this.badge_block = response.data.block_num
-        this.badge_tx = response.data.id
 
-        this.showSuccess('Badge created.')
-      }catch(error){
-        console.log(error)
-        this.showDanger(error.message)
-      }
-
-      this.sending = false
-      this.hideInfo()
-    },
-
-    async issue_assertions() {
-      this.sending = true
-      this.hideSuccess()
-      this.hideDanger()
-
-      try{
         var valid = true;
         valid = this.validateAwardDate(true) && valid
         valid = this.validateExpirationDate(true) && valid
-        valid = this.validateBadgeBlock(true) && valid
-        valid = this.validateBadgeTx(true) && valid
 
         this.was_validated = true
         if (!valid) {
@@ -223,20 +166,20 @@ export default {
 
         var award_date = new Date(this.award_date + 'Z').toISOString().slice(0, -5)
         var expiration_date = new Date(this.expiration_date + 'Z').toISOString().slice(0, -5)
-        var badge = {
-          block: this.badge_block,
-          tx: this.badge_tx
-        }
 
         this.graduates.forEach( (graduate)=>{
           graduate.start_date = new Date(graduate.course_key.start_date + 'Z').toISOString().slice(0, -5)
           graduate.award_date = award_date
           graduate.expiration_date = expiration_date
-          graduate.badge = badge
           graduate.key = graduate.course_key.key
         })
-        
-        var response = await axios.post(Config.SERVER_API + "create_assertions", this.graduates)
+
+        var badges = {
+          course: course,
+          graduates: this.graduates
+        }
+
+        var response = await axios.post(Config.SERVER_API + "create_badges", badges)
         console.log(response.data)
         this.showSuccess('<a href="'+Config.EXPLORER+'b/'+response.data.block_num+'/'+response.data.id+'" class="alert-link" target="_blank">New diplomas issued!</a>')
       }catch(error){
@@ -394,18 +337,6 @@ export default {
       return this.validateField('expiration_date', submit, function(){
         var d = new Date(self.expiration_date + 'Z').toISOString().slice(0, -14)
         if(d !== self.expiration_date) throw new Error('Incorrect date')
-      })
-    },
-
-    validateBadgeBlock(submit) {
-      let self = this
-      return this.validateField('badge_block', submit, function(){
-      })
-    },
-
-    validateBadgeTx(submit) {
-      let self = this
-      return this.validateField('badge_block', submit, function(){
       })
     },
   },

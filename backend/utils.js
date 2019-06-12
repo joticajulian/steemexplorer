@@ -23,7 +23,15 @@ function validateCourse(course) {
   return course
 }
 
+function createPermlink(title) {
+  let permlink
+  let noise = Math.random().toString(36).substring(7)
+  title = title.trim().toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]+/g, '')
+  return noise + '-' + title
+}
+
 module.exports = {
   validateUser,
-  validateCourse
+  validateCourse,
+  createPermlink
 }

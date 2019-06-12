@@ -295,9 +295,10 @@ passport.deserializeUser((_id, done) => {
 
 // Blockchain transactions
 
-app.post("/api/create_badge", authMiddleware, isAdminMiddleware, async (req, res, next) => {
-  console.log('Creating a new badge in the blockchain: '+JSON.stringify(req.body))
-  var course = req.body
+app.post("/api/create_badges", authMiddleware, isAdminMiddleware, async (req, res, next) => {
+  console.log('Creating badge and assertions in a post')
+  var course = req.body.course
+
   var badge = {
     image: course.image,
     id: course.id,
@@ -317,13 +318,59 @@ app.post("/api/create_badge", authMiddleware, isAdminMiddleware, async (req, res
     '@language': 'en'
   }
 
+  var assertions = []
+  req.body.graduates.forEach( (graduate)=>{
+    var assertion = {
+      issuedOn: graduate.award_time,
+      start_date: graduate.start_date,
+      award_date: graduate.award_date,
+      expiration_date: graduate.expiration_date,
+      type: 'Assertion',
+      verification: {
+        type:'HostedBadge'
+      },
+      '@context': 'https://w3id.org/openbadges/v2',
+      id:'',
+      recipient:{
+        hashed:false,
+        salt:'',
+        identity: graduate.key,
+        type: 'base58'
+      }
+    }
+
+    assertions.push(assertion)
+  })
+
+  if(assertions.length > 0) var award_date = assertions[0].award_date.slice(0,-9)
+  else var award_date = ''
+
+  var body = 
+`${course.description}
+
+## Graduates
+
+`
+  assertions.forEach( (a)=>{
+    body += a.recipient.identity + '\n'
+  })
+
+  var metadata = {
+    badge,
+    assertions
+  }
+  var title = course.name + ' ' + award_date
+
   var operation = [
-    'custom_json',
+    'comment',
     {
-      required_auths: [],
-      required_posting_auths: [Config.ACCOUNT],
-      id: 'badge',
-      json: JSON.stringify(badge)
+      parent_author: '',
+      parent_permlink: 'badge',
+      author: Config.ACCOUNT,
+      permlink: Utils.createPermlink(title),
+      title: title,
+      body: body,
+      json_metadata: JSON.stringify(metadata)
     }
   ]
 
@@ -337,57 +384,6 @@ app.post("/api/create_badge", authMiddleware, isAdminMiddleware, async (req, res
   }
   res.send(result)
 })
-
-app.post("/api/create_assertions", authMiddleware, isAdminMiddleware, async (req, res, next) => {
-  console.log('Creating a assertions:')
-  var operations = []
-
-  req.body.forEach( (graduate)=>{
-    var assertion = {
-      issuedOn: graduate.award_time,
-      start_date: graduate.start_date,
-      award_date: graduate.award_date,
-      expiration_date: graduate.expiration_date,
-      type: 'Assertion',
-      verification: {
-        type:'HostedBadge'
-      },
-      '@context': 'https://w3id.org/openbadges/v2',
-      badge: graduate.badge,
-      id:'',
-      recipient:{
-        hashed:false,
-        salt:'',
-        identity: graduate.key,
-        type: 'base58'
-      }
-    }
-
-    var operation = [
-      'custom_json',
-      {
-        required_auths: [],
-        required_posting_auths: [Config.ACCOUNT],
-        id: 'assertion',
-        json: JSON.stringify(assertion)
-      }
-    ]
-
-    operations.push(operation)
-  })
-
-  try{
-    var postingKey = PrivateKey.fromString(Config.POSTING_KEY)
-    var result = await steemClient.broadcast.sendOperations(operations, postingKey)
-  }catch(err) {
-    res.status(400).send('Error broadcasting operation: '+err.message)
-    console.log(err)
-    return
-  }
-  res.send(result)
-})
-
-
 
 app.listen(port, () => {
   console.log("Example app listening on port "+port)
