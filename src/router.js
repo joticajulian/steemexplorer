@@ -99,6 +99,11 @@ export default new Router({
       component: () => import('./views/CoursesPage.vue')
     },
     {
+      path: "/proof",
+      name: "Proof",
+      component: () => import('./views/ProofPage.vue')
+    },
+    {
       path: "/explorer",
       name: "Explorer",
       component: HomeExplorer
