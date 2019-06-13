@@ -5,19 +5,19 @@
       <h2 class="text-center">Create proof</h2>
       <div :class="{'was-validated':was_validated}" novalidate>
         <div class="form-group row">
-          <label for="input_block" class="col-md-2 col-form-label">BLOCK</label>
+          <label for="input_issuer" class="col-md-2 col-form-label">ISSUER</label>
           <div class="col-md-10">
-            <input class="form-control" type="text" id="input_block"
-              v-model="block" placeholder="Block number" :class="{'is-invalid': error.block }"/>
-            <div v-if="error.block" class="invalid-feedback">{{ errorText.block }}</div>
+            <input class="form-control" type="text" id="input_issuer"
+              v-model="issuer" placeholder="Issuer" :class="{'is-invalid': error.issuer }"/>
+            <div v-if="error.issuer" class="invalid-feedback">{{ errorText.issuer }}</div>
           </div>
         </div>
         <div class="form-group row">
-          <label for="input_tx" class="col-md-2 col-form-label">TX ID</label>
+          <label for="input_permlink" class="col-md-2 col-form-label">PERMLINK</label>
           <div class="col-md-10">
-            <input class="form-control" type="text" id="input_tx"
-              v-model="tx" placeholder="Transaction ID" :class="{'is-invalid': error.tx }"/>
-            <div v-if="error.tx" class="invalid-feedback">{{ errorText.tx }}</div>
+            <input class="form-control" type="text" id="input_permlink"
+              v-model="permlink" placeholder="Permlink" :class="{'is-invalid': error.permlink }"/>
+            <div v-if="error.permlink" class="invalid-feedback">{{ errorText.permlink }}</div>
           </div>
         </div>
         <div class="form-group row">
@@ -39,7 +39,7 @@
         <div class="form-group row">
           <label for="input_private_key" class="col-md-2 col-form-label">PRIVATE KEY</label>
           <div class="col-md-10">
-            <input class="form-control" type="text" id="input_private_key"
+            <input class="form-control" type="password" id="input_private_key"
               v-model="private_key" placeholder="Private key" :class="{'is-invalid': error.private_key }"/>
             <div v-if="error.private_key" class="invalid-feedback">{{ errorText.private_key }}</div>
           </div>
@@ -62,6 +62,7 @@
 import debounce from 'lodash.debounce'
 import axios from 'axios'
 import { Client, PrivateKey } from 'eftg-dsteem'
+import { saveAs } from 'file-saver'
 
 import Config from '@/config.js'
 import Utils from '@/js/utils.js'
@@ -73,23 +74,23 @@ export default {
 
   data() {
     return {
-      block: '',
-      tx: '',
+      issuer: '',
+      permlink: '',
       message: '',
       expiration_date: '',
       private_key: '',
       
       sending: false,
       error: {
-        block: false,
-        tx: false,
+        issuer: false,
+        permlink: false,
         message: false,
         expiration_date: false,
         private_key: false,
       },
       errorText: {
-        block: '',
-        tx: '',
+        issuer: '',
+        permlink: '',
         message: '',
         expiration_date: '',
         private_key: '',
@@ -111,16 +112,16 @@ export default {
     this.expiration_date = new Date().toISOString().slice(0, -5)
 
     //validate fields while typing
-    this.debounced_validateBlock          = debounce(this.validateBlock          , 300)
-    this.debounced_validateTx             = debounce(this.validateTx             , 300)
+    this.debounced_validateIssuer         = debounce(this.validateIssuer         , 300)
+    this.debounced_validatePermlink       = debounce(this.validatePermlink       , 300)
     this.debounced_validateMessage        = debounce(this.validateMessage        , 300)
     this.debounced_validateExpirationDate = debounce(this.validateExpirationDate , 300)
     this.debounced_validatePrivateKey     = debounce(this.validatePrivateKey     , 300)
   },
 
   watch: {
-    block: function() { this.debounced_validateBlock() },
-    tx: function() { this.debounced_validateTx() },
+    issuer: function() { this.debounced_validateIssuer() },
+    permlink: function() { this.debounced_validatePermlink() },
     message: function() { this.debounced_validateMessage() },
     expiration_date: function() { this.debounced_validateExpirationDate() },
     private_key: function() { this.debounced_validatePrivateKey() }
@@ -134,22 +135,31 @@ export default {
 
       try{
         var valid = true;
-        valid = this.validateBlock(true) && valid
-        valid = this.validateTx(true) && valid
+        valid = this.validateIssuer(true) && valid
+        valid = this.validatePermlink(true) && valid
         valid = this.validateMessage(true) && valid
         valid = this.validateExpirationDate(true) && valid
         valid = this.validatePrivateKey(true) && valid
+        var privKey = PrivateKey.fromString(this.private_key)
+        var pubKey = privKey.createPublic(Config.STEEM_ADDRESS_PREFIX).toString()
         
         this.was_validated = true
         if (!valid) {
           throw new Error("Error validating fields!");
         }
-        let user = 'initminer'
+        var include_badge = false
+        if( this.issuer !== '' || this.permlink !== '' ){
+          include_badge = true
+          var content = await this.steem_database_call( 'get_content', [this.issuer, this.permlink] )
+          if(!content) throw new Error('There is no content on @'+this.issuer+'/'+this.permlink)
+          var metadata = JSON.parse(content.json_metadata)
+          if(!metadata || !metadata.assertions) throw new Error('@'+this.issuer+'/'+this.permlink+' does not corresponds with a badge with assertions')
+          var assertion = metadata.assertions.find( (a)=>{ return a.recipient.identity === pubKey })
+          if(!assertion) throw new Error('There are not assertions in the badge that match with this private key')
+        }
+        
+        var client = this.RPCnode_initClient()
 
-        let opts = {}
-        opts.addressPrefix = Config.STEEM_ADDRESS_PREFIX
-        if(process.env.VUE_APP_CHAIN_ID) opts.chainId = process.env.VUE_APP_CHAIN_ID
-        var client = new Client('', opts)
         var trx = {
           ref_block_num: 0,
           ref_block_prefix: 0,
@@ -157,8 +167,8 @@ export default {
           operations: [
             ['transfer',
               {
-                from: user,
-                to: user,
+                from: '',
+                to: '',
                 amount: '0.001 ' + Config.STEEM_ADDRESS_PREFIX,
                 memo: this.message
               }
@@ -166,8 +176,20 @@ export default {
           ],
           extensions: []
         }
-        var sgnTrx = client.broadcast.sign(trx, PrivateKey.fromString(this.private_key))
+        var sgnTrx = client.broadcast.sign(trx, privKey)
         console.log(sgnTrx)
+        var presentation = {}
+        if(include_badge) {
+          presentation.badge = {
+            issuer: this.issuer,
+            permlink: this.permlink
+          }
+        }
+        presentation.proof = sgnTrx
+
+        var blob = new Blob([JSON.stringify(presentation)], {type: "text/plain;charset=utf-8"});
+        saveAs(blob, "proof.json");
+
         this.showSuccess('Proof created')
       }catch(error){
         console.log(error)
@@ -208,16 +230,16 @@ export default {
       return true
     },
 
-    validateBlock(submit) {
+    validateIssuer(submit) {
       let self = this
-      return this.validateField('block', submit, function(){
+      return this.validateField('issuer', submit, function(){
         
       })
     },
 
-    validateTx(submit) {
+    validatePermlink(submit) {
       let self = this
-      return this.validateField('tx', submit, function(){
+      return this.validateField('permlink', submit, function(){
         
       })
     },
