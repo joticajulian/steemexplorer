@@ -5,19 +5,11 @@
       <h2 class="text-center">Create proof</h2>
       <div :class="{'was-validated':was_validated}" novalidate>
         <div class="form-group row">
-          <label for="input_issuer" class="col-md-2 col-form-label">ISSUER</label>
+          <label for="input_badge_url" class="col-md-2 col-form-label">BADGE URL</label>
           <div class="col-md-10">
-            <input class="form-control" type="text" id="input_issuer"
-              v-model="issuer" placeholder="Issuer" :class="{'is-invalid': error.issuer }"/>
-            <div v-if="error.issuer" class="invalid-feedback">{{ errorText.issuer }}</div>
-          </div>
-        </div>
-        <div class="form-group row">
-          <label for="input_permlink" class="col-md-2 col-form-label">PERMLINK</label>
-          <div class="col-md-10">
-            <input class="form-control" type="text" id="input_permlink"
-              v-model="permlink" placeholder="Permlink" :class="{'is-invalid': error.permlink }"/>
-            <div v-if="error.permlink" class="invalid-feedback">{{ errorText.permlink }}</div>
+            <input class="form-control" type="text" id="input_badge_url"
+              v-model="badge_url" placeholder="Link to the badge" :class="{'is-invalid': error.badge_url }"/>
+            <div v-if="error.badge_url" class="invalid-feedback">{{ errorText.badge_url }}</div>
           </div>
         </div>
         <div class="form-group row">
@@ -70,27 +62,24 @@ import SteemClient from '@/mixins/SteemClient.js'
 import HeaderEFTG from '@/components/HeaderEFTG'
 
 export default {
-  name: 'IssueCredential',
+  name: 'Proof',
 
   data() {
     return {
-      issuer: '',
-      permlink: '',
+      badge_url: '',
       message: '',
       expiration_date: '',
       private_key: '',
       
       sending: false,
       error: {
-        issuer: false,
-        permlink: false,
+        badge_url: false,
         message: false,
         expiration_date: false,
         private_key: false,
       },
       errorText: {
-        issuer: '',
-        permlink: '',
+        badge_url: '',
         message: '',
         expiration_date: '',
         private_key: '',
@@ -109,19 +98,17 @@ export default {
   ],
 
   created() {
-    this.expiration_date = new Date().toISOString().slice(0, -5)
+    this.expiration_date = new Date(Date.now() + 24*60*60*1000).toISOString().slice(0, -5)
 
     //validate fields while typing
-    this.debounced_validateIssuer         = debounce(this.validateIssuer         , 300)
-    this.debounced_validatePermlink       = debounce(this.validatePermlink       , 300)
+    this.debounced_validateBadgeUrl       = debounce(this.validateBadgeUrl       , 300)
     this.debounced_validateMessage        = debounce(this.validateMessage        , 300)
     this.debounced_validateExpirationDate = debounce(this.validateExpirationDate , 300)
     this.debounced_validatePrivateKey     = debounce(this.validatePrivateKey     , 300)
   },
 
   watch: {
-    issuer: function() { this.debounced_validateIssuer() },
-    permlink: function() { this.debounced_validatePermlink() },
+    badge_url: function() { this.debounced_validateBadgeUrl() },
     message: function() { this.debounced_validateMessage() },
     expiration_date: function() { this.debounced_validateExpirationDate() },
     private_key: function() { this.debounced_validatePrivateKey() }
@@ -135,8 +122,7 @@ export default {
 
       try{
         var valid = true;
-        valid = this.validateIssuer(true) && valid
-        valid = this.validatePermlink(true) && valid
+        valid = this.validateBadgeUrl(true) && valid
         valid = this.validateMessage(true) && valid
         valid = this.validateExpirationDate(true) && valid
         valid = this.validatePrivateKey(true) && valid
@@ -148,12 +134,19 @@ export default {
           throw new Error("Error validating fields!");
         }
         var include_badge = false
-        if( this.issuer !== '' || this.permlink !== '' ){
+
+        var issuer = ''
+        var permlink = ''
+        if( this.badge_url !== ''){
           include_badge = true
-          var content = await this.steem_database_call( 'get_content', [this.issuer, this.permlink] )
-          if(!content) throw new Error('There is no content on @'+this.issuer+'/'+this.permlink)
+          var url = this.badge_url.trim()
+          var permlink = url.substr(url.lastIndexOf('/') + 1);
+          var issuer = url.substring(url.lastIndexOf('@') + 1, url.lastIndexOf('/'));
+
+          var content = await this.steem_database_call( 'get_content', [issuer, permlink] )
+          if(!content) throw new Error('There is no content on @'+issuer+'/'+permlink)
           var metadata = JSON.parse(content.json_metadata)
-          if(!metadata || !metadata.assertions) throw new Error('@'+this.issuer+'/'+this.permlink+' does not corresponds with a badge with assertions')
+          if(!metadata || !metadata.assertions) throw new Error('@'+issuer+'/'+permlink+' does not corresponds with a badge with assertions')
           var assertion = metadata.assertions.find( (a)=>{ return a.recipient.identity === pubKey })
           if(!assertion) throw new Error('There are not assertions in the badge that match with this private key')
         }
@@ -179,12 +172,8 @@ export default {
         var sgnTrx = client.broadcast.sign(trx, privKey)
         console.log(sgnTrx)
         var presentation = {}
-        if(include_badge) {
-          presentation.badge = {
-            issuer: this.issuer,
-            permlink: this.permlink
-          }
-        }
+        if(include_badge)
+          presentation.badge = { issuer, permlink }
         presentation.proof = sgnTrx
 
         var blob = new Blob([JSON.stringify(presentation)], {type: "text/plain;charset=utf-8"});
@@ -230,16 +219,9 @@ export default {
       return true
     },
 
-    validateIssuer(submit) {
+    validateBadgeUrl(submit) {
       let self = this
-      return this.validateField('issuer', submit, function(){
-        
-      })
-    },
-
-    validatePermlink(submit) {
-      let self = this
-      return this.validateField('permlink', submit, function(){
+      return this.validateField('badge_url', submit, function(){
         
       })
     },
