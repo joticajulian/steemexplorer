@@ -104,6 +104,11 @@ export default new Router({
       component: () => import('./views/ProofPage.vue')
     },
     {
+      path: "/verify",
+      name: "Verify",
+      component: () => import('./views/VerifyPage.vue')
+    },
+    {
       path: "/explorer",
       name: "Explorer",
       component: HomeExplorer
