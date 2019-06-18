@@ -112,6 +112,45 @@
                   </div>
                 </div>
                 <button class="btn btn-primary mt-2" @click="addKey">Add key</button>
+
+                <div v-if="current.badges && current.badges.length > 0">
+                  <h4 class="mt-4">Badges</h4>
+                  <div class="card">
+                    <ul class="list-group list-group-flush">
+                      <li v-for="(badge,index) in current.badges" class="list-group-item" @click="selectBadge(index)">
+                        <div class="row">
+                          <div class="col-11">
+                            <strong>{{badge.badge.name}}</strong>
+                            <div><router-link :to="EXPLORER+badge.badge.link.url">{{badge.badge.link.title}}</router-link></div>
+                            <div class="row">
+                              <div class="col-3">Start date</div>
+                              <div class="col-9">{{badge.assertion.start_date}}</div>
+                            </div>
+                            <div class="row">
+                              <div class="col-3">Award date</div>
+                              <div class="col-9">{{badge.assertion.award_date}}</div>
+                            </div>
+                            <div class="row">
+                              <div class="col-3">Expiration date</div>
+                              <div class="col-9">{{badge.assertion.expiration_date}}</div>
+                            </div>
+                            <div class="row">
+                              <div class="col-3">Key</div>
+                              <div class="col-9">{{badge.assertion.recipient.identity}}</div>
+                            </div>
+                          </div>
+                          <div class="col-1">
+                            <button v-if="selectedKey == index" class="btn btn-primary" @click="removeKey(index)">Remove</button>
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <div v-else>
+                  <h4 class="mt-4">No badges</h4>
+                </div>
+
                 <div class="mt-3">
                   <button class="btn btn-primary mr-2" @click="editStudent">Edit student</button>
                   <button class="btn btn-primary" @click="removeStudent">Remove student</button>
@@ -191,7 +230,8 @@ export default {
         newkey: '',
         course: '',
         start_date: ''
-      }
+      },
+      EXPLORER: Config.EXPLORER
     }
   },
 
