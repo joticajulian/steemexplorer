@@ -263,6 +263,18 @@ app.post("/api/update_course", authMiddleware, isAdminMiddleware, async (req, re
   console.log("course updated")
 })
 
+app.get("/api/badges", authMiddleware, isAdminMiddleware, async (req, res, next) => {
+  var badges = await db.collection('badges').find({}).toArray()
+  console.log('get badges')
+  res.send(courses)
+})
+
+app.post('/api/remove_badge', authMiddleware, isAdminMiddleware, async (req, res, next) => {
+  await db.collection('badges').remove(req.body)
+  res.send('badge removed')
+  console.log('badge removed')
+})
+
 passport.use(new LocalStrategy({
     usernameField: 'email',
     passwordField: 'password'
@@ -297,18 +309,26 @@ passport.deserializeUser((_id, done) => {
 
 app.post("/api/create_badges", authMiddleware, isAdminMiddleware, async (req, res, next) => {
   console.log('Creating badge and assertions in a post')
-  var course = req.body.course
+  if(!req.body.course || !req.body.course.name){
+    res.status(400).send('No course name defined')
+    return
+  }
+  var course = await db.collection('courses').findOne({name:req.body.course.name})
+  if(!course){
+    res.status(400).send('Course '+req.body.course.name+' not found')
+    return
+  }
 
   var badge = {
     image: course.image,
-    id: course.id,
+    id: course._id,
     tags: [],
     related: [],
     name: course.name,
     criteria: {
       narrative: course.description,
       preconditions: course.preconditions,
-      id: course.id
+      id: course._id
     },
     alignment: [],
     issuer: Config.ACCOUNT,
@@ -319,6 +339,7 @@ app.post("/api/create_badges", authMiddleware, isAdminMiddleware, async (req, re
   }
 
   var assertions = []
+  var assertionsPrivateInfo = []
   req.body.graduates.forEach( (graduate)=>{
     var assertion = {
       issuedOn: graduate.award_time,
@@ -339,7 +360,15 @@ app.post("/api/create_badges", authMiddleware, isAdminMiddleware, async (req, re
       }
     }
 
+    var assertionPrivateInfo = JSON.parse(JSON.stringify(assertion))
+    assertionPrivateInfo.recipient.realIdentity = {
+      _id: ObjectId(graduate._id),
+      name: graduate.name,
+      family_name: graduate.family_name
+    }
+
     assertions.push(assertion)
+    assertionsPrivateInfo.push(assertionPrivateInfo)
   })
 
   if(assertions.length > 0) var award_date = assertions[0].award_date.slice(0,-9)
@@ -360,14 +389,17 @@ app.post("/api/create_badges", authMiddleware, isAdminMiddleware, async (req, re
     assertions
   }
   var title = course.name + ' ' + award_date
+  var author = Config.ACCOUNT
+  var permlink = Utils.createPermlink(title)
+  var url = '@'+author+'/'+permlink
 
   var operation = [
     'comment',
     {
       parent_author: '',
       parent_permlink: 'badge',
-      author: Config.ACCOUNT,
-      permlink: Utils.createPermlink(title),
+      author: author,
+      permlink: permlink,
       title: title,
       body: body,
       json_metadata: JSON.stringify(metadata)
@@ -381,6 +413,27 @@ app.post("/api/create_badges", authMiddleware, isAdminMiddleware, async (req, re
     res.status(400).send('Error broadcasting operation: '+err.message)
     console.log(err)
     return
+  }
+
+  badge.link = { author, permlink, title, url }
+  var insertedBadge = await db.collection('badges').insertOne({badge, assertionsPrivateInfo})
+
+  for(var i in assertionsPrivateInfo){
+    var a = assertionsPrivateInfo[i]
+
+    var studentBadge = {
+      _id: insertedBadge.insertedId,
+      issuer: badge.issuer,
+      name: badge.name,
+      link: badge.link
+    }
+
+    var badges = {
+      badge: studentBadge,
+      assertion: assertions[i]
+    }
+    console.log(a.recipient.realIdentity._id)
+    await db.collection('students').updateOne({_id:a.recipient.realIdentity._id}, {$push:{ badges }})
   }
   res.send(result)
 })
