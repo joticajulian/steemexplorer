@@ -102,6 +102,10 @@ export default {
       console.log(response)
       //var response = await axios.get(Config.SERVER_API + "user")
       var response = await axios.get(Config.SERVER_API + "getuser/" + response.data._id) //todo: remove
+      if(!response.data.user.imgUrl || response.data.user.imgUrl==='')
+        response.data.user.imgUrl = "'https://steemitimages.com/DQmb2HNSGKN3pakguJ4ChCRjgkVuDN9WniFRPmrxoJ4sjR4'"
+      else
+        response.data.user.imgUrl = "'" + response.data.user.imgUrl + "'" 
       response.data.user.logged = true
       console.log('User details')
       console.log(response.data.user)
