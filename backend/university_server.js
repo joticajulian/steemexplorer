@@ -24,11 +24,12 @@ const port = process.env.PORT || 3000
 
 app.use(express.static(publicRoot))*/
 
-app.use(function(req, res, next) {
+/*app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
-});
+});*/
+app.use(express.static(publicRoot))
 
 app.use(bodyParser.json())
 app.use(cookieSession({
@@ -120,7 +121,7 @@ app.get('/api/logout', function(req, res){
 });
 
 const authMiddleware = (req, res, next) => {
-  return next() //todo: remove
+  // return next() //todo: remove
   if (!req.isAuthenticated()) {
     console.log('401 not authenticated')
     res.status(401).send('You are not authenticated')
@@ -130,7 +131,7 @@ const authMiddleware = (req, res, next) => {
 }
 
 const isAdminMiddleware = (req, res, next) => {
-  return next(); //todo: remove
+  // return next(); //todo: remove
   (async () => {
     if( await isAdmin( req.session.passport.user ) )
       next()
@@ -276,12 +277,12 @@ app.post('/api/remove_badge', authMiddleware, isAdminMiddleware, async (req, res
 })
 
 passport.use(new LocalStrategy({
-    usernameField: 'email',
+    usernameField: 'username',
     passwordField: 'password'
   }, 
   (username, password, done) => {
     (async () => {
-      var user = await getUser({email:username, password:password})
+      var user = await getUser({username:username, password:password})
       if(user)
         done(null, user)
       else
