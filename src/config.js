@@ -1,11 +1,7 @@
 const config = {
   'production': {
     RPC_NODES : [
-      'https://api.eftg.eu',
-      'https://rpc-italy.eftg.eu',
-      'https://rpc-germany.eftg.eu',
-      'https://rpc-luxembourg.eftg.eu',
-      'https://rpc-romania.eftg.eu'
+      'https://apidev.blkcc.xyz',
     ],
     IMAGE_HOSTER : 'https://cdn.eftg.eu',
     ELASTIC : 'https://api.eftg.eu/pulsar/',
