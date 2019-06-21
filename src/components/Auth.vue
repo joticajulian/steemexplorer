@@ -36,6 +36,7 @@ import axios from 'axios'
 import Config from "@/config.js";
 import Utils from "@/js/utils.js";
 import Alerts from '@/mixins/Alerts.js'
+import Auth from '@/mixins/Auth.js'
 import router from '@/router.js'
 
 export default {
@@ -45,72 +46,33 @@ export default {
     return {
       username: "",
       password: "",
-      auth: {
-        user: "",
-        logged: false,
-        imgUrl: "",
-        keys: {
-          owner: null,
-          active: null,
-          posting: null,
-          memo: null
-        }
-      },
       sending: false,
     };
   },
 
   mixins: [
+    Auth,
     Alerts
   ],
 
   methods: {
-    try_to_login() {
+    async try_to_login() {
       let self = this;
-      async function main() {
+      try{
         self.sending = true
         self.hideDanger()
         self.hideInfo()
         var auth = await self.login(self.username, self.password);
         if (auth.logged) {
-          self.$store.state.auth = auth
           self.$emit("login")
         }
-        self.sending = false
-      }
-      main().catch(function(error) {
+      }catch(error) {
         console.log(error);
         self.showDanger(error.message)
         self.sending = false
         self.$emit('error')
-      });
-    },
-
-    /**
-     * Checks if the password or WIF is valid for that user
-     */
-    async login(_username, _password) {
-    
-      let data = {
-        username: _username,
-        password: _password
       }
-      var auth = {}
-
-      var response = await axios.post(Config.SERVER_API + "login", data)
-      console.log("Logged in")
-      console.log(response)
-      //var response = await axios.get(Config.SERVER_API + "user")
-      var response = await axios.get(Config.SERVER_API + "getuser/" + response.data._id) //todo: remove
-      if(!response.data.user.imgUrl || response.data.user.imgUrl==='')
-        response.data.user.imgUrl = "'https://steemitimages.com/DQmb2HNSGKN3pakguJ4ChCRjgkVuDN9WniFRPmrxoJ4sjR4'"
-      else
-        response.data.user.imgUrl = "'" + response.data.user.imgUrl + "'" 
-      response.data.user.logged = true
-      console.log('User details')
-      console.log(response.data.user)
-      router.push("/adminstudents") //todo: handle type
-      return response.data.user
+      self.sending = false
     },
 
     close() {
