@@ -16,7 +16,7 @@ const config = {
     IMAGE_HOSTER : 'https://cdn.acc.blkcc.xyz',
     ELASTIC : 'https://api.blkcc.xyz/pulsar/',
     CDN : 'https://cdn.acc.blkcc.xyz/',
-    SERVER_API: 'http://40.113.101.44:8084/api/',
+    SERVER_API: 'http://40.113.101.44:8085/api/',
     EFTG_HARDFORK_0_1 : false
   },
   'development': {
@@ -26,7 +26,7 @@ const config = {
     IMAGE_HOSTER : 'https://cdn.dev.blkcc.xyz',
     ELASTIC : 'https://apidev.blkcc.xyz/pulsar/',
     CDN : 'https://cdn.dev.blkcc.xyz/',
-    SERVER_API: 'http://pulsar.dev.blkcc.xyz:8084/api/',
+    SERVER_API: 'http://pulsar.dev.blkcc.xyz:8085/api/',
     EFTG_HARDFORK_0_1 : true
   }
 }
