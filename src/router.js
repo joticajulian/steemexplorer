@@ -44,29 +44,9 @@ export default new Router({
       component: Home
     },
     {
-      path: "/oam-portal",
-      name: "OAMEntryPage",
-      component: OAMEntryPage
-    },
-    {
-      path: "/search.html",
-      name: "SearchPage",
-      component: SearchPage
-    },
-    {
-      path: "/faq",
-      name: "Faq",
-      component: Faq
-    },
-    {
       path: "/map",
       name: "MapPage",
       component: MapPage
-    },
-    {
-      path: "/contact",
-      name: "Contact",
-      component: Contact
     },
     {
       path: "/password",
@@ -79,34 +59,14 @@ export default new Router({
       component: Witnesses
     },
     {
-      path: "/issue",
-      name: "IssueCredential",
-      component: () => import('./views/IssueCredentialPage.vue')
-    },
-    {
-      path: "/keymanagement",
-      name: "KeyManagement",
-      component: () => import('./views/KeyManagementPage.vue')
-    },
-    {
-      path: "/adminstudents",
-      name: "AdminStudents",
-      component: () => import('./views/AdminStudentsPage.vue')
-    },
-    {
-      path: "/courses",
-      name: "Courses",
-      component: () => import('./views/CoursesPage.vue')
+      path: "/keys",
+      name: "Keys",
+      component: () => import('./views/KeysPage.vue')
     },
     {
       path: "/proof",
       name: "Proof",
       component: () => import('./views/ProofPage.vue')
-    },
-    {
-      path: "/verify",
-      name: "Verify",
-      component: () => import('./views/VerifyPage.vue')
     },
     {
       path: "/explorer",

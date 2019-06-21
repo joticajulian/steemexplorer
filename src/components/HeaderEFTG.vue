@@ -27,41 +27,17 @@
         </ul>
       </b-navbar>
       <b-navbar-nav v-else class="nav-link ml-auto d-lg-none">
-        <button class="btn btn-primary" @click="login">Login</button>
+        <button class="btn btn-primary" @click="showModalAuth">Login</button>
       </b-navbar-nav>
 
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
         <ul class="navbar-nav">
-          <li class="nav-item">
-            <router-link to="/adminstudents" class="nav-item nav-link"><div class="extra-padding">Admin</div></router-link>
+          <li v-if="$store.state.auth.logged" class="nav-item">
+            <router-link to="/keys" class="nav-item nav-link"><div class="extra-padding">Keys</div></router-link>
           </li>
-          <li class="nav-item">
-            <router-link to="/courses" class="nav-item nav-link"><div class="extra-padding">Courses</div></router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/issue" class="nav-item nav-link"><div class="extra-padding">Issue Credentials</div></router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/keymanagement" class="nav-item nav-link"><div class="extra-padding">Key management</div></router-link>
-          </li>
-          <li class="nav-item">
+          <li v-if="$store.state.auth.logged" class="nav-item">
             <router-link to="/proof" class="nav-item nav-link"><div class="extra-padding">Proof</div></router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/verify" class="nav-item nav-link"><div class="extra-padding">Verify</div></router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/explorer" class="nav-item nav-link"><div class="extra-padding">Explorer</div></router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/map" class="nav-item nav-link"><div class="extra-padding">Map</div></router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/witnesses" class="nav-item nav-link"><div class="extra-padding">Witnesses</div></router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/contact" class="nav-item nav-link"><div class="extra-padding">Contact</div></router-link>
           </li>
         </ul>
         <ul class="navbar-nav ml-auto">
@@ -82,7 +58,7 @@
               </b-nav-item-dropdown>
             </div>
             <div v-else>
-              <button class="btn btn-primary" @click="login">Login</button>
+              <button class="btn btn-primary" @click="showModalAuth">Login</button>
             </div>
           </li>
         </ul>
@@ -93,6 +69,7 @@
 
 <script>
 import AuthComponent from '@/components/Auth'
+import Auth from '@/mixins/Auth.js'
 import Config from '@/config.js'
 import axios from 'axios'
 
@@ -102,12 +79,18 @@ export default {
     portal: "",
     showAuth: false
   },
+
   data() {
     return {
       showModal: false,
       EXPLORER: Config.EXPLORER
     };
   },
+
+  mixins: [
+    Auth
+  ],
+
   
   mounted() {
     this.autologin();    
@@ -115,10 +98,16 @@ export default {
   
   methods: {
     async autologin() {
-
+      try{
+        //this.$refs.auth.login()
+        await this.login()
+      }catch(error){
+        console.log('Not logged')
+        console.log(error)
+      }
     },
     
-    login() {
+    showModalAuth() {
       this.$refs.modalAuth.show()
     },
 
