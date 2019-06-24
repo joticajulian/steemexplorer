@@ -39,7 +39,7 @@ body {
 
 #app .navbar{
   padding: 0 14px;
-  background-color: #548cec !important;
+  background-color: #22631e !important;
   margin-bottom: 1rem;
 }
 
@@ -48,7 +48,7 @@ body {
 }
 
 #app .navbar a:hover{
-  background-color: #2d5cab;  
+  background-color: #0c7932;  
 }
 
 #app .list-group-item:hover{
@@ -76,11 +76,11 @@ body {
 }
 
 #app .btn-primary {
-  background-color: #548cec;
+  background-color: #22631e;
 }
 
 #app .btn-primary:hover {
-  background-color: #2d5cab;
+  background-color: #0c7932;
 }
 
 #app .btn-secondary {
@@ -92,11 +92,11 @@ body {
 }
 
 #app .btn-secondary:not(:disabled):not(.disabled).active {
-  background-color:#548cec; 
+  background-color:#22631e; 
 }
 
 #app .bg-primary {
-  background-color: #548cec !important;
+  background-color: #22631e !important;
 }
 
 #app .bg-secondary {
@@ -108,7 +108,7 @@ body {
 }
 
 #app .text-primary {
-  color: #548cec !important;
+  color: #22631e !important;
 }
 
 #app .text-secondary {
@@ -116,8 +116,8 @@ body {
 }
 
 #app .table-primary th{
-  background-color: #548cec !important;
-  border-color: #548cec !important;
+  background-color: #22631e !important;
+  border-color: #22631e !important;
   color: white !important;
 }
 
@@ -139,8 +139,8 @@ body {
   margin: 20px auto;
   border: 3px solid #ffffff;  
   border-radius: 50%;
-  border-top: 3px solid #2d5cab;
-  border-right: 3px solid #2d5cab;
+  border-top: 3px solid #0c7932;
+  border-right: 3px solid #0c7932;
   width: 2rem;
   height: 2rem;
   -webkit-animation: spin 0.7s linear infinite; /* Safari */
@@ -172,7 +172,7 @@ body {
 }
 .no-a:hover{
   text-decoration: none;
-  color: #548cec;
+  color: #22631e;
 }
 
 .image-profile {
