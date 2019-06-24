@@ -17,11 +17,8 @@
                 v-bind:style="{ backgroundImage: 'url(' + $store.state.auth.imgUrl + ')' }"                  
               ></div>
             </template>
-            <b-dropdown-header>{{$store.state.auth.user}}</b-dropdown-header>
+            <b-dropdown-header>{{$store.state.auth.username}}</b-dropdown-header>
             <b-dropdown-divider></b-dropdown-divider>
-            <router-link :to="EXPLORER+'@'+$store.state.auth.user" class="dropdown-item no-a" style="border-bottom:0px;"><font-awesome-icon icon="user" class="mr-2"/>Profile</router-link>
-            <router-link to="/password" class="dropdown-item no-a" style="border-bottom:0px;"><font-awesome-icon icon="key" class="mr-2"/>Change Password</router-link>
-            <router-link to="/keymanagement" class="dropdown-item no-a" style="border-bottom:0px;"><font-awesome-icon icon="key" class="mr-2"/>Key management</router-link>
             <b-dropdown-item @click="logout">Logout</b-dropdown-item>
           </b-nav-item-dropdown>
         </ul>
@@ -49,12 +46,9 @@
                     v-bind:style="{ backgroundImage: 'url(' + $store.state.auth.imgUrl + ')' }"                  
                   ></div>
                 </template>
-                <b-dropdown-header>{{$store.state.auth.user}}</b-dropdown-header>
+                <b-dropdown-header>{{$store.state.auth.username}}</b-dropdown-header>
                 <b-dropdown-divider></b-dropdown-divider>
-                <router-link :to="EXPLORER+'@'+$store.state.auth.user" class="dropdown-item no-a" style="border-bottom:0px;"><font-awesome-icon icon="user" class="mr-2"/>Profile</router-link>
-                <router-link to="/password" class="dropdown-item no-a" style="border-bottom:0px;"><font-awesome-icon icon="key" class="mr-2"/>Change Password</router-link>
-                <router-link to="/keymanagement" class="dropdown-item no-a" style="border-bottom:0px;"><font-awesome-icon icon="key" class="mr-2"/>Key management</router-link>
-                <b-dropdown-item @click="logout">Logout</b-dropdown-item>
+                <b-dropdown-item @click="logoutAndEmit">Logout</b-dropdown-item>
               </b-nav-item-dropdown>
             </div>
             <div v-else>
@@ -99,11 +93,9 @@ export default {
   methods: {
     async autologin() {
       try{
-        //this.$refs.auth.login()
         await this.login()
       }catch(error){
         console.log('Not logged')
-        console.log(error)
       }
     },
     
@@ -120,20 +112,8 @@ export default {
       this.$refs.modalAuth.hide()    
     },
     
-    async logout() {
-      await axios.get(Config.SERVER_API + "logout")
-      console.log(this.$store.state.auth.username + " logout");
-      this.$store.state.auth = {
-        user: "",
-        logged: false,
-        imgUrl: "",
-        keys: {
-          owner: null,
-          active: null,
-          posting: null,
-          memo: null
-        }
-      };
+    async logoutAndEmit() {
+      await this.logout()
       this.$emit('logout')
     }
   },

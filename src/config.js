@@ -34,6 +34,9 @@ const config = {
 const environment = process.env.NODE_ENV || 'development';
 const finalConfig = config[environment];
 
+const PAGE_AFTER_LOGIN = '/keys'
+const PAGE_AFTER_LOGOUT = '/'
+
 const SBD = 'EUR';
 const STEEM = 'EFTG';
 const SP = 'EFTG-Power';
@@ -70,6 +73,9 @@ export default {
   ELASTIC: finalConfig.ELASTIC,
   CDN: finalConfig.CDN,
   SERVER_API: finalConfig.SERVER_API,
+
+  PAGE_AFTER_LOGIN,
+  PAGE_AFTER_LOGOUT,
   
   SBD: SBD,
   STEEM: STEEM,
