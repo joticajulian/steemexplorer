@@ -44,8 +44,8 @@ export default {
 
   data() {
     return {
-      username: "",
-      password: "",
+      username: '',
+      password: '',
       sending: false,
     };
   },
@@ -57,22 +57,21 @@ export default {
 
   methods: {
     async try_to_login() {
-      let self = this;
       try{
-        self.sending = true
-        self.hideDanger()
-        self.hideInfo()
-        var auth = await self.login(self.username, self.password);
+        this.sending = true
+        this.hideDanger()
+        this.hideInfo()
+        var auth = await this.login(this.username, this.password);
         if (auth.logged) {
-          self.$emit("login")
+          this.$emit("login")
         }
       }catch(error) {
         console.log(error);
-        self.showDanger(error.message)
-        self.sending = false
-        self.$emit('error')
+        this.showDanger(error.message)
+        this.sending = false
+        this.$emit('error')
       }
-      self.sending = false
+      this.sending = false
     },
 
     close() {
