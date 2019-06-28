@@ -129,12 +129,61 @@ app.post("/api/create_keys", authMiddleware, async (req, res, next) => {
   var key = {
     university,
     course,
+    pending: true,
+    badge: {},
     public_key: pubKey.toString(),
     private_key: privKey.toString()
   }  
 
   await db.collection('users').updateOne(filter,{ $push: { keys: key } })
   res.send({ok:true})
+})
+
+app.post("/api/update_key", authMiddleware, async (req, res, next) => {
+  var filter = {_id:ObjectId(req.session.passport.user)}
+  var user = await getUser(filter)
+
+  var issuer = ''
+  var permlink = ''
+  
+  var url = req.body.badge_url.trim()
+  var permlink = url.substr(url.lastIndexOf('/') + 1);
+  var issuer = url.substring(url.lastIndexOf('@') + 1, url.lastIndexOf('/'));
+
+  var badge = {
+    issuer,
+    permlink
+  }
+
+  var content = await steemClient.database.call( 'get_content', [issuer, permlink] )
+  if(!content){
+    res.status(404).send('There is no content on @'+issuer+'/'+permlink)
+    return
+  }
+
+  var key_found = false
+  var metadata = JSON.parse(content.json_metadata)
+  if(metadata && metadata.assertions){
+    user.keys.forEach( (key) => {
+      var assertion = metadata.assertions.find( (a)=>{ return a.recipient.identity === key.public_key })
+      if(assertion){
+        key_found = true
+        var filter = {
+          _id:ObjectId(req.session.passport.user),
+          'keys.public_key': key.public_key
+        }
+        db.collection('users').updateOne( filter, { $set: { 'keys.$.badge': badge, 'keys.$.pending': false } })
+        console.log('badge added')
+      }
+    })
+  }
+  if(key_found){
+    res.send('Badge added')
+    console.log('Badge added')
+    return
+  }
+
+  res.status(404).send('Nothing to update')
 })
 
 app.post("/api/get_key", authMiddleware, async (req, res, next) => {
@@ -155,15 +204,15 @@ app.post("/api/get_key", authMiddleware, async (req, res, next) => {
 app.get("/api/get_keys", authMiddleware, async (req, res, next) => {
   var filter = {_id:ObjectId(req.session.passport.user)}
   var user = await getUser(filter)
-  var keys = []
+  /*var keys = []
   for(var i in user.keys){
     keys.push({
       university: user.keys[i].university,
       course: user.keys[i].course,
       public_key: user.keys[i].public_key
     })
-  }
-  res.send(keys)
+  }*/
+  res.send(user.keys)
   return
 })
 
@@ -179,7 +228,7 @@ app.post("/api/create_proof", authMiddleware, async (req, res, next) => {
   var permlink = url.substr(url.lastIndexOf('/') + 1);
   var issuer = url.substring(url.lastIndexOf('@') + 1, url.lastIndexOf('/'));
   var content = await steemClient.database.call( 'get_content', [issuer, permlink] )
-  if(!content){
+  if(!content || !content.json_metadata){
     res.status(404).send('There is no content on @'+issuer+'/'+permlink)
     return
   }
