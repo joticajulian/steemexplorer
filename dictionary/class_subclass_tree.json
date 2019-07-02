@@ -1,0 +1,103 @@
+[{
+	"id": 100,
+	"name": "Periodic regulated information",
+	"regulated_info": true,
+	"subclass": [{
+		"id": 101,
+		"name": "Annual financial and audit reports",
+		"tag": "annual-financreport",
+		"regulated_info": true
+	},
+	{
+		"id": 102,
+		"name": "Half yearly financial reports and audit reports",
+		"tag": "halfyear-financreport",
+		"regulated_info": true
+	},
+	{
+		"id": 103,
+		"name": "Payments to governments",
+		"tag": "payments-governments",
+		"regulated_info": true
+	},
+	{
+		"id": 104,
+		"name": "Quarterly financial and audit reports (non-regulated information)",
+		"tag": "quarterly-financreport",
+		"regulated_info": false
+	}]
+},
+{
+	"id": 200,
+	"name": "Ongoing regulated information",
+	"regulated_info": true,
+	"subclass": [{
+		"id": 201,
+		"name": "Home Member State",
+		"tag": "homememberstate",
+		"regulated_info": true
+	},
+	{
+		"id": 202,
+		"name": "Inside information",
+		"tag": "inside-information",
+		"regulated_info": true
+	},
+	{
+		"id": 203,
+		"name": "Major shareholding notifications",
+		"tag": "shareholding-notif",
+		"regulated_info": true
+	},
+	{
+		"id": 204,
+		"name": "Acquisition or disposal of the issuer's own shares",
+		"tag": "issuer-own-shares",
+		"regulated_info": true
+	},
+	{
+		"id": 205,
+		"name": "Total number of voting rights and capital",
+		"tag": "number-voting-rights",
+		"regulated_info": true
+	},
+	{
+		"id": 206,
+		"name": "Changes in the rights attaching to the classes of shares or securities",
+		"tag": "changes-rights",
+		"regulated_info": true
+	}]
+},
+{
+	"id": 300,
+	"name": "Additional regulated information required to be disclosed under the laws of a Member State",
+	"regulated_info": true,
+	"subclass": [{
+		"id": 301,
+		"name": "Additional regulated information required to be disclosed under the laws of a Member State",
+		"tag": "additional-info-ms",
+		"regulated_info": true
+	}]
+},
+{
+	"id": 400,
+	"name": "Other: Non-Regulated Information from Issuers",
+	"regulated_info": false,
+	"subclass": [{
+		"id": 401,
+		"name": "General Meeting",
+		"tag": "general-meeting",
+		"regulated_info": false
+	}]
+},
+{
+	"id": 500,
+	"name": "Other: Non-Regulated Information from OAMs",
+	"regulated_info": false,
+	"subclass": [{
+		"id": 501,
+		"name": "Suspension",
+		"tag": "suspension",
+		"regulated_info": false
+	}]
+}]

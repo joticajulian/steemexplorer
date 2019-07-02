@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "type": "LEI",
+    "unique": true
+  },
+  {
+    "id": 2,
+    "type": "VAT",
+    "unique": true
+  },
+  {
+    "id": 3,
+    "type": "RegistrationNumber",
+    "unique": false
+  },
+  {
+    "id": 4,
+    "type": "ISIN",
+    "unique": false
+  }
+]

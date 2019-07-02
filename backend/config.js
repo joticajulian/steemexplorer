@@ -1,7 +1,16 @@
+const account = 'initminer'
+const memo_key = '5JKVA1RMufcDpprpWmRsNVrkJtb3m3E8VbRUHdsVxC9CRxii2Z4'
+const posting_key = '5JKVA1RMufcDpprpWmRsNVrkJtb3m3E8VbRUHdsVxC9CRxii2Z4'
+const active_key = '5JKVA1RMufcDpprpWmRsNVrkJtb3m3E8VbRUHdsVxC9CRxii2Z4'
+
 const config = {
   'production': {
     RPC_NODES : [
-      'https://api.steemit.com',
+      'https://api.eftg.eu',
+      'https://rpc-italy.eftg.eu',
+      'https://rpc-germany.eftg.eu',
+      'https://rpc-luxembourg.eftg.eu',
+      'https://rpc-romania.eftg.eu'
     ],
     IMAGE_HOSTER : 'https://cdn.eftg.eu',
     ELASTIC : 'https://api.eftg.eu/pulsar/',
@@ -16,26 +25,23 @@ const config = {
     IMAGE_HOSTER : 'https://cdn.acc.blkcc.xyz',
     ELASTIC : 'https://api.blkcc.xyz/pulsar/',
     CDN : 'https://cdn.acc.blkcc.xyz/',
-    SERVER_API: 'http://40.113.101.44:8085/api/',
+    SERVER_API: 'http://40.113.101.44:8084/api/',
     EFTG_HARDFORK_0_1 : false
   },
   'development': {
     RPC_NODES : [
-      'https://api.steemit.com',
+      'https://apidev.blkcc.xyz',
     ],
     IMAGE_HOSTER : 'https://cdn.dev.blkcc.xyz',
     ELASTIC : 'https://apidev.blkcc.xyz/pulsar/',
     CDN : 'https://cdn.dev.blkcc.xyz/',
-    SERVER_API: 'http://pulsar.dev.blkcc.xyz:8085/api/',
+    SERVER_API: 'http://pulsar.dev.blkcc.xyz:8084/api/',
     EFTG_HARDFORK_0_1 : true
   }
 }
 
 const environment = process.env.NODE_ENV || 'development';
 const finalConfig = config[environment];
-
-const PAGE_AFTER_LOGIN = '/keys'
-const PAGE_AFTER_LOGOUT = '/'
 
 const SBD = 'EUR';
 const STEEM = 'EFTG';
@@ -66,16 +72,18 @@ const MAP = {
 
 const APP_VERSION = 'pulsar/1.5.3';
 
-export default {
+const final_account       = process.env.ACCOUNT       || account
+const final_memo_key      = process.env.MEMO_KEY      || memo_key
+const final_posting_key   = process.env.POSTING_KEY   || posting_key
+const final_active_key    = process.env.ACTIVE_KEY    || active_key
+
+module.exports = {
 
   RPC_NODES: finalConfig.RPC_NODES,
   IMAGE_HOSTER: finalConfig.IMAGE_HOSTER,
   ELASTIC: finalConfig.ELASTIC,
   CDN: finalConfig.CDN,
   SERVER_API: finalConfig.SERVER_API,
-
-  PAGE_AFTER_LOGIN,
-  PAGE_AFTER_LOGOUT,
   
   SBD: SBD,
   STEEM: STEEM,
@@ -102,4 +110,9 @@ export default {
   MAP:MAP,
 
   APP_VERSION: APP_VERSION,
+
+  ACCOUNT: final_account,
+  MEMO_KEY: final_memo_key,
+  POSTING_KEY: final_posting_key,
+  ACTIVE_KEY: final_active_key,
 };

@@ -1,0 +1,68 @@
+[
+  {
+    "filename":          "../../test_files/POST_RI2017.pdf",
+    "issuer_name":       "Post Telecom PSF S.A.",
+    "home_member_state": "LU",
+    "identifier_type":   "LEI",
+    "identifier_value":  "549300HODTJUIOVE3C26",
+    "subclass":          101,
+    "disclosure_date":   "2013-12-31T12:00:00",
+    "submission_date":   "2013-12-31T12:00:00",
+    "type_submission":   "first",
+    "document_language": "en",
+    "title":             "Annual Financial Report Post 2013",
+    "financial_year":    2013
+  },{
+    "filename":          "../../test_files/POST_RI2017.pdf",
+    "issuer_name":       "Post Telecom PSF S.A.",
+    "home_member_state": "LU",
+    "identifier_type":   "LEI",
+    "identifier_value":  "549300HODTJUIOVE3C26",
+    "subclass":          101,
+    "disclosure_date":   "2014-12-31T12:00:00",
+    "submission_date":   "2014-12-31T12:00:00",
+    "type_submission":   "first",
+    "document_language": "en",
+    "title":             "Annual Financial Report Post 2014",
+    "financial_year":    2014
+  },{
+    "filename":          "../../test_files/POST_RI2017.pdf",
+    "issuer_name":       "Post Telecom PSF S.A.",
+    "home_member_state": "LU",
+    "identifier_type":   "LEI",
+    "identifier_value":  "549300HODTJUIOVE3C26",
+    "subclass":          101,
+    "disclosure_date":   "2015-12-31T12:00:00",
+    "submission_date":   "2015-12-31T12:00:00",
+    "type_submission":   "first",
+    "document_language": "en",
+    "title":             "Annual Financial Report Post 2015",
+    "financial_year":    2015
+  },{
+    "filename":          "../../test_files/POST_RI2017.pdf",
+    "issuer_name":       "Post Telecom PSF S.A.",
+    "home_member_state": "LU",
+    "identifier_type":   "LEI",
+    "identifier_value":  "549300HODTJUIOVE3C26",
+    "subclass":          101,
+    "disclosure_date":   "2016-12-31T12:00:00",
+    "submission_date":   "2016-12-31T12:00:00",
+    "type_submission":   "first",
+    "document_language": "en",
+    "title":             "Annual Financial Report Post 2016",
+    "financial_year":    2016
+  },{
+    "filename":          "../../test_files/POST_RI2017.pdf",
+    "issuer_name":       "Post Telecom PSF S.A.",
+    "home_member_state": "LU",
+    "identifier_type":   "LEI",
+    "identifier_value":  "549300HODTJUIOVE3C26",
+    "subclass":          101,
+    "disclosure_date":   "2017-12-31T12:00:00",
+    "submission_date":   "2017-12-31T12:00:00",
+    "type_submission":   "first",
+    "document_language": "en",
+    "title":             "Annual Financial Report Post 2017",
+    "financial_year":    2017
+  }  
+]
