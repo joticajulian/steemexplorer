@@ -30,6 +30,16 @@
       >{{show_private_key?'Hide':'Show private key'}}</button>
     </b-modal>
 
+    <b-modal ref="modalCreateKeys" hide-footer title="Create Keys">
+      <select class="form-control" v-model="create_key_issuer">
+        <option v-for="(opt,key) in issuers" :value="opt.name">{{opt.name}}</option>
+      </select>
+      <select class="form-control" v-model="create_key_course">
+        <option v-for="(opt,key) in courses" :value="opt.name">{{opt.name}}</option>
+      </select>
+      <button @click="create_keys" class="btn btn-primary" :disabled="sending"><div v-if="sending" class="mini loader"></div>Create keys</button>
+    </b-modal>
+
     <b-modal ref="modalProof" hide-footer title="Create proof">
       <CreateProof :badge="key.badge"></CreateProof>
     </b-modal>
@@ -65,21 +75,7 @@
           </b-collapse>
         </b-card>
       </div>
-      <div class="form-group row">
-        <div class="col-md-5">
-          <input class="form-control" type="text" id="input_university"
-            v-model="university" placeholder="University" :class="{'is-invalid': error.university }"/>
-          <div v-if="error.university" class="invalid-feedback">{{ errorText.university }}</div>
-        </div>
-        <div class="col-md-5">
-          <input class="form-control" type="text" id="input_course"
-            v-model="course" placeholder="Course" :class="{'is-invalid': error.course }"/>
-          <div v-if="error.course" class="invalid-feedback">{{ errorText.course }}</div>
-        </div>
-        <div class="col-md-2">
-          <button @click="create_keys" class="btn btn-primary" :disabled="sending"><div v-if="sending" class="mini loader"></div>Create keys</button>
-        </div>
-      </div>            
+      <button @click="showModalCreateKey" class="btn btn-primary mt-3 mb-3">Add</button>     
       <div v-if="alert.info" class="alert alert-info" role="alert">{{alert.infoText}}</div>
       <div v-if="alert.success" class="alert alert-success" role="alert" v-html="alert.successText"></div>
       <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alert.dangerText}}</div>
@@ -111,8 +107,11 @@ export default {
       key: {},
       show_private_key: false,
 
-      university: '',
-      course: '',
+      create_key_issuer: '',
+      create_key_course: '',
+
+      courses: [],
+      issuers: [],
 
       sending: false,
       error: {
@@ -138,6 +137,16 @@ export default {
 
   created() {
     this.loadKeys()
+    this.debounced_loadCourses = debounce(this.loadCourses, 300)
+  },
+
+  watch: {
+    create_key_issuer: function() {
+      this.debounced_loadCourses();
+    },
+    create_key_course: function() {
+      console.log('course changed')
+    }
   },
 
   methods: {
@@ -156,6 +165,12 @@ export default {
       })
     },
 
+    async loadCourses() {
+      var issuer = this.issuers.find( (i)=>{ return i.name === this.create_key_issuer })
+      var response = await axios.get(issuer.api + 'courses')
+      this.courses = response.data
+    },
+
     async create_keys() {
       this.sending = true
       this.hideSuccess()
@@ -163,13 +178,14 @@ export default {
 
       try{
         var data = {
-          university: this.university,
-          course: this.course
+          university: this.create_key_issuer,
+          course: this.create_key_course
         }
 
         var response = await axios.post(Config.SERVER_API + "create_keys", data)          
         this.showSuccess('Keys created')
         this.loadKeys()
+        this.$refs.modalCreateKeys.hide()
       }catch(error){
         console.log(error)
         this.showDanger(error.message)
@@ -188,6 +204,12 @@ export default {
         console.log(error)
         this.showDanger(error.message)
       }
+    },
+
+    async showModalCreateKey() {
+      this.$refs.modalCreateKeys.show()
+      var response = await axios.get(Config.SERVER_API + 'issuers')
+      this.issuers = response.data
     },
 
     showBadge(course) {
