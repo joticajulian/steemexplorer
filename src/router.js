@@ -64,9 +64,9 @@ export default new Router({
       component: () => import('./views/KeysPage.vue')
     },
     {
-      path: "/proof",
-      name: "Proof",
-      component: () => import('./views/ProofPage.vue')
+      path: "/issuers",
+      name: "Issuers",
+      component: () => import('./views/IssuersPage.vue')
     },
     {
       path: "/explorer",

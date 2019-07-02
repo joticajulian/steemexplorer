@@ -6,7 +6,7 @@
     <b-navbar toggleable="lg" type="dark" variant="primary">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <router-link to="/" class="nav-item nav-link"><div id="logo"><img src="../assets/university-logo-white.png" /></div></router-link>
+          <router-link :to="linkLogo" class="nav-item nav-link"><div id="logo"><img src="../assets/university-logo-white.png" /></div></router-link>
         </li>
       </ul>
       <b-navbar v-if="$store.state.auth.logged" class="ml-auto d-lg-none" style="margin:0;">
@@ -19,6 +19,7 @@
             </template>
             <b-dropdown-header>{{$store.state.auth.username}}</b-dropdown-header>
             <b-dropdown-divider></b-dropdown-divider>
+            <router-link to="/issuers" class="dropdown-item no-a" style="border-bottom:0px;"><font-awesome-icon icon="key" class="mr-2"/>Issuers</router-link>
             <b-dropdown-item @click="logout">Logout</b-dropdown-item>
           </b-nav-item-dropdown>
         </ul>
@@ -30,12 +31,6 @@
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
         <ul class="navbar-nav">
-          <li v-if="$store.state.auth.logged" class="nav-item">
-            <router-link to="/keys" class="nav-item nav-link"><div class="extra-padding">Keys</div></router-link>
-          </li>
-          <li v-if="$store.state.auth.logged" class="nav-item">
-            <router-link to="/proof" class="nav-item nav-link"><div class="extra-padding">Proof</div></router-link>
-          </li>
         </ul>
         <ul class="navbar-nav ml-auto">
           <li class="nav-item d-lg-block d-none">
@@ -48,6 +43,7 @@
                 </template>
                 <b-dropdown-header>{{$store.state.auth.username}}</b-dropdown-header>
                 <b-dropdown-divider></b-dropdown-divider>
+                <router-link to="/issuers" class="dropdown-item no-a" style="border-bottom:0px;"><font-awesome-icon icon="key" class="mr-2"/>Issuers</router-link>
                 <b-dropdown-item @click="logoutAndEmit">Logout</b-dropdown-item>
               </b-nav-item-dropdown>
             </div>
@@ -77,6 +73,7 @@ export default {
   data() {
     return {
       showModal: false,
+      linkLogo: '/',
       EXPLORER: Config.EXPLORER
     };
   },
@@ -94,8 +91,10 @@ export default {
     async autologin() {
       try{
         await this.login()
+        this.linkLogo = Config.PAGE_AFTER_LOGIN
       }catch(error){
         console.log('Not logged')
+        this.linkLogo = Config.PAGE_AFTER_LOGOUT
       }
     },
     
@@ -114,6 +113,7 @@ export default {
     
     async logoutAndEmit() {
       await this.logout()
+      this.linkLogo = Config.PAGE_AFTER_LOGOUT
       this.$emit('logout')
     }
   },

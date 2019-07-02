@@ -1,4 +1,5 @@
 const express = require('express')
+const axios = require('axios')
 const Utils = require('./utils')
 const Config = require('./config')
 const { Client, PrivateKey } = require('eftg-dsteem')
@@ -204,15 +205,57 @@ app.post("/api/get_key", authMiddleware, async (req, res, next) => {
 app.get("/api/get_keys", authMiddleware, async (req, res, next) => {
   var filter = {_id:ObjectId(req.session.passport.user)}
   var user = await getUser(filter)
-  /*var keys = []
-  for(var i in user.keys){
-    keys.push({
-      university: user.keys[i].university,
-      course: user.keys[i].course,
-      public_key: user.keys[i].public_key
-    })
-  }*/
   res.send(user.keys)
+  return
+})
+
+app.post('/api/update_issuer', authMiddleware, async (req, res, next) => {
+  var filter = {
+    _id:ObjectId(req.session.passport.user),
+    'issuers.name': req.body.issuer.name
+  }
+  var issuer = await db.collection('users').findOne(filter)
+  if(issuer){
+    db.collection('users').updateOne( filter, { $set: { 'issuers.$': req.body.issuer } })
+    console.log('issuer updated')
+  }else{
+    db.collection('users').updateOne( filter, { $push: { issuers: req.body.issuer } })
+    console.log('issuer added')
+  }
+  res.send('issuer updated')
+})
+
+app.post('/api/login_issuer/:issuer', authMiddleware, async (req, res, next) => {
+  var filter = {
+    _id:ObjectId(req.session.passport.user),
+    'issuers.name': req.params.issuer
+  }
+  var issuer = await db.collection('users').findOne(filter)
+  if(issuer && issuer.data && issuer.data.api && issuer.data.username && issuer.data.password) {
+    try{
+      var login = {
+        username: issuer.data.username,
+        password: issuer.data.password
+      }
+      var response = await axios.post(issuer.data.api + 'login', login)
+      res.send('login')
+      return
+    }catch(error){
+      console.log('login error')
+      console.log(error)
+      res.status(404).send(error.message)
+      return
+    }
+  }
+  res.status(401).send('No issuer data')
+  return
+})
+
+app.get('/api/issuers', authMiddleware, async (req, res, next) => {
+  var filter = {_id:ObjectId(req.session.passport.user)}
+  var user = await getUser(filter)
+  if(user.issuers) res.send(user.issuers)
+  else res.send([])
   return
 })
 
