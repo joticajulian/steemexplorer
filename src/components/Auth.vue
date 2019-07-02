@@ -6,7 +6,7 @@
         <div class="col-md-8">
           <input class="form-control" type="text" id="inputUsername"
              @keyup.enter="try_to_login" 
-             v-model="username" placeholder="Enter your username"/>        
+             v-model="username" placeholder="Enter your username"/>
         </div>
       </div>
       <div class="form-group row">
