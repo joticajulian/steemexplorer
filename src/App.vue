@@ -18,14 +18,14 @@ export default {
 </script>
 
 <style>
-@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Ubuntu&display=swap');
 
 body {
   margin: 0px;  
 }
 
 #app {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Ubuntu', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
@@ -39,7 +39,7 @@ body {
 
 #app .navbar{
   padding: 0 14px;
-  background-color: #22631e !important;
+  background-color: #3c6fc7 !important;
   margin-bottom: 1rem;
 }
 
@@ -48,7 +48,7 @@ body {
 }
 
 #app .navbar a:hover{
-  background-color: #0c7932;  
+  background-color: #0b47af;  
 }
 
 #app .list-group-item:hover{
@@ -76,11 +76,11 @@ body {
 }
 
 #app .btn-primary {
-  background-color: #22631e;
+  background-color: #3c6fc7;
 }
 
 #app .btn-primary:hover {
-  background-color: #0c7932;
+  background-color: #0b47af;
 }
 
 #app .btn-secondary {
@@ -92,11 +92,11 @@ body {
 }
 
 #app .btn-secondary:not(:disabled):not(.disabled).active {
-  background-color:#22631e; 
+  background-color:#3c6fc7; 
 }
 
 #app .bg-primary {
-  background-color: #22631e !important;
+  background-color: #3c6fc7 !important;
 }
 
 #app .bg-secondary {
@@ -108,7 +108,7 @@ body {
 }
 
 #app .text-primary {
-  color: #22631e !important;
+  color: #3c6fc7 !important;
 }
 
 #app .text-secondary {
@@ -116,8 +116,8 @@ body {
 }
 
 #app .table-primary th{
-  background-color: #22631e !important;
-  border-color: #22631e !important;
+  background-color: #3c6fc7 !important;
+  border-color: #3c6fc7 !important;
   color: white !important;
 }
 
@@ -139,8 +139,8 @@ body {
   margin: 20px auto;
   border: 3px solid #ffffff;  
   border-radius: 50%;
-  border-top: 3px solid #0c7932;
-  border-right: 3px solid #0c7932;
+  border-top: 3px solid #0b47af;
+  border-right: 3px solid #0b47af;
   width: 2rem;
   height: 2rem;
   -webkit-animation: spin 0.7s linear infinite; /* Safari */
@@ -172,7 +172,7 @@ body {
 }
 .no-a:hover{
   text-decoration: none;
-  color: #22631e;
+  color: #3c6fc7;
 }
 
 .image-profile {
