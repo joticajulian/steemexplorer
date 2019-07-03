@@ -199,9 +199,10 @@ export default {
         
       this.exists.reward = true;
       
-      //var result = await this.client.database.getState('')
-      var result = await this.steem_database_call('get_state',[''])
-      //var result = await this.client.database.call('get_witness_schedule')
+      var props = await this.steem_database_call('get_dynamic_global_properties')
+      var witness_schedule = await this.steem_database_call('get_witness_schedule')
+      var feed_price = await this.steem_database_call('get_current_median_history_price')
+      var result = { props, witness_schedule, feed_price }
       
       //DYNAMIC GLOBAL PROPERTIES
       var keys = ['current_supply', 'current_sbd_supply', 'virtual_supply', 'total_vesting_fund_steem', 'total_vesting_shares', 'pending_rewarded_vesting_shares', 'pending_rewarded_vesting_steem', 'sbd_interest_rate', 'sbd_print_rate', 'maximum_block_size'];
