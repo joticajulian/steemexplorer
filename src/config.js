@@ -34,20 +34,20 @@ const config = {
 const environment = process.env.NODE_ENV || 'development';
 const finalConfig = config[environment];
 
-const PAGE_AFTER_LOGIN = '/keys'
+const PAGE_AFTER_LOGIN = '/'
 const PAGE_AFTER_LOGOUT = '/'
 
-const SBD = 'EUR';
-const STEEM = 'EFTG';
-const SP = 'EFTG-Power';
+const SBD = 'SBD';
+const STEEM = 'STEEM';
+const SP = 'SP';
 const VESTS = 'VESTS';
 
-const HARDFORK = 19
+const HARDFORK = 20
 
 const EXPLORER = '/explorer/'
 const DSTEEM_TIMEOUT = 5000 //ms
 
-const STEEM_ADDRESS_PREFIX = 'EUR';
+const STEEM_ADDRESS_PREFIX = 'STM';
 const STEEM_100_PERCENT = 10000;
 const STEEM_VOTE_REGENERATION_SECONDS = 5 * 24 * 60 * 60;
 const STEEM_INFLATION_RATE_START_PERCENT = 978;
@@ -60,11 +60,11 @@ const STEEM_SBD_STOP_PERCENT = 1000;
 
 const MAP = {
   TOP_WITNESSES: 30,
-  INI_POS : [50.5, 15], //latitude, longitude
-  INI_ZOOM : 4 ,
+  INI_POS : [40, 0], //latitude, longitude
+  INI_ZOOM : 1 ,
 }
 
-const APP_VERSION = 'pulsar/1.5.3';
+const APP_VERSION = 'steemexplorer/2.0.0';
 
 export default {
 

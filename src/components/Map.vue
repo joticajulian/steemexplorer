@@ -7,8 +7,8 @@
         <div class="last-witness">
           <div v-if="showLegend && lastBlocks.length > 0">
             <div><img :src="icon.green" width="10px" class="mr-2"/>Current Witness: <router-link :to="'/explorer/@'+current_witness.witness">{{current_witness.visible_name}}</router-link> {{current_location}}</div>
-            <div><img :src="icon.blue"   width="10px" class="mr-2"/>OAM witness online</div>
-            <div><img :src="icon.yellow" width="10px" class="mr-2"/>European Commission witness online</div>
+            <!--<div><img :src="icon.blue"   width="10px" class="mr-2"/>witness online</div>-->
+            <div><img :src="icon.yellow" width="10px" class="mr-2"/>witness online</div>
             <div><img :src="icon.red" width="10px" class="mr-2"/>witness offline</div>
           </div>
         </div>
@@ -18,7 +18,7 @@
         <div v-if="lastBlocks.length > 0">
           <div class="last-blocks">
             <transition-group name="list-blocks" tag="div">
-              <div v-for="(b,key,index) in lastBlocks" :key="b.block_num" class="list-blocks-item">
+              <div v-for="(b) in lastBlocks" :key="b.block_num" class="list-blocks-item">
                 <div class="block-left">
                   <router-link :to="EXPLORER+'b/'+b.block_num">{{b.block_num}}</router-link>
                   <span v-if="b.loaded">
@@ -51,7 +51,6 @@
 
 <script>
 import Config from '@/config.js'
-import { Client, PrivateKey } from 'eftg-dsteem'
 import SteemClient from '@/mixins/SteemClient.js'
 
 // Leaflet library for OpenStreetMap
@@ -61,9 +60,6 @@ import greenIconUrl from '@/assets/green-circle.png'
 import redIconUrl from '@/assets/red-circle.png'
 import blueIconUrl from '@/assets/blue-circle.png'
 import yellowIconUrl from '@/assets/yellow-circle.png'
-import HeaderEFTG from "@/components/HeaderEFTG";
-import FooterEFTG from "@/components/FooterEFTG";
-import Dictionary from "@/mixins/Dictionary.js"
 
 // Axios import for HTTP requests
 import axios from 'axios';
@@ -120,7 +116,6 @@ export default {
   },
   
   mixins: [
-    Dictionary,
     SteemClient
   ],
 
@@ -142,50 +137,24 @@ export default {
   },
 
   methods: {
-    initMap(i = 0) {
-      var fireFetchWitnesses = false
+    initMap() {
+      this.fetchWitnesses()
+      .catch(function(error){
+        console.log('Error in fetchWitnesses')
+        console.log(error)
+      })
 
-      if( this.dictionary.loaded.homeMemberStates ){
-        fireFetchWitnesses = true
-      } else {
-        if( i < 30 ) {
-          let self = this
-          setTimeout( function(){self.initMap(i+1)} , 100 )
-        } else {
-          console.log('Problems loading home member states')
-          fireFetchWitnesses = true
-        }
-      }
-
-      if(fireFetchWitnesses){
-        this.fetchWitnesses()
-        .catch(function(error){
-          console.log('Error in fetchWitnesses')
-          console.log(error)
-        })
-
-        this.ints.blocks = setInterval(this.fetchBlocks, 3000);
-      }
+      this.ints.blocks = setInterval(this.fetchBlocks, 3000);
     },
   
-    isOAM(wit) {
-      if(wit.length < 8) return false
-      var hms = this.dictionary.homeMemberStates.find(function (hms) {return hms.code3.toLowerCase() === wit.substring(0,3)})
-      if(hms && wit.substring(3,7) === '-tec') return true
-      return false 
-    },
-    
     getIndexOffset(wit, status) {
-      var isOAM = this.isOAM(wit)
-      
       var zIndex = 0
       switch(status){
         case 'offline':
           zIndex = 0
           break
         case 'online':
-          if(isOAM) zIndex = 600
-          else zIndex = 500          
+          zIndex = 500          
           break
         case 'live':
           zIndex = 1000
@@ -197,11 +166,8 @@ export default {
     },
     
     getIcon(wit, status) {
-      var isOAM = this.isOAM(wit)
-      
       var size = [12, 12]      
-      if(isOAM) size = [20, 20]
-      
+            
       var url = redIconUrl
       
       switch(status){
@@ -209,8 +175,7 @@ export default {
           url = redIconUrl
           break
         case 'online':
-          if(isOAM) url = blueIconUrl
-          else      url = yellowIconUrl
+          url = yellowIconUrl
           break
         case 'live':
           url = greenIconUrl
@@ -246,6 +211,7 @@ export default {
       // Taking the data from assets/seednodes.json
       this.witnesses = seednodes.slice()
       this.witnesses.forEach(function(wit){
+        wit.visible_name = wit.owner
         var redIcon = self.getIcon(wit.owner, 'offline')
         
         if(wit.latlong[0] != null && wit.latlong[1] != null){
@@ -282,7 +248,7 @@ export default {
         } else {
           self.witnesses.push({
             owner: wit.owner,
-            visible_name: self.getRandomOAM(),
+            visible_name: wit.owner,
             status: status,
             latlong: [null, null],
             location: '',
@@ -320,7 +286,7 @@ export default {
         } else {
           self.witnesses.push({
             owner: account.name,
-            visible_name: self.getRandomOAM(),
+            visible_name: account.name,
             status: 'online', //if it is producing blocks there is no need to check the signing key, he is online
             latlong: [null, null],
             location: location,
@@ -377,13 +343,7 @@ export default {
           
         var icon = this.getIcon(wit.owner,wit.status)
                   
-        // changing name "wit23" etc ... to "oam-city" based on location
         wit.visible_name = wit.owner
-        if (wit.owner.substring(0,3) === 'wit' || wit.owner.substring(0,3) === 'tst'){
-          wit.visible_name = 'ec-' + wit.location.toLowerCase()
-          console.log('changing name of ' + wit.owner + ' to ' + wit.visible_name)
-          this.updateBlockVisibleName(wit)
-        }
         var zIndex = this.getIndexOffset(wit.owner, wit.status)
         wit.marker = L.marker(wit.latlong, {icon: icon, zIndexOffset:zIndex}).bindPopup(wit.visible_name).addTo(this.map);        
       } else if(wit.marker && wit.marker!= null) {
@@ -508,8 +468,6 @@ export default {
 
     // Change the color of a marker in the map
     setMarkerColor(id, status){
-      var isOAM = this.isOAM(this.witnesses[id].owner)
-      
       var icon = this.getIcon(this.witnesses[id].owner, status)
       if(this.witnesses[id].marker != null) {
         var zIndex = this.getIndexOffset( this.witnesses[id].owner , status )
@@ -517,33 +475,9 @@ export default {
         this.witnesses[id].marker.setZIndexOffset(zIndex)
         this.current_location = '';
       } else {
-        console.log('@'+this.witnesses[id].owner+' is '+color+', but he does not have a marker')
-        //this.current_location = '(Unknown location)';
+        console.log('@'+this.witnesses[id].owner+' does not have a marker')
+        this.current_location = '(Unknown location)';
       }
-    },
-    
-    getRandomOAM () {
-      var oams = [
-        'ec-belgium',
-        'ec-spain',
-        'ec-rome',
-        'ec-berlin',
-        'ec-barcelona',
-        'ec-amsterdam',
-        'ec-copenhagen',
-        'ec-brussels',
-        'ec-munich',
-        'ec-edinburgh',
-        'ec-prague',
-        'ec-milan',
-        'ec-lisbon',
-        'ec-stockholm',
-        'ec-dublin',
-        'ec-florence',
-        'ec-pisa'
-      ]
-      var random = Math.floor(oams.length * Math.random())
-      return oams[random]
     },
     
     zoomUpdate (zoom) {

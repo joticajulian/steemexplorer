@@ -1,11 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '@/components/Home'
-import OAMEntryPage from '@/components/OAMEntryPage'
-import SearchPage from '@/components/SearchPage'
 import MapPage from '@/components/MapPage'
-import Faq from '@/components/Faq'
-import Contact from '@/components/Contact'
 import Password from '@/components/Password'
 import Witnesses from '@/components/Witnesses'
 import Page404 from '@/components/Page404'
@@ -41,7 +37,7 @@ export default new Router({
     {
       path: "/",
       name: "Home",
-      component: Home
+      component: HomeExplorer
     },
     {
       path: "/map",
@@ -57,16 +53,6 @@ export default new Router({
       path: "/witnesses",
       name: "Witnesses",
       component: Witnesses
-    },
-    {
-      path: "/keys",
-      name: "Keys",
-      component: () => import('./views/KeysPage.vue')
-    },
-    {
-      path: "/issuers",
-      name: "Issuers",
-      component: () => import('./views/IssuersPage.vue')
     },
     {
       path: "/explorer",
