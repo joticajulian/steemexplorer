@@ -55,6 +55,11 @@ export default new Router({
       component: Witnesses
     },
     {
+      path: "/rewardcalc",
+      name: "RewardCalc",
+      component: () => import('./views/RewardCalcPage.vue')
+    },
+    {
       path: "/explorer",
       name: "Explorer",
       component: HomeExplorer
