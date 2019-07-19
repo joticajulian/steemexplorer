@@ -28,7 +28,17 @@ const config = {
     CDN : 'https://cdn.dev.blkcc.xyz/',
     SERVER_API: 'http://pulsar.dev.blkcc.xyz:8085/api/',
     EFTG_HARDFORK_0_1 : true
-  }
+  },
+  'testnet': {
+    RPC_NODES : [
+      'https://testnet.steemitdev.com',
+    ],
+    IMAGE_HOSTER : 'https://cdn.dev.blkcc.xyz',
+    ELASTIC : 'https://apidev.blkcc.xyz/pulsar/',
+    CDN : 'https://cdn.dev.blkcc.xyz/',
+    SERVER_API: 'http://pulsar.dev.blkcc.xyz:8085/api/',
+    EFTG_HARDFORK_0_1 : false
+  },
 }
 
 const environment = process.env.NODE_ENV || 'development';
