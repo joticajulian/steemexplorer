@@ -8,34 +8,40 @@
       <div v-if="this.exists.globals">
         <div class="card">
           <div class="title">Current supply</div><br
-          >{{this.chainprops.current_supply}}<br
-          >{{this.chainprops.current_sbd_supply}}<br
-          ><hr>virtual {{this.chainprops.virtual_supply}}
+          >{{this.chain.current_supply}}<br
+          >{{this.chain.current_sbd_supply}}<br
+          ><hr>virtual {{this.chain.virtual_supply}}
+        </div>
+        <div class="card">
+          <div class="title">Steem Price</div><br
+          >Witnesses price: ${{this.chain.witnesses_price.toFixed(4)}}<br
+          >Haircut: ${{this.chain.haircut_price.toFixed(4)}}<br
+          ><hr>Feed price: ${{this.chain.feed_price.toFixed(4)}}
         </div>
         <div class="card">
           <div class="title">Inflation</div><br
-          >Annual rate: {{this.chainprops.current_inflation_rate}}<br
-          >({{this.chainprops.new_steem_per_day}} per day)
+          >Annual rate: {{this.chain.current_inflation_rate}}<br
+          >({{this.chain.new_steem_per_day}} per day)
         </div>
         <div class="card">
           <div class="title">Stake</div><br
-          >Fund: {{this.chainprops.total_vesting_fund_steem}}<br
-          >({{this.chainprops.sp_percent.toFixed(2)}}% of virtual sup.)<br
-          >Shares: {{this.chainprops.total_vesting_shares}}<br
+          >Fund: {{this.chain.total_vesting_fund_steem}}<br
+          >({{this.chain.sp_percent.toFixed(2)}}% of virtual sup.)<br
+          >Shares: {{this.chain.total_vesting_shares}}<br
           ><hr
-          >{{this.chainprops.steem_per_mvests.toFixed(3)}} {{this.STEEM_SYMBOL}} per m{{this.VESTS_SYMBOL}}          
+          >{{this.chain.steem_per_mvests.toFixed(3)}} {{this.STEEM_SYMBOL}} per m{{this.VESTS_SYMBOL}}          
         </div>      
         <div class="card"> 
           <div class="title">{{this.SBD_SYMBOL}}</div><br
-          >{{this.chainprops.current_sbd_supply}}<br
+          >{{this.chain.current_sbd_supply}}<br
           >(<span :class="{
-              green: 100*this.sbd_percent<=this.STEEM_SBD_START_PERCENT,
-              orange: 100*this.sbd_percent>this.STEEM_SBD_START_PERCENT && 100*this.sbd_percent<this.STEEM_SBD_STOP_PERCENT,
-              red: 100*this.sbd_percent>=this.STEEM_SBD_STOP_PERCENT
-              }">{{this.sbd_percent.toFixed(2)}}%</span
+              green: 100*this.chain.sbd_percent<=this.STEEM_SBD_START_PERCENT,
+              orange: 100*this.chain.sbd_percent>this.STEEM_SBD_START_PERCENT*0.8 && 100*this.chain.sbd_percent<this.STEEM_SBD_STOP_PERCENT,
+              red: 100*this.chain.sbd_percent>=this.STEEM_SBD_STOP_PERCENT*0.8
+              }">{{this.chain.sbd_percent.toFixed(2)}}%</span
             > of virtual sup.)<br
-          >Print rate: {{this.chainprops.sbd_print_rate/100}}%<br
-          >Interest rate: {{this.chainprops.sbd_interest_rate/100}}%
+          >Print rate: {{this.chain.sbd_print_rate/100}}%<br
+          >Interest rate: {{this.chain.sbd_interest_rate/100}}%
         </div>
       </div>
       <div v-else>
@@ -44,12 +50,12 @@
       <div v-if="this.exists.globals && this.exists.reward">  
         <div class="card">
           <div class="title">Reward fund</div><br
-          >{{this.chainprops.reward_balance}}<br
-          >({{this.reward_percent.toFixed(2)}}% of virtual sup.)<br
+          >{{this.chain.reward_balance}}<br
+          >({{this.chain.reward_percent.toFixed(2)}}% of virtual sup.)<br
           >for next 15 days<br
           ><hr
-          >{{this.chainprops.reward_balance_day}} per day<br
-          >vote of {{this.vote_value_1000_sp.toFixed(3)}} per 1000 {{this.SP_SYMBOL}}
+          >{{this.chain.reward_balance_day}} per day<br
+          >vote of {{this.chain.vote_value_1000_sp.toFixed(3)}} per 1000 {{this.SP_SYMBOL}}
         </div>
       </div>
       <div v-else>
@@ -57,8 +63,8 @@
       </div>      
     </div
     ><div class="col-md-9">
-      <div v-if="lastBlocks.length > 0">
-        <div class="last-blocks">
+      <div class="last-blocks">
+        <div v-if="lastBlocks.length > 0">
           <h2>Last Blocks</h2>      
           <transition-group name="list-blocks" tag="div" class="block-group">
             <div v-for="(b,key,index) in lastBlocks" :key="b.block_num" class="list-blocks-item">
@@ -80,14 +86,17 @@
             </div>
           </transition-group>
         </div>
-        <div class="schedule">
-          <h2>Schedule</h2>
-          <transition-group name="list-schedule" tag="div">
-            <div v-for="(wit,key,index) in schedule" :key="wit" class="list-schedule-item">
-              {{wit}}
-            </div>
-          </transition-group>
+        <div v-else>
+          <div class="loader"></div>
         </div>
+      </div>
+      <div v-if="exists.schedule" class="schedule">
+        <h2>Schedule</h2>
+        <transition-group name="list-schedule" tag="div">
+          <div v-for="(wit,key,index) in schedule" :key="wit" class="list-schedule-item">
+            {{wit}}
+          </div>
+        </transition-group>
       </div>
       <div v-else>
         <div class="loader"></div>
@@ -116,18 +125,6 @@ export default {
   name: 'Home',
   data () {
     return {
-      chainprops: {
-        current_sbd_supply: '0.000',
-        virtual_supply: '0.001',
-        reward_balance: '0.000',
-        reward_balance_day: '0.000',
-        recent_claims: 1,
-        steem_per_rshare: 0,
-        feed_price: 0,
-        reward_percent: 0,
-        steem_per_mvests: 0,
-        vote_value_1000_sp: 0
-      },
       lastTxs:[
       ],
       lastBlocks:[
@@ -137,6 +134,7 @@ export default {
       exists: {
         globals: false,
         reward: false,
+        schedule: false,
       },
       ints: {},
       first_time: true,
@@ -158,94 +156,113 @@ export default {
   ],
   
   created() {
-    this.getChainProperties().then( ()=> {
-      this.getDynamicGlobalProperties();
-      this.ints.globalprops = setInterval(this.getDynamicGlobalProperties, 12000);
+    this.chain.feed_price = 0
+    this.chain.witnesses_price = 0
+    this.chain.haircut_price = 0
+    this.chain.sp_percent = 0
+    this.chain.steem_per_mvests = 0
+    this.chain.sbd_percent = 0
+    this.chain.reward_percent = 0
+    this.chain.vote_value_1000_sp = 0
+
+    this.getChainProperties(true).then( ()=> {
+      this.getExtendedChainProperties();
+      
+      this.exists.reward = true;
+      this.exists.globals = true;
+      console.log('no more loader')
+
+      this.getWitnessSchedule()
+      this.getWitnessesPrice()
+
       this.ints.blocks = setInterval(this.fetchBlocks, 3000);
+      this.ints.chainprops = setInterval(()=>{
+        this.getChainProperties(true)
+        .then( ()=>{ 
+          this.getExtendedChainProperties()
+          this.getWitnessSchedule()
+        })
+      }, 12000);
     })
   },
   
   beforeDestroy() {
-    clearInterval(this.ints.globalprops);
+    //clearInterval(this.ints.witschedule);
+    clearInterval(this.ints.chainprops);
     clearInterval(this.ints.blocks);
   },
   
-  computed: {
-    sbd_percent: function(){
-      return parseFloat(this.chainprops.current_sbd_supply) / this.chainprops.feed_price * 100 / parseFloat(this.chainprops.virtual_supply);      
-    },    
-    sbd_per_rshare: function(){
-      return this.chainprops.steem_per_rshare * this.chainprops.feed_price;
-    },
-    reward_percent: function(){
-      return parseFloat(this.chainprops.reward_balance) * 100 / parseFloat(this.chainprops.virtual_supply);
-    },
-    vote_value_1000_sp: function(){
-      return (1/50)*1000*this.chainprops.steem_per_rshare*1e12 / this.chainprops.steem_per_mvests * this.chainprops.feed_price;
-    }
-  },
-
   methods: {
   
-    async getDynamicGlobalProperties() {
-      var self = this;
-      //var result = await this.client.database.call('get_reward_fund',['post'])
-      var result = await this.steem_database_call('get_reward_fund',['post'])
-      
-      this.chainprops.reward_balance = result.reward_balance;
-      this.chainprops.recent_claims = result.recent_claims;
-      this.chainprops.reward_balance_day = (parseFloat(this.chainprops.reward_balance)/15).toFixed(3) + ' ' + Config.STEEM;        
-      this.chainprops.steem_per_rshare = parseFloat(this.chainprops.reward_balance) / parseInt(this.chainprops.recent_claims);
-        
-      this.exists.reward = true;
-      
-      var props = await this.steem_database_call('get_dynamic_global_properties')
+    async getWitnessSchedule() {
+      console.log('get witness schedule')
       var witness_schedule = await this.steem_database_call('get_witness_schedule')
-      var feed_price = await this.steem_database_call('get_current_median_history_price')
-      var result = { props, witness_schedule, feed_price }
-      
-      //DYNAMIC GLOBAL PROPERTIES
-      var keys = ['current_supply', 'current_sbd_supply', 'virtual_supply', 'total_vesting_fund_steem', 'total_vesting_shares', 'pending_rewarded_vesting_shares', 'pending_rewarded_vesting_steem', 'sbd_interest_rate', 'sbd_print_rate', 'maximum_block_size'];
-        
-      for(var key in result.props){
-        if(keys.indexOf(key) < 0) continue;
-        this.chainprops[key] = result.props[key];
+
+      if(this.first_time) this.last_block_num = this.chain.head_block_number;
+      this.first_time = false;
+      console.log('last block num: '+this.last_block_num)
+      console.log(this.schedule) 
+
+      this.exists.schedule = true;
+
+      if(this.schedule.length == 0){
+        this.schedule = witness_schedule.current_shuffled_witnesses;
+        return;
       }
-      this.chainprops.steem_per_mvests = parseFloat(this.chainprops.total_vesting_fund_steem)*1000000/parseFloat(this.chainprops.total_vesting_shares);
-        
-      var current_inflation_rate = Utils.getInflationRate(result.props.head_block_number)
-      this.chainprops.current_inflation_rate = current_inflation_rate/100 + '%'
-      this.chainprops.new_steem_per_day = (Config.STEEM_BLOCKS_PER_DAY * parseFloat(this.chainprops.virtual_supply) * (current_inflation_rate / 10000) / Config.STEEM_BLOCKS_PER_YEAR ).toFixed(3) + ' ' + Config.STEEM;
-      this.chainprops.sp_percent = parseFloat(this.chainprops.total_vesting_fund_steem) * 100 / parseFloat(this.chainprops.virtual_supply);    
-      this.chainprops.feed_price = parseFloat(result.feed_price.base)/parseFloat(result.feed_price.quote);
-         
-      this.exists.globals = true;
-        
-      if(this.first_time) this.last_block_num = result.props.head_block_number;
-      this.first_time = false; 
-        
-        
-      // SCHEDULE
-      if(self.schedule.length == 0){
-          self.schedule = result.witness_schedule.current_shuffled_witnesses;
-          return;
+      var current_witness = '';
+      if(this.lastBlocks.length > 0) current_witness = this.lastBlocks[0].witness;
+      var round = witness_schedule.current_shuffled_witnesses;
+      var id = round.indexOf(current_witness);
+      if(id == -1) return;
+      for(var i=id+1;i<round.length;i++){
+        this.$set(this.schedule, i-id-1, round[i]);
+      }
+      for(var i=0;i<id;i++){
+        this.$set(this.schedule, round.length-id-1+i, round[i]);
+      }
+      this.$set(this.schedule, round.length-1, round[id]);
+    },
+
+    getExtendedChainProperties() {
+      console.log('get extended chain properties')
+      var current_inflation_rate = Utils.getInflationRate(this.chain.head_block_number)
+      this.chain.current_inflation_rate = current_inflation_rate/100 + '%'
+      this.chain.new_steem_per_day = (Config.STEEM_BLOCKS_PER_DAY * parseFloat(this.chain.virtual_supply) * (current_inflation_rate / 10000) / Config.STEEM_BLOCKS_PER_YEAR ).toFixed(3) + ' ' + Config.STEEM;
+      this.chain.sp_percent = parseFloat(this.chain.total_vesting_fund_steem) * 100 / parseFloat(this.chain.virtual_supply);
+      this.chain.sbd_percent = parseFloat(this.chain.current_sbd_supply) / this.chain.feed_price * 100 / parseFloat(this.chain.virtual_supply);      
+      this.chain.sbd_per_rshare = this.chain.steem_per_rshare * this.chain.feed_price;
+      this.chain.reward_percent = parseFloat(this.chain.reward_balance) * 100 / parseFloat(this.chain.virtual_supply);
+      this.chain.reward_balance_day = (parseFloat(this.chain.reward_balance)/15).toFixed(3) + ' ' + Config.STEEM; 
+      this.chain.vote_value_1000_sp = (1/50)*1000*this.chain.steem_per_rshare*1e12 / this.chain.steem_per_mvests * this.chain.feed_price;
+    },
+
+    async getWitnessesPrice() {
+      console.log('get witnesses price')
+      try{
+        var feed_history = await this.steem_database_call('get_feed_history')
+        var prices = []
+        for(var i in feed_history.price_history){
+          var price = feed_history.price_history[i]
+          prices.push( parseFloat(price.base)/parseFloat(price.quote) )
         }
-        var current_witness = '';
-        if(self.lastBlocks.length > 0) current_witness = self.lastBlocks[0].witness;
-        var round = result.witness_schedule.current_shuffled_witnesses;
-        var id = round.indexOf(current_witness);
-        if(id == -1) return;
-        for(var i=id+1;i<round.length;i++){
-          self.$set(self.schedule, i-id-1, round[i]);
-        }
-        for(var i=0;i<id;i++){
-          self.$set(self.schedule, round.length-id-1+i, round[i]);
-        }
-        self.$set(self.schedule, round.length-1, round[id]);
-      
+        console.log(prices)
+        this.chain.witnesses_price = prices[ Math.floor(prices.length/2) ]
+        console.log(this.chain.witnesses_price)
+      }catch(error){
+        console.log('getWitnessesPrice error')
+        console.log(error)
+      }
+    },
+
+    isNullExchangeRage(rate){
+      if(!rate.base || !rate.quote) return true
+      if(parseFloat(rate.base)<=0) return true
+      if(parseFloat(rate.quote)<=0) return true
+      return false
     },
   
     fetchBlocks() {
+      console.log('fecth blocks')
       if(this.last_block_num == 0) return;
       if(this.wait_more_time) {
         this.wait_more_time = false

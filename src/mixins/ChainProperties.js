@@ -13,6 +13,7 @@ export default {
         recent_claims: 1,
         sbd_per_rshare: 0,
         steem_per_rshare: 0,
+        haircut_price: -1,
       },
 
       STEEM_SYMBOL: Config.STEEM,
@@ -45,9 +46,9 @@ export default {
       this.$store.state.chain.sbd_per_rshare   = this.chain.sbd_per_rshare
     },
     
-    async getChainProperties() {
-      
-      if(this.$store.state.chain.steem_per_mvests) {
+    async getChainProperties(force = false) {
+
+      if(!force && this.$store.state.chain.steem_per_mvests) {
         this.chain = this.$store.state.chain
         return
       }
@@ -60,10 +61,13 @@ export default {
       this.$store.state.chain.recent_claims  = this.chain.recent_claims
       this.updateRS();
 
-      var result = await this.steem_database_call('get_dynamic_global_properties')
+      var result = await this.steem_database_call('get_dynamic_global_properties');
+      for(var i in result) this.chain[i] = result[i]
       this.chain.steem_per_mvests = parseFloat(result.total_vesting_fund_steem)*1000000/parseFloat(result.total_vesting_shares)
+      this.chain.haircut_price = 9*parseFloat(result.current_sbd_supply) / parseFloat(result.current_supply)
 
       this.$store.state.chain.steem_per_mvests = this.chain.steem_per_mvests
+      this.$store.state.chain.haircut_price = this.chain.haircut_price
 
       var result = await this.steem_database_call('get_current_median_history_price')
       this.chain.feed_price = parseFloat(result.base)/parseFloat(result.quote)
@@ -72,7 +76,7 @@ export default {
       this.updateRS();
       this.changeFeedPrice(this.chain.feed_price)
     },
-    
+
     vests2sp(vests){
       return (this.chain.steem_per_mvests * parseFloat(vests) / 1000000).toFixed(3) + ' ' + Config.SP;
     }
