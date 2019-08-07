@@ -73,12 +73,12 @@ export default {
         if(error.name === 'UserError' || error.name === 'PasswordError' || 
            error.name === 'RPCError'  || error.name === 'RPCFailRounds' || error.name === 'Abort'
         ) {
-          self.showDanger(error.message)
+          this.showDanger(error.message)
         }else {
-          self.showDanger('Password format mismatch')        
+          this.showDanger('Password format mismatch')        
         }
-        self.sending = false
-        self.$emit('error')
+        this.sending = false
+        this.$emit('error')
       }
     },
     /**
