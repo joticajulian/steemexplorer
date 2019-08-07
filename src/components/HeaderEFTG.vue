@@ -53,7 +53,7 @@
                 <b-dropdown-header>{{$store.state.auth.username}}</b-dropdown-header>
                 <b-dropdown-divider></b-dropdown-divider>
                 <router-link to="/issuers" class="dropdown-item no-a" style="border-bottom:0px;"><font-awesome-icon icon="key" class="mr-2"/>Issuers</router-link>
-                <b-dropdown-item @click="logoutAndEmit">Logout</b-dropdown-item>
+                <b-dropdown-item @click="logout">Logout</b-dropdown-item>
               </b-nav-item-dropdown>
             </div>
             <div v-else>
@@ -120,9 +120,19 @@ export default {
       this.$refs.modalAuth.hide()    
     },
     
-    async logoutAndEmit() {
-      await this.logout()
-      this.linkLogo = Config.PAGE_AFTER_LOGOUT
+    logout() {
+      console.log(this.$store.state.auth.user + " logout");
+      this.$store.state.auth = {
+        user: "",
+        logged: false,
+        imgUrl: "",
+        keys: {
+          owner: null,
+          active: null,
+          posting: null,
+          memo: null
+        }
+      };
       this.$emit('logout')
     }
   },
