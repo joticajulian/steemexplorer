@@ -19,7 +19,7 @@
             </template>
             <b-dropdown-header>{{$store.state.auth.username}}</b-dropdown-header>
             <b-dropdown-divider></b-dropdown-divider>
-            <router-link to="/issuers" class="dropdown-item no-a" style="border-bottom:0px;"><font-awesome-icon icon="key" class="mr-2"/>Issuers</router-link>
+            <!--<router-link to="/issuers" class="dropdown-item no-a" style="border-bottom:0px;"><font-awesome-icon icon="key" class="mr-2"/>Issuers</router-link>-->
             <b-dropdown-item @click="logout">Logout</b-dropdown-item>
           </b-nav-item-dropdown>
         </ul>
@@ -52,7 +52,7 @@
                 </template>
                 <b-dropdown-header>{{$store.state.auth.username}}</b-dropdown-header>
                 <b-dropdown-divider></b-dropdown-divider>
-                <router-link to="/issuers" class="dropdown-item no-a" style="border-bottom:0px;"><font-awesome-icon icon="key" class="mr-2"/>Issuers</router-link>
+                <!--<router-link to="/profileissuers" class="dropdown-item no-a" style="border-bottom:0px;"><font-awesome-icon icon="key" class="mr-2"/>Issuers</router-link>-->
                 <b-dropdown-item @click="logout">Logout</b-dropdown-item>
               </b-nav-item-dropdown>
             </div>
