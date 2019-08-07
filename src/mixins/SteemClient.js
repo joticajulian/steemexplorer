@@ -60,7 +60,7 @@ export default {
       let opts = {}
       opts.addressPrefix = Config.STEEM_ADDRESS_PREFIX
       opts.timeout = Config.DSTEEM_TIMEOUT
-      if(process.env.VUE_APP_CHAIN_ID) opts.chainId = process.env.VUE_APP_CHAIN_ID
+      if(Config.STEEM_CHAIN_ID) opts.chainId = Config.STEEM_CHAIN_ID
       return new Client(address, opts)
     },
 
