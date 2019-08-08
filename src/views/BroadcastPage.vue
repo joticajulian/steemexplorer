@@ -1,0 +1,272 @@
+<template>
+  <div>
+    <HeaderEFTG ref="headerEFTG"></HeaderEFTG>
+    <div class="container">
+      <h2>Broadcast</h2>
+      <div class="row">
+        <div class="col-md-3">
+          <div class="card mb-2">
+            <ul class="list-group list-group-flush">
+              <li v-for="(operation,name,index) in operations" :key="index" class="list-group-item" @click="selectOperation(index)">
+                {{operation.name}}
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="col">
+          <h3 class="mb-2">{{trx.op0.name}}</h3>
+          <div class="mb-3">{{trx.op0.description}}</div>
+          <div v-for="(param,pname,pindex) in trx.op0.params" :key="pindex" class="form-group row">
+            <label class="col-md-2 col-form-label">{{param.name}}</label>
+            <div v-if="param.type==='textarea'" class="col">
+              <textarea class="form-control"
+                v-model="param.value" :rows="param.rows" :disabled="signatures.length>0"/>
+            </div>
+            <div v-else-if="param.type==='password'" class="col">            
+              <input class="form-control" type="password"
+                v-model="param.value" :placeholder="param.placeholder" :disabled="signatures.length>0"/>
+            </div>
+            <div v-else class="col">            
+              <input class="form-control" type="text"
+                v-model="param.value" :placeholder="param.placeholder" :disabled="signatures.length>0"/>
+            </div>
+          </div>
+          <h4 class="mt-5 mb-2">Signatures</h4>
+          <div class="row">
+            <div class="col-12">
+              <div class="card mb-2">
+                <ul class="list-group list-group-flush">
+                  <li v-for="(sig,index) in signatures" :key="index" class="list-group-item" @click="selectSignature(index)">
+                    {{sig.display}}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="form-group row mt-3">
+            <label class="col-md-2 col-form-label">Signature</label>
+            <input class="col-md-9 form-control" type="text" v-model="signature" placeholder="Signature"/>
+            <div class="col-md-1">
+              <button class="btn btn-primary" @click="addSignature(signature)">Add</button>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-md-2 col-form-label">Private Key</label>
+            <input class="col-md-9 form-control" type="password" v-model="privkey" placeholder="Private key"/>
+            <div class="col-md-1">
+              <button class="btn btn-primary" @click="sign">Sign</button>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-large mt-3 mb-4" @click="broadcast" :disabled="sending"><div v-if="sending" class="mini loader"/>broadcast</button>
+          <div v-if="alert.info" class="alert alert-info" role="alert">{{alert.infoText}}</div>
+          <div v-if="alert.success" class="alert alert-success" role="alert" v-html="alert.successText"></div>
+          <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alert.dangerText}}</div>
+        </div>
+      </div>
+    </div>    
+  </div>
+</template>
+
+<script>
+import HeaderEFTG from '@/components/HeaderEFTG'
+import SteemClient from '@/mixins/SteemClient.js'
+import { Client, PrivateKey, cryptoUtils, Signature } from 'dsteem'
+import Alerts from '@/mixins/Alerts.js'
+
+import Config from '@/config.js'
+import Operations from '@/js/operations.js'
+import ChainProperties from '@/mixins/ChainProperties.js'
+
+
+export default {
+  name: 'RewardCalcPage',
+  
+  data() {
+    return {
+      operations: Operations,
+      opSelected: 'comment',
+      signature: '',
+      privkey: '',
+      headers: null,
+      expireTime: 60*1000,
+      trx: {
+        op0: {}
+      },
+      signatures: [],
+      
+      sending: false,
+      EXPLORER: Config.EXPLORER,
+    }
+  },
+
+  components: {
+    HeaderEFTG
+  },
+
+  mixins: [
+    ChainProperties,
+    SteemClient,
+    Alerts
+  ],
+
+  created() {
+    this.getChainProperties()
+    this.operations = Operations
+    this.selectOperation('comment')
+  },
+
+  watch: {
+    
+  },
+
+  methods: {
+    selectOperation(index){
+      this.trx.op0 = this.operations[index]
+      for(var key in this.trx.op0.params){
+        this.trx.op0.params[key].value = '' 
+      }
+    },
+
+    selectSignature(){},
+
+    async addSignature(sig){
+      if(!this.headers) throw new Error('No headers defined')
+      var trx = this.buildTransaction()
+      trx.signatures = [sig]
+      var keys = this.getSignatureKeys(trx)
+      var display = keys[0]
+      var account = await this.searchAccountKey(keys[0])
+      if(account && account.name){
+        display = '@' + account.name
+        if(account.authorities){
+          for(var i in account.authorities)
+            display = display + ' ' + account.authorities[i]
+        }
+      }
+
+      this.signatures.push({
+        signature: sig,
+        public_key: keys[0],
+        display: display
+      })
+    },
+
+    async searchAccountKey(key){
+      key = key.toString()
+      var account = {
+        name: null,
+        authorities: []
+      }
+      try{
+        var accounts = await this.steem_database_call('get_key_references',[[key]])
+        if(!accounts || accounts.length == 0){
+          console.log('No keys found')
+          return null
+        }
+        console.log('Found accounts:')
+        console.log(accounts)
+        account.name = accounts[0][0]
+        accounts = await this.steem_database_call('get_accounts',[[account.name]])
+        if(!accounts || accounts.length == 0) return account
+        var roles = ['owner','active','posting']
+        for(var i in roles){
+          var role = roles[i]
+          accounts[0][role].key_auths.forEach( (k)=>{
+            if(key === k[0]) account.authorities.push(role)
+          })
+        }
+      }catch(error){
+        console.log(error)
+      }
+      return account
+    },
+
+    buildTransaction(){
+      if(!this.headers) throw new Error('no headers defined')
+      var operation = [ this.trx.op0.operation, {} ]
+      for(var key in this.trx.op0.params){
+        var param = this.trx.op0.params[key]
+        operation[1][key] = param.value
+      }
+
+      var trx = {
+        ref_block_num: this.headers.ref_block_num,
+        ref_block_prefix: this.headers.ref_block_prefix,
+        expiration: this.headers.expiration,
+        operations: [operation],
+        extensions: [],
+        signatures: []
+      }
+
+      return trx
+    },
+
+    sign(){
+      if(this.headers){
+        var trx = this.buildTransaction()
+
+        var client = new Client('',{chainId:Config.STEEM_CHAIN_ID})
+        try{
+          var privkey = PrivateKey.fromString(this.privkey)
+        }catch(error){
+          this.showDanger('Error reading the private key')
+          throw error
+        }
+        var sgnTrx = client.broadcast.sign(trx, privkey)
+        this.addSignature( sgnTrx.signatures[0] )
+      }else{
+        this.addHeaders().then( this.sign )
+      }
+    },
+
+    async broadcast(){
+      this.hideDanger()
+      this.hideSuccess()
+      if(this.signatures.length == 0){
+        this.showDanger('Please sign the transaction')
+        return
+      }
+      var trx = this.buildTransaction()
+      this.signatures.forEach( (sig)=>{
+        trx.signatures.push(sig.signature)
+      })
+      this.sending = true
+      try{
+        var result = await this.steem_broadcast_send(trx)
+        this.showSuccess(`<a href="${this.EXPLORER}b/${result.block_num}/${result.id}">Transaction sent successfully</a>`)
+      }catch(error){
+        this.showDanger(error.message)
+      }
+      this.sending = false
+    },
+
+    async addHeaders(){
+      var dgp = await this.steem_database_call('get_dynamic_global_properties')
+
+      var ref_block_num = dgp.head_block_number;
+      var ref_block_prefix = Buffer.from(dgp.head_block_id, 'hex').readUInt32LE(4);
+      var expiration = new Date(new Date(dgp.time + 'Z').getTime() + this.expireTime).toISOString().slice(0, -5)
+
+      this.headers = {
+        ref_block_num,
+        ref_block_prefix,
+        expiration,
+      }
+    },
+
+    getSignatureKeys(trx){
+      var chainId = this.RPCnode_initClient().chainId
+      var digest = cryptoUtils.transactionDigest(trx,chainId)
+      var keys = []
+      for(var i in trx.signatures){
+        var sig = trx.signatures[i]
+        keys.push(Signature.fromString(sig).recover(digest))
+      }
+      return keys
+    },
+  }
+}
+</script>
+
+<style scoped>
+</style>

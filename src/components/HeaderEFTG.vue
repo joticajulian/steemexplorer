@@ -40,6 +40,9 @@
           <li class="nav-item">
             <router-link to="/witnesses" class="nav-item nav-link"><div class="extra-padding">Witnesses</div></router-link>
           </li>
+          <li class="nav-item">
+            <router-link to="/broadcast" class="nav-item nav-link"><div class="extra-padding">Broadcast</div></router-link>
+          </li>
         </ul>
         <ul class="navbar-nav ml-auto">
           <li class="nav-item d-lg-block d-none">

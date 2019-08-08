@@ -60,6 +60,11 @@ export default new Router({
       component: () => import('./views/RewardCalcPage.vue')
     },
     {
+      path: "/broadcast",
+      name: "Broadcast",
+      component: () => import('./views/BroadcastPage.vue')
+    },
+    {
       path: "/explorer",
       name: "Explorer",
       component: HomeExplorer
