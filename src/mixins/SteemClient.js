@@ -175,6 +175,12 @@ export default {
       return this.RPCnode_request( async function(client){
         return await client.broadcast.sendOperations(operations, privKey)
       }, this.onNodeProgress)
+    },
+
+    async steem_broadcast_send( trx ) {
+      return this.RPCnode_request( async function(client){
+        return await client.broadcast.send(trx)
+      }, this.onNodeProgress)
     }
   }
 }
