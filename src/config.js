@@ -13,6 +13,7 @@ const config = {
   },
   'development': {
     RPC_NODES : [
+      //'https://testnet.steemitdev.com',
       'https://api.steemit.com',
     ],
     EFTG_HARDFORK_0_1 : true
@@ -42,6 +43,7 @@ const EXPLORER = '/explorer/'
 const DSTEEM_TIMEOUT = 5000 //ms
 
 const STEEM_ADDRESS_PREFIX = 'STM';
+//const STEEM_ADDRESS_PREFIX = 'TST';
 const STEEM_100_PERCENT = 10000;
 const STEEM_VOTE_REGENERATION_SECONDS = 5 * 24 * 60 * 60;
 const STEEM_INFLATION_RATE_START_PERCENT = 978;
@@ -52,6 +54,7 @@ const STEEM_BLOCKS_PER_DAY = (24 * 60 * 60) / 3;
 const STEEM_SBD_START_PERCENT = 900;
 const STEEM_SBD_STOP_PERCENT = 1000;
 const STEEM_CHAIN_ID = '0000000000000000000000000000000000000000000000000000000000000000'
+//const STEEM_CHAIN_ID = '46d82ab7d8db682eb1959aed0ada039a6d49afa1602491f93dde9cac3e8e6c32'
 
 const MAP = {
   TOP_WITNESSES: 30,
