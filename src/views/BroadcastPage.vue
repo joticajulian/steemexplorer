@@ -91,7 +91,7 @@
 <script>
 import HeaderEFTG from '@/components/HeaderEFTG'
 import SteemClient from '@/mixins/SteemClient.js'
-import { Client, PrivateKey, cryptoUtils, Signature } from 'dsteem'
+import { Client, PrivateKey, cryptoUtils, Signature, utils } from 'dsteem'
 import Alerts from '@/mixins/Alerts.js'
 
 import Config from '@/config.js'
@@ -235,6 +235,10 @@ export default {
         var param = this.trx.op0.params[key]
         operation[1][key] = this.paramParse(param.value, param.type)
       }
+
+      // special case for witness_set_properties
+      if( this.trx.op0.operation === 'witness_set_properties' )
+        operation = utils.buildWitnessUpdateOp( operation[1].owner , operation[1].props )
 
       var trx = {
         ref_block_num: this.headers.ref_block_num,

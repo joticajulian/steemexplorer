@@ -1244,7 +1244,8 @@ const witness_set_properties = {
   authorities: ['signing'], //should be signed with the same signing_key defined in the operation
   description:
 `
-
+Example for props:
+{"account_creation_fee":"3.000 STEEM","account_subsidy_budget":10000,"account_subsidy_decay":330782,"maximum_block_size":65536,"sbd_interest_rate":0,"sbd_exchange_rate":{"base":"2.500 SBD","quote":"1.000 STEEM"},"url":"http://steemit.com/","new_signing_key":"STM7T2TBdQWqNAhuzH5SXfSnsTLmrZkAufmvMwEsbvGihtHsf7dWk","key":"STM7T2TBdQWqNAhuzH5SXfSnsTLmrZkAufmvMwEsbvGihtHsf7dWk"}
 `,
   params: {
     owner: witness,
