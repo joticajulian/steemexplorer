@@ -128,25 +128,30 @@ export default {
     selectSignature(){},
 
     async addSignature(sig){
-      if(!this.headers) throw new Error('No headers defined')
-      var trx = this.buildTransaction()
-      trx.signatures = [sig]
-      var keys = this.getSignatureKeys(trx)
-      var display = keys[0]
-      var account = await this.searchAccountKey(keys[0])
-      if(account && account.name){
-        display = '@' + account.name
-        if(account.authorities){
-          for(var i in account.authorities)
-            display = display + ' ' + account.authorities[i]
+      try{
+        if(!this.headers) throw new Error('No headers defined')
+        var trx = this.buildTransaction()
+        trx.signatures = [sig]
+        var keys = this.getSignatureKeys(trx)
+        var display = keys[0]
+        var account = await this.searchAccountKey(keys[0])
+        if(account && account.name){
+          display = '@' + account.name
+          if(account.authorities){
+            for(var i in account.authorities)
+              display = display + ' ' + account.authorities[i]
+          }
         }
+  
+        this.signatures.push({
+          signature: sig,
+          public_key: keys[0],
+          display: display
+        })
+      }catch(error){
+        this.showDanger(error.message)
+        throw error
       }
-
-      this.signatures.push({
-        signature: sig,
-        public_key: keys[0],
-        display: display
-      })
     },
 
     async searchAccountKey(key){
@@ -237,7 +242,12 @@ export default {
     },
 
     sign(){
-      if(this.headers){
+      try{
+        if(!this.headers){
+          this.addHeaders().then( this.sign )
+          return
+        }
+
         var trx = this.buildTransaction()
         console.log(trx)
 
@@ -245,36 +255,37 @@ export default {
         try{
           var privkey = PrivateKey.fromString(this.privkey)
         }catch(error){
-          this.showDanger('Error reading the private key')
-          throw error
+          throw new Error('Error reading the private key')
         }
         var sgnTrx = client.broadcast.sign(trx, privkey)
         this.addSignature( sgnTrx.signatures[0] )
-      }else{
-        this.addHeaders().then( this.sign )
+      }catch(error){
+        this.showDanger(error.message)
+        throw error
       }
     },
 
     async broadcast(){
-      this.hideDanger()
-      this.hideSuccess()
-      if(this.signatures.length == 0){
-        this.showDanger('Please sign the transaction')
-        return
-      }
-      var trx = this.buildTransaction()
-      this.signatures.forEach( (sig)=>{
-        trx.signatures.push(sig.signature)
-      })
-      this.sending = true
       try{
-        //var result = await this.steem_broadcast_send(trx)
-        //this.showSuccess(`<a href="${this.EXPLORER}b/${result.block_num}/${result.id}">Transaction sent successfully</a>`)
+        this.hideDanger()
+        this.hideSuccess()
+        this.sending = true
+        if(this.signatures.length == 0)
+          throw new Error('Please sign the transaction')
+
+        var trx = this.buildTransaction()
+        this.signatures.forEach( (sig)=>{
+          trx.signatures.push(sig.signature)
+        })
+        var result = await this.steem_broadcast_send(trx)
+        this.showSuccess(`<a href="${this.EXPLORER}b/${result.block_num}/${result.id}">Transaction sent successfully</a>`)
         console.log(trx)
+        this.sending = false
       }catch(error){
         this.showDanger(error.message)
+        this.sending = false
+        throw error
       }
-      this.sending = false
     },
 
     async addHeaders(){
