@@ -1,5 +1,26 @@
 <template>
   <div>
+    <b-modal ref="modalSignature" hide-footer title="Signature">
+      <div v-if="signatures.length>0">
+        <label class="col-form-label">Public key</label>
+        <div>{{signatures[sigSelected].public_key}}</div>
+        <label class="col-form-label mt-3">Signed by</label>
+        <div v-if="signatures[sigSelected].signed_by !== ''">@{{signatures[sigSelected].signed_by}}</div>
+        <div v-else>Unknown account</div>
+        <label class="col-form-label mt-3">Authorities</label>
+        <div v-if="signatures[sigSelected].authorities.length > 0">
+          <span v-for="auth in signatures[sigSelected].authorities">{{auth}}. </span>
+        </div>
+        <div v-else>Unknown</div>
+        <button class="btn btn-primary mr-3" @click="hideModalSignature">close</button>
+        <button class="btn btn-secondary" @click="removeSignature">remove</button>
+      </div>
+      <div v-else>
+        No signatures
+      </div>
+    </b-modal>
+
+
     <HeaderEFTG ref="headerEFTG"></HeaderEFTG>
     <div class="container">
       <h2>Broadcast</h2>
@@ -54,7 +75,7 @@
             <label class="col-md-2 col-form-label">Private Key</label>
             <input class="col-md-9 form-control" type="password" v-model="privkey" placeholder="Private key"/>
             <div class="col-md-1">
-              <button class="btn btn-primary" @click="sign">Sign</button>
+              <button class="btn btn-primary" @click="sign(false)">Sign</button>
             </div>
           </div>
           <button class="btn btn-primary btn-large mt-3 mb-4" @click="broadcast" :disabled="sending"><div v-if="sending" class="mini loader"/>broadcast</button>
@@ -93,6 +114,7 @@ export default {
         op0: {}
       },
       signatures: [],
+      sigSelected: 0,
       
       sending: false,
       EXPLORER: Config.EXPLORER,
@@ -125,28 +147,50 @@ export default {
       this.signatures = []
     },
 
-    selectSignature(){},
+    selectSignature(index){
+      this.sigSelected = index
+      this.$refs.modalSignature.show()
+    },
+
+    hideModalSignature(){
+      this.$refs.modalSignature.hide()
+    },
+
+    removeSignature(){
+      this.signatures.splice( this.sigSelected , 1 )
+      this.sigSelected = 0
+      this.$refs.modalSignature.hide()
+    },
 
     async addSignature(sig){
+      this.hideSuccess()
+      this.hideDanger()
       try{
         if(!this.headers) throw new Error('No headers defined')
         var trx = this.buildTransaction()
         trx.signatures = [sig]
         var keys = this.getSignatureKeys(trx)
         var display = keys[0]
+        var signed_by = ''
+        var authorities = []
         var account = await this.searchAccountKey(keys[0])
         if(account && account.name){
-          display = '@' + account.name
+          signed_by = account.name
+          display = '@' + signed_by
           if(account.authorities){
-            for(var i in account.authorities)
-              display = display + ' ' + account.authorities[i]
+            authorities = account.authorities
+            for(var i in authorities){
+              display = display + ' ' + authorities[i]
+            }
           }
         }
   
         this.signatures.push({
           signature: sig,
           public_key: keys[0],
-          display: display
+          display,
+          signed_by,
+          authorities
         })
       }catch(error){
         this.showDanger(error.message)
@@ -241,12 +285,15 @@ export default {
       }
     },
 
-    sign(){
+    sign(skip){
       try{
-        if(!this.headers){
-          this.addHeaders().then( this.sign )
+        console.log(skip)
+        if(!skip && (!this.headers || this.signatures.length==0)){
+          this.addHeaders().then( ()=>{this.sign(true)} )
           return
         }
+        this.hideSuccess()
+        this.hideDanger()
 
         var trx = this.buildTransaction()
         console.log(trx)
@@ -294,6 +341,8 @@ export default {
       var ref_block_num = dgp.head_block_number;
       var ref_block_prefix = Buffer.from(dgp.head_block_id, 'hex').readUInt32LE(4);
       var expiration = new Date(new Date(dgp.time + 'Z').getTime() + this.expireTime).toISOString().slice(0, -5)
+      console.log(`Blockchain time: ${dgp.time}`)
+      console.log(`Headers: Expiration: ${expiration}`)
 
       this.headers = {
         ref_block_num,
