@@ -7,7 +7,7 @@
         <div class="col-md-3">
           <div class="card mb-2">
             <ul class="list-group list-group-flush">
-              <li v-for="(operation,name,index) in operations" :key="index" class="list-group-item" @click="selectOperation(index)">
+              <li v-for="(operation,name,index) in operations" :key="index" class="list-group-item" @click="selectOperation(name)">
                 {{operation.name}}
               </li>
             </ul>
@@ -18,16 +18,16 @@
           <div class="mb-3">{{trx.op0.description}}</div>
           <div v-for="(param,pname,pindex) in trx.op0.params" :key="pindex" class="form-group row">
             <label class="col-md-2 col-form-label">{{param.name}}</label>
-            <div v-if="param.type==='textarea'" class="col">
+            <div v-if="param.typeUI==='textarea'" class="col">
               <textarea class="form-control"
                 v-model="param.value" :rows="param.rows" :disabled="signatures.length>0"/>
             </div>
-            <div v-else-if="param.type==='password'" class="col">            
-              <input class="form-control" type="password"
+            <div v-else-if="param.typeUI==='text'" class="col">            
+              <input class="form-control" type="text"
                 v-model="param.value" :placeholder="param.placeholder" :disabled="signatures.length>0"/>
             </div>
-            <div v-else class="col">            
-              <input class="form-control" type="text"
+            <div v-else-if="param.typeUI==='checkbox'" class="col">
+              <input class="form-control" type="checkbox"
                 v-model="param.value" :placeholder="param.placeholder" :disabled="signatures.length>0"/>
             </div>
           </div>
@@ -120,11 +120,9 @@ export default {
   },
 
   methods: {
-    selectOperation(index){
-      this.trx.op0 = this.operations[index]
-      for(var key in this.trx.op0.params){
-        this.trx.op0.params[key].value = '' 
-      }
+    selectOperation(name){
+      this.trx.op0 = this.operations[name]
+      this.signatures = []
     },
 
     selectSignature(){},
@@ -186,7 +184,7 @@ export default {
       var operation = [ this.trx.op0.operation, {} ]
       for(var key in this.trx.op0.params){
         var param = this.trx.op0.params[key]
-        operation[1][key] = param.value
+        operation[1][key] = this.paramParse(param.value, param.type)
       }
 
       var trx = {
@@ -201,9 +199,47 @@ export default {
       return trx
     },
 
+    paramParse(value, type){
+      switch(type){
+        case 'asset':
+        case 'account':
+        case 'string':
+        case 'public_key':
+        case 'time':
+        case 'textarea':
+          return value
+
+        case 'boolean':
+          return (typeof value === 'string' && value === 'true') || (typeof value === 'boolean' && value)
+
+        case 'buffer':
+          return Buffer.from(value)
+
+        case 'number':
+          return parseInt(value)
+
+        case 'json':
+          try{
+            JSON.parse(value)
+          }catch(error){
+            throw new Error('Invalid json format')
+          }
+          return value // json data is written as string in the blockchain
+        case 'object':
+          try{
+            return JSON.parse(value)
+          }catch(error){
+            throw new Error('Invalid json format')
+          }
+        default:
+          throw new Error(`The param type ${type} is unknown`)
+      }
+    },
+
     sign(){
       if(this.headers){
         var trx = this.buildTransaction()
+        console.log(trx)
 
         var client = new Client('',{chainId:Config.STEEM_CHAIN_ID})
         try{
@@ -232,8 +268,9 @@ export default {
       })
       this.sending = true
       try{
-        var result = await this.steem_broadcast_send(trx)
-        this.showSuccess(`<a href="${this.EXPLORER}b/${result.block_num}/${result.id}">Transaction sent successfully</a>`)
+        //var result = await this.steem_broadcast_send(trx)
+        //this.showSuccess(`<a href="${this.EXPLORER}b/${result.block_num}/${result.id}">Transaction sent successfully</a>`)
+        console.log(trx)
       }catch(error){
         this.showDanger(error.message)
       }
