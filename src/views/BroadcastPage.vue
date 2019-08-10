@@ -2,16 +2,18 @@
   <div>
     <b-modal ref="modalSignature" hide-footer title="Signature">
       <div v-if="signatures.length>0">
+        <label class="col-form-label">Signature</label>
+        <div class="hash">{{signatures[sigSelected].signature}}</div>
         <label class="col-form-label">Public key</label>
-        <div>{{signatures[sigSelected].public_key}}</div>
+        <div class="hash">{{signatures[sigSelected].public_key}}</div>
         <label class="col-form-label mt-3">Signed by</label>
         <div v-if="signatures[sigSelected].signed_by !== ''">@{{signatures[sigSelected].signed_by}}</div>
         <div v-else>Unknown account</div>
         <label class="col-form-label mt-3">Authorities</label>
-        <div v-if="signatures[sigSelected].authorities.length > 0">
+        <div v-if="signatures[sigSelected].authorities.length > 0" class="mb-3">
           <span v-for="auth in signatures[sigSelected].authorities">{{auth}}. </span>
         </div>
-        <div v-else>Unknown</div>
+        <div v-else class="mb-3">Unknown</div>
         <button class="btn btn-primary mr-3" @click="hideModalSignature">close</button>
         <button class="btn btn-secondary" @click="removeSignature">remove</button>
       </div>
@@ -157,6 +159,7 @@ export default {
       
       sending: false,
       EXPLORER: Config.EXPLORER,
+      EXPLORER2: Config.EXPLORER2,
 
       trx_import: '',
       trx_export: '',
@@ -432,7 +435,7 @@ export default {
           trx.signatures.push(sig.signature)
         })
         var result = await this.steem_broadcast_send(trx)
-        this.showSuccess(`<a href="${this.EXPLORER}b/${result.block_num}/${result.id}">Transaction sent successfully</a>`)
+        this.showSuccess(`<a href="${this.EXPLORER2}b/${result.block_num}/${result.id}">Transaction sent successfully</a>`)
         console.log(trx)
         this.sending = false
       }catch(error){
@@ -528,4 +531,11 @@ export default {
 </script>
 
 <style scoped>
+
+.hash {
+  font-family: monospace;
+  //font-size: 1.3rem;
+  overflow-wrap: break-word;
+}
+
 </style>
