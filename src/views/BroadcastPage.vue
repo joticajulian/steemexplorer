@@ -21,23 +21,23 @@
     </b-modal>
 
 
-    <b-modal ref="modalImport" hide-footer title="Import">
-      <p>Import a transaction</p>
+    <b-modal ref="modalImport" hide-footer title="Import transaction">
       <textarea class="form-control" v-model="trx_import" rows="10"/>
       <button class="btn btn-primary mt-3 mb-3" @click="do_import">import</button>
       <div v-if="alertImport.danger"  class="alert alert-danger" role="alert">{{alertImport.dangerText}}</div>
     </b-modal>
 
 
-    <b-modal ref="modalExport" hide-footer title="Export">
+    <b-modal ref="modalExport" hide-footer title="Export transaction">
       <textarea class="form-control" v-model="trx_export" rows="10" disabled/>
+      <button class="btn btn-primary mt-3" @click="copy_trx">copy</button>
     </b-modal>
 
 
     <HeaderEFTG ref="headerEFTG"></HeaderEFTG>
     <div class="container">
-      <div class="row">
-        <h2 class="col-md-10">Broadcast</h2>
+      <div class="row mb-3">
+        <h2 class="col-6">Broadcast</h2>
         <div class="col">
           <div class="text-right">
             <button class="btn btn-primary" @click="showModalImport">import</button>
@@ -55,6 +55,19 @@
           </div>
         </div>
         <div class="col">
+          <div v-if="signatures.length==0">
+            <div class="form-group row mt-3">
+              <label class="col-md-9 col-sm-6 col-form-label text-right">Expiration</label>
+              <div class="col-md-3 col-sm-6">
+                <select class="form-control" v-model="expireTime">
+                  <option v-for="(opt,key) in expiration_options" :value="opt.value">{{opt.text}}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div v-else>
+            <label class="col-form-label col-12 text-right" :class="{'text-danger':hasExpired}">{{leftTime}}</label>
+          </div>
           <h3 class="mb-2">{{trx.op0.name}}</h3>
           <div class="mb-3">{{trx.op0.description}}</div>
           <div v-for="(param,pname,pindex) in trx.op0.params" :key="pindex" class="form-group row">
@@ -98,8 +111,10 @@
               <button class="btn btn-primary" @click="sign(false)">Sign</button>
             </div>
           </div>
-          <button class="btn btn-primary btn-large mt-3 mb-4 mr-2" @click="broadcast" :disabled="sending"><div v-if="sending" class="mini loader"/>broadcast</button>
-          <button class="btn btn-secondary" @click="do_export">export</button>
+          <div class="form-group mt-3 mb-4">
+            <button class="btn btn-primary btn-large mr-2" @click="broadcast" :disabled="sending"><div v-if="sending" class="mini loader"/>broadcast</button>
+            <button class="btn btn-secondary" @click="do_export">export</button>
+          </div>
           <div v-if="alert.info" class="alert alert-info" role="alert">{{alert.infoText}}</div>
           <div v-if="alert.success" class="alert alert-success" role="alert" v-html="alert.successText"></div>
           <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alert.dangerText}}</div>
@@ -114,6 +129,7 @@ import HeaderEFTG from '@/components/HeaderEFTG'
 import SteemClient from '@/mixins/SteemClient.js'
 import { Client, PrivateKey, cryptoUtils, Signature, utils } from 'dsteem'
 import Alerts from '@/mixins/Alerts.js'
+import Utils from '@/js/utils.js'
 
 import Config from '@/config.js'
 import Operations from '@/js/operations.js'
@@ -130,7 +146,9 @@ export default {
       signature: '',
       privkey: '',
       headers: null,
-      expireTime: 60*1000,
+      expireTime: 60*60*1000,
+      leftTime: '',
+      hasExpired: false,
       trx: {
         op0: {}
       },
@@ -150,6 +168,12 @@ export default {
         danger: false,
         textDanger: ''
       },
+      expiration_options: [
+        {value:  1*60*1000, text:'1 minute'},
+        {value: 10*60*1000, text:'10 minutes'},
+        {value: 30*60*1000, text:'30 minutes'},
+        {value: 60*60*1000, text:'1 hour'},
+      ],
     }
   },
 
@@ -167,6 +191,17 @@ export default {
     this.getChainProperties()
     this.operations = Operations
     this.selectOperation('comment')
+    setInterval( ()=>{
+      if(!this.headers) return
+      var diff = new Date(this.headers.expiration+'Z') - Date.now()
+      if(diff > 0){
+        this.leftTime = 'Expires in ' + Utils.textTimeAgo(diff, '')
+        this.hasExpired = false
+      }else{
+        this.leftTime = 'Transaction expired'
+        this.hasExpired = true
+      }
+    },1000)
   },
 
   watch: {
@@ -412,7 +447,7 @@ export default {
 
       var ref_block_num = dgp.head_block_number;
       var ref_block_prefix = Buffer.from(dgp.head_block_id, 'hex').readUInt32LE(4);
-      var expiration = new Date(new Date(dgp.time + 'Z').getTime() + this.expireTime).toISOString().slice(0, -5)
+      var expiration = new Date(new Date(dgp.time + 'Z').getTime() + parseInt(this.expireTime)).toISOString().slice(0, -5)
       console.log(`Blockchain time: ${dgp.time}`)
       console.log(`Headers: Expiration: ${expiration}`)
 
@@ -436,21 +471,23 @@ export default {
 
     do_import(){
       try{
-        alertImport.danger = false
+        this.alertImport.danger = false
         var trx = JSON.parse(this.trx_import)
-        getSignaturesKeys(trx)
+        this.getSignatureKeys(trx)
         if(trx.operations.length > 1)
           throw new Error('Transactions with more than one operation are not supported yet')
 
-        this.headers.ref_block_num = trx.ref_block_num
-        this.headers.ref_block_prefix = trx.ref_block_prefix
-        this.headers.expiration = trx.expiration
+        this.headers = {
+          ref_block_num: trx.ref_block_num,
+          ref_block_prefix: trx.ref_block_prefix,
+          expiration: trx.expiration,
+        }
 
         var op_name = trx.operations[0][0]
         this.trx.op0 = this.operations[op_name]
         for(var key in this.trx.op0.params){
           var param = this.trx.op0.params[key]
-          param.value = this.paramParseInv( operation[1][key] , param.type )
+          param.value = this.paramParseInv( trx.operations[0][1][key] , param.type )
         }
 
         this.signatures = []
@@ -461,8 +498,8 @@ export default {
         this.$refs.modalImport.hide()
 
       }catch(error){
-        alertImport.danger = true
-        alertImport.dangerText = error.name +':'+error.message
+        this.alertImport.danger = true
+        this.alertImport.dangerText = error.message
         throw error
       }
     },
@@ -478,9 +515,13 @@ export default {
         this.trx_export = JSON.stringify(trx,null,2)
         this.$refs.modalExport.show()
       }catch(error){
-        this.showDanger(error.name + ':' + error.message)
+        this.showDanger(error.message)
         throw error
       }
+    },
+
+    copy_trx(){
+      Utils.copyTextToClipboard(this.trx_export)
     },
   }
 }
