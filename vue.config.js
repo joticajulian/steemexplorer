@@ -5,7 +5,9 @@ module.exports = {
     ? './'
     : '/',
 
-  outputDir: 'docs'
+  outputDir: 'docs',
+
+  chainWebpack: config => config.resolve.symlinks(false),
 
   /** Bundle Analyzer
    *
