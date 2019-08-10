@@ -21,9 +21,29 @@
     </b-modal>
 
 
+    <b-modal ref="modalImport" hide-footer title="Import">
+      <p>Import a transaction</p>
+      <textarea class="form-control" v-model="trx_import" rows="10"/>
+      <button class="btn btn-primary mt-3 mb-3" @click="do_import">import</button>
+      <div v-if="alertImport.danger"  class="alert alert-danger" role="alert">{{alertImport.dangerText}}</div>
+    </b-modal>
+
+
+    <b-modal ref="modalExport" hide-footer title="Export">
+      <textarea class="form-control" v-model="trx_export" rows="10" disabled/>
+    </b-modal>
+
+
     <HeaderEFTG ref="headerEFTG"></HeaderEFTG>
     <div class="container">
-      <h2>Broadcast</h2>
+      <div class="row">
+        <h2 class="col-md-10">Broadcast</h2>
+        <div class="col">
+          <div class="text-right">
+            <button class="btn btn-primary" @click="showModalImport">import</button>
+          </div>
+        </div>
+      </div>
       <div class="row">
         <div class="col-md-3">
           <div class="card mb-2">
@@ -78,7 +98,8 @@
               <button class="btn btn-primary" @click="sign(false)">Sign</button>
             </div>
           </div>
-          <button class="btn btn-primary btn-large mt-3 mb-4" @click="broadcast" :disabled="sending"><div v-if="sending" class="mini loader"/>broadcast</button>
+          <button class="btn btn-primary btn-large mt-3 mb-4 mr-2" @click="broadcast" :disabled="sending"><div v-if="sending" class="mini loader"/>broadcast</button>
+          <button class="btn btn-secondary" @click="do_export">export</button>
           <div v-if="alert.info" class="alert alert-info" role="alert">{{alert.infoText}}</div>
           <div v-if="alert.success" class="alert alert-success" role="alert" v-html="alert.successText"></div>
           <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alert.dangerText}}</div>
@@ -118,6 +139,17 @@ export default {
       
       sending: false,
       EXPLORER: Config.EXPLORER,
+
+      trx_import: '',
+      trx_export: '',
+      alertImport: {
+        danger: false,
+        textDanger: ''
+      },
+      alertExport: {
+        danger: false,
+        textDanger: ''
+      },
     }
   },
 
@@ -154,6 +186,14 @@ export default {
 
     hideModalSignature(){
       this.$refs.modalSignature.hide()
+    },
+
+    showModalImport(){
+      this.$refs.modalImport.show()
+    },
+
+    showModalExport(){
+      this.$refs.modalExport.show()
     },
 
     removeSignature(){
@@ -289,6 +329,34 @@ export default {
       }
     },
 
+    paramParseInv(value, type){
+      switch(type){
+        case 'asset':
+        case 'account':
+        case 'string':
+        case 'public_key':
+        case 'time':
+        case 'textarea':
+          return value
+
+        case 'boolean':
+          return value ? 'true' : 'false'
+
+        case 'buffer':
+          return value //todo review
+
+        case 'number':
+          return value + ''
+
+        case 'json':
+          return value // json data is written as string in the blockchain
+        case 'object':
+          return JSON.stringify(value)
+        default:
+          throw new Error(`The param type ${type} is unknown`)
+      }
+    },
+
     sign(skip){
       try{
         console.log(skip)
@@ -364,6 +432,55 @@ export default {
         keys.push(Signature.fromString(sig).recover(digest))
       }
       return keys
+    },
+
+    do_import(){
+      try{
+        alertImport.danger = false
+        var trx = JSON.parse(this.trx_import)
+        getSignaturesKeys(trx)
+        if(trx.operations.length > 1)
+          throw new Error('Transactions with more than one operation are not supported yet')
+
+        this.headers.ref_block_num = trx.ref_block_num
+        this.headers.ref_block_prefix = trx.ref_block_prefix
+        this.headers.expiration = trx.expiration
+
+        var op_name = trx.operations[0][0]
+        this.trx.op0 = this.operations[op_name]
+        for(var key in this.trx.op0.params){
+          var param = this.trx.op0.params[key]
+          param.value = this.paramParseInv( operation[1][key] , param.type )
+        }
+
+        this.signatures = []
+        for(var i in trx.signatures){
+          this.addSignature(trx.signatures[i])
+        }
+
+        this.$refs.modalImport.hide()
+
+      }catch(error){
+        alertImport.danger = true
+        alertImport.dangerText = error.name +':'+error.message
+        throw error
+      }
+    },
+
+    do_export(){
+      try{
+        this.hideDanger()
+        this.hideSuccess()
+        var trx = this.buildTransaction()
+        this.signatures.forEach( (sig)=>{
+          trx.signatures.push(sig.signature)
+        })
+        this.trx_export = JSON.stringify(trx,null,2)
+        this.$refs.modalExport.show()
+      }catch(error){
+        this.showDanger(error.name + ':' + error.message)
+        throw error
+      }
     },
   }
 }
