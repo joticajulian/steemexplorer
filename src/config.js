@@ -40,6 +40,7 @@ const VESTS = 'VESTS';
 const HARDFORK = 20
 
 const EXPLORER = '/explorer/'
+const EXPLORER2 = '/steemexplorer/#/explorer/'
 const DSTEEM_TIMEOUT = 5000 //ms
 
 const STEEM_ADDRESS_PREFIX = 'STM';
@@ -84,6 +85,7 @@ export default {
   EFTG_HARDFORK_0_1: finalConfig.EFTG_HARDFORK_0_1,
 
   EXPLORER,
+  EXPLORER2,
   DSTEEM_TIMEOUT,
 
   STEEM_ADDRESS_PREFIX: STEEM_ADDRESS_PREFIX,
