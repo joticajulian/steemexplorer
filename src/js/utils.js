@@ -13,22 +13,22 @@ export default {
     return this.textTimeAgo(t);
   },
 
-  textTimeAgo: function(t) {
-    if (t <= 1000) return "1 second ago";
-    if (t < 60 * 1000) return (t / 1000).toFixed(0) + " seconds ago";
-    if (t < 2 * 60 * 1000) return "1 minute ago";
-    if (t < 60 * 60 * 1000) return (t / 1000 / 60).toFixed(0) + " minutes ago";
-    if (t < 2 * 60 * 60 * 1000) return "1 hour ago";
+  textTimeAgo: function(t, ago = ' ago') {
+    if (t <= 1000) return "1 second"+ago;
+    if (t < 60 * 1000) return (t / 1000).toFixed(0) + " seconds"+ago;
+    if (t < 2 * 60 * 1000) return "1 minute"+ago;
+    if (t < 60 * 60 * 1000) return (t / 1000 / 60).toFixed(0) + " minutes"+ago;
+    if (t < 2 * 60 * 60 * 1000) return "1 hour"+ago;
     if (t < 24 * 60 * 60 * 1000)
-      return (t / 1000 / 60 / 60).toFixed(0) + " hours ago";
+      return (t / 1000 / 60 / 60).toFixed(0) + " hours"+ago;
     if (t < 2 * 24 * 60 * 60 * 1000) return "yesterday";
     if (t < 30 * 24 * 60 * 60 * 1000)
-      return (t / 1000 / 60 / 60 / 24).toFixed(0) + " days ago";
+      return (t / 1000 / 60 / 60 / 24).toFixed(0) + " days"+ago;
     if (t < 2 * 30 * 24 * 60 * 60 * 1000) return "last month";
     if (t < 12 * 30 * 24 * 60 * 60 * 1000)
-      return (t / 1000 / 60 / 60 / 24 / 30).toFixed(0) + " months ago";
+      return (t / 1000 / 60 / 60 / 24 / 30).toFixed(0) + " months"+ago;
     if (t < 2 * 12 * 30 * 24 * 60 * 60 * 1000) return "last year";
-    return (t / 1000 / 60 / 60 / 24 / 30 / 12).toFixed(0) + " years ago";
+    return (t / 1000 / 60 / 60 / 24 / 30 / 12).toFixed(0) + " years"+ago;
   },
 
   extractUrlProfileImage: function(metadata) {
@@ -178,5 +178,17 @@ export default {
     if(size < 1024 * 1024 * 1024) return Math.round(size/1024/1024)+'MB'
     if(size < 1024 * 1024 * 1024 * 1024) return Math.round(size/1024/1024/1024)+'GB'
     if(size < 1024 * 1024 * 1024 * 1024 * 1024) return Math.round(size/1024/1024/1024)+'TB'
-  }
+  },
+
+  copyTextToClipboard: function(text) {
+    if (!navigator.clipboard) {
+      fallbackCopyTextToClipboard(text);
+      return;
+    }
+    navigator.clipboard.writeText(text).then(function() {
+      console.log('Async: Copying to clipboard was successful!');
+    }, function(err) {
+      console.error('Async: Could not copy text: ', err);
+    });
+  } 
 };
