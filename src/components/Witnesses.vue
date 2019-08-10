@@ -86,6 +86,7 @@ export default {
       saving: false,
       
       EXPLORER: Config.EXPLORER,
+      EXPLORER2: Config.EXPLORER2,
     };
   },
   
@@ -249,7 +250,7 @@ export default {
         self.saving = false
         var block = result.block_num
         var trx_id = result.id
-        self.showSuccess(`<a href="${Config.EXPLORER}b/${block}/${trx_id}" class="alert-link" target="_blank">Votes saved!</a>`)
+        self.showSuccess(`<a href="${Config.EXPLORER2}b/${block}/${trx_id}" class="alert-link" target="_blank">Votes saved!</a>`)
         self.loadVotesFromAccount()
       })
       .catch(function(error){
