@@ -45,6 +45,13 @@ export default {
     return "'https://steemitimages.com/DQmb2HNSGKN3pakguJ4ChCRjgkVuDN9WniFRPmrxoJ4sjR4'";
   },
 
+  getProfileImage: function(metadata) {
+    if(metadata && metadata.profile && metadata.profile.profile_image){
+      return metadata.profile.profile_image.replace('![image]','')
+    }
+    return 'https://steemitimages.com/DQmb2HNSGKN3pakguJ4ChCRjgkVuDN9WniFRPmrxoJ4sjR4';
+  },
+
   getVotingPower: function(account) {
     var voting_power = account.voting_power;
     var last_vote_time = new Date(account.last_vote_time + "Z");

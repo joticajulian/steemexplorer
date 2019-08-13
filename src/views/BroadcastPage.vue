@@ -93,7 +93,7 @@
               <div class="card mb-2">
                 <ul class="list-group list-group-flush">
                   <li v-for="(sig,index) in signatures" :key="index" class="list-group-item" @click="selectSignature(index)">
-                    {{sig.display}}
+                    <div class="image-profile mr-2" :style="{ backgroundImage: 'url(' + sig.image + ')' }"></div><span>{{sig.display}}</span>
                   </li>
                 </ul>
               </div>
@@ -251,9 +251,11 @@ export default {
         var display = keys[0]
         var signed_by = ''
         var authorities = []
+        var image = ''
         var account = await this.searchAccountKey(keys[0])
         if(account && account.name){
           signed_by = account.name
+          image = account.image
           display = '@' + signed_by
           if(account.authorities){
             authorities = account.authorities
@@ -262,14 +264,16 @@ export default {
             }
           }
         }
-  
-        this.signatures.push({
+
+        var item = {
           signature: sig,
           public_key: keys[0],
           display,
           signed_by,
-          authorities
-        })
+          authorities,
+          image
+        }
+        this.signatures.push(item)
       }catch(error){
         this.showDanger(error.message)
         throw error
@@ -280,7 +284,8 @@ export default {
       key = key.toString()
       var account = {
         name: null,
-        authorities: []
+        authorities: [],
+        image: ''
       }
       try{
         var accounts = await this.steem_database_call('get_key_references',[[key]])
@@ -299,6 +304,10 @@ export default {
           accounts[0][role].key_auths.forEach( (k)=>{
             if(key === k[0]) account.authorities.push(role)
           })
+        }
+        if(account.authorities.length > 0 && accounts[0].json_metadata && accounts[0].json_metadata.length > 0){
+          var metadata = JSON.parse(accounts[0].json_metadata)
+          account.image = Utils.getProfileImage(metadata)
         }
       }catch(error){
         console.log(error)
