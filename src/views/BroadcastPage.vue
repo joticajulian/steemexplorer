@@ -151,6 +151,7 @@ export default {
       signature: '',
       privkey: '',
       headers: null,
+      headersAux: null,
       expireTime: 60*60*1000,
       leftTime: '',
       hasExpired: false,
@@ -208,6 +209,8 @@ export default {
         this.hasExpired = true
       }
     },1000)
+    this.addHeaders('aux') //used to sign offline
+    setInterval( ()=>{this.addHeaders('aux')} , 10000)
   },
 
   watch: {
@@ -299,6 +302,8 @@ export default {
         image: ''
       }
       try{
+        if(!navigator.onLine)
+          return account
         var accounts = await this.steem_database_call('get_key_references',[[key]])
         if(!accounts || accounts.length == 0){
           console.log('No keys found')
@@ -464,20 +469,35 @@ export default {
       }
     },
 
-    async addHeaders(){
-      var dgp = await this.steem_database_call('get_dynamic_global_properties')
+    async addHeaders(where = 'principal'){
+      if(navigator.onLine){
+        var dgp = await this.steem_database_call('get_dynamic_global_properties')
 
-      var ref_block_num = dgp.head_block_number;
-      var ref_block_prefix = Buffer.from(dgp.head_block_id, 'hex').readUInt32LE(4);
-      var expiration = new Date(new Date(dgp.time + 'Z').getTime() + parseInt(this.expireTime)).toISOString().slice(0, -5)
-      console.log(`Blockchain time: ${dgp.time}`)
-      console.log(`Headers: Expiration: ${expiration}`)
+        var ref_block_num = dgp.head_block_number;
+        var ref_block_prefix = Buffer.from(dgp.head_block_id, 'hex').readUInt32LE(4);
+        var expiration = new Date(new Date(dgp.time + 'Z').getTime() + parseInt(this.expireTime)).toISOString().slice(0, -5)
+      }else{
+        if(where==='principal' && !this.headersAux)
+          throw new Error('Please connect to internet to get headers before signing offline')
+        var ref_block_num = this.headersAux.ref_block_num
+        var ref_block_prefix = this.headersAux.ref_block_prefix
+        var expiration = new Date(Date.now() + parseInt(this.expireTime)).toISOString().slice(0, -5) 
+      }
 
-      this.headers = {
+      var headers = {
         ref_block_num,
         ref_block_prefix,
         expiration,
       }
+
+      if(where !== 'aux'){
+        if(dgp && dgp.time)
+          console.log(`Blockchain time: ${dgp.time}`)
+        console.log(`Headers: Expiration: ${expiration}`)
+
+        this.headers = headers
+      }
+      this.headersAux = headers
     },
 
     getSignatureKeys(trx){
