@@ -87,7 +87,10 @@
                 v-model="param.value" :placeholder="param.placeholder" :disabled="signatures.length>0"/>
             </div>
           </div>
-          <h4 class="mt-5 mb-2">Signatures</h4>
+          <div class="mt-5 mb-2">
+            <h4 class="d-inline mr-2">Signatures</h4>
+            <button class="btn btn-secondary" @click="reloadSignatures"><font-awesome-icon icon="sync"/></button>
+          </div>
           <div class="row">
             <div class="col-12">
               <div class="card mb-2">
@@ -238,6 +241,14 @@ export default {
       this.signatures.splice( this.sigSelected , 1 )
       this.sigSelected = 0
       this.$refs.modalSignature.hide()
+    },
+
+    async reloadSignatures(){
+      var signatures = this.signatures
+      this.signatures = []
+      for(var i in signatures){
+        this.addSignature( signatures[i].signature )
+      }
     },
 
     async addSignature(sig){
