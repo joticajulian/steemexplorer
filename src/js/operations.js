@@ -511,6 +511,16 @@ const price = {
   placeholder:''
 }
 
+const type_se = {
+  type:'string',
+  placeholder:''
+}
+
+const id_se = {
+  type:'string',
+  placeholder:''
+}
+
 /**
  * account_create
  */
@@ -1361,8 +1371,8 @@ const steem_engine_cancel = {
   action: 'cancel',
   params: {
     _account: account,
-    type: memo,
-    id: memo
+    type: type_se,
+    id: id_se
   }
 }
 
