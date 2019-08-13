@@ -327,7 +327,6 @@ export default {
     },
 
     buildTransaction(){
-      if(!this.headers) throw new Error('no headers defined')
       var operation = [ this.trx.op0.operation, {} ]
       for(var key in this.trx.op0.params){
         var param = this.trx.op0.params[key]
@@ -339,9 +338,9 @@ export default {
         operation = utils.buildWitnessUpdateOp( operation[1].owner , operation[1].props )
 
       var trx = {
-        ref_block_num: this.headers.ref_block_num,
-        ref_block_prefix: this.headers.ref_block_prefix,
-        expiration: this.headers.expiration,
+        ref_block_num: this.headers ? this.headers.ref_block_num : 0,
+        ref_block_prefix: this.headers ? this.headers.ref_block_prefix : 0,
+        expiration: this.headers ? this.headers.expiration : new Date(Date.now() + parseInt(this.expireTime)).toISOString().slice(0, -5),
         operations: [operation],
         extensions: [],
         signatures: []
