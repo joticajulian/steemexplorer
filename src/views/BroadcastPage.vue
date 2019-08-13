@@ -332,15 +332,19 @@ export default {
     },
 
     buildTransaction(){
-      var operation = [ this.trx.op0.operation, {} ]
-      for(var key in this.trx.op0.params){
-        var param = this.trx.op0.params[key]
-        operation[1][key] = this.paramParse(param.value, param.type)
+      if( this.trx.op0.operation.includes('steem_engine_') ){
+        var operation = this.buildOperationSteemEngine()
+      }else{
+        var operation = [ this.trx.op0.operation, {} ]
+        for(var key in this.trx.op0.params){
+          var param = this.trx.op0.params[key]
+          operation[1][key] = this.paramParse(param.value, param.type)
+        }
+  
+        // special case for witness_set_properties
+        if( this.trx.op0.operation === 'witness_set_properties' )
+          operation = utils.buildWitnessUpdateOp( operation[1].owner , operation[1].props )
       }
-
-      // special case for witness_set_properties
-      if( this.trx.op0.operation === 'witness_set_properties' )
-        operation = utils.buildWitnessUpdateOp( operation[1].owner , operation[1].props )
 
       var trx = {
         ref_block_num: this.headers ? this.headers.ref_block_num : 0,
@@ -352,6 +356,30 @@ export default {
       }
 
       return trx
+    },
+
+    buildOperationSteemEngine(){
+      var contractPayload = {}
+      for(var key in this.trx.op0.params){
+        if(key === '_account') continue
+        var param = this.trx.op0.params[key]
+        contractPayload[key] = this.paramParse(param.value, param.type)
+      }
+      var json = {
+        contractName: this.trx.op0.contract,
+        contractAction: this.trx.op0.action,
+        contractPayload
+      }
+      var operation = [
+        'custom_json',
+        {
+          required_auths: [this.trx.op0.params._account.value],
+          required_posting_auths: [],
+          id: 'ssc-mainnet1',
+          json: JSON.stringify(json)
+        }
+      ]
+      return operation
     },
 
     paramParse(value, type){
@@ -372,6 +400,10 @@ export default {
 
         case 'number':
           return parseInt(value)
+
+        case 'float-string':
+          if(isNaN(value)) throw new Error('Incorrect amount')
+          return value
 
         case 'json':
           try{

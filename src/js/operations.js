@@ -494,6 +494,23 @@ const worker_account = {
   placeholder:''
 }
 
+// STEEM ENGINE
+
+const symbol = {
+  type:'string',
+  placeholder:''
+}
+
+const quantity = {
+  type:'float-string',
+  placeholder:''
+}
+
+const price = {
+  type:'float-string',
+  placeholder:''
+}
+
 /**
  * account_create
  */
@@ -1254,6 +1271,120 @@ Example for props:
   }
 }
 
+/**
+ * steem engine issue
+ */
+const steem_engine_issue = {
+  authorities: ['active'],
+  description:
+`
+
+`,
+  contract: 'tokens',
+  action: 'issue',
+  params: {
+    _account: account,
+    to,
+    quantity,
+    symbol
+  }
+}
+
+/**
+ * steem engine transfer
+ */
+const steem_engine_transfer = {
+  authorities: ['active'],
+  description:
+`
+
+`,
+  contract: 'tokens',
+  action: 'transfer',
+  params: {
+    _account: account,
+    to,
+    quantity,
+    symbol,
+    memo
+  }
+}
+
+/**
+ * steem engine buy
+ */
+const steem_engine_buy = {
+  authorities: ['active'],
+  description:
+`
+
+`,
+  contract: 'market',
+  action: 'buy',
+  params: {
+    _account: account,
+    symbol,
+    quantity,
+    price
+  }
+}
+
+/**
+ * steem engine sell
+ */
+const steem_engine_sell = {
+  authorities: ['active'],
+  description:
+`
+
+`,
+  contract: 'market',
+  action: 'sell',
+  params: {
+    _account: account,
+    symbol,
+    quantity,
+    price
+  }
+}
+
+/**
+ * steem engine cancel
+ */
+const steem_engine_cancel = {
+  authorities: ['active'],
+  description:
+`
+
+`,
+  contract: 'market',
+  action: 'cancel',
+  params: {
+    _account: account,
+    type: memo,
+    id: memo
+  }
+}
+
+/**
+ * steem engine stake
+ */
+const steem_engine_stake = {
+  authorities: ['active'],
+  description:
+`
+
+`,
+  contract: 'tokens',
+  action: 'stake',
+  params: {
+    _account: account,
+    to,
+    symbol,
+    quantity
+  }
+}
+
 
 
 var operations = {
@@ -1313,7 +1444,15 @@ var operations = {
   // SPS
   create_proposal,
   remove_proposal,
-  update_proposal_votes,  
+  update_proposal_votes,
+
+  // STEEM ENGINE
+  steem_engine_issue,
+  steem_engine_transfer,
+  steem_engine_buy,
+  steem_engine_sell,
+  steem_engine_cancel,
+  steem_engine_stake,
 }
 
 var prettyName = (n)=>{
@@ -1339,6 +1478,7 @@ for(var i in operations){
       case 'public_key':
       case 'number':
       case 'time':
+      case 'float-string':
         param.typeUI = 'text'
         break
       case 'textarea':
