@@ -221,8 +221,8 @@ export default {
         this.hasExpired = true
       }
     },1000)
-    this.addHeaders('aux') //used to sign offline
-    setInterval( ()=>{this.addHeaders('aux')} , 10000)
+    this.addHeaders() //used to sign offline
+    setInterval( ()=>{this.addHeaders()} , 60000)
   },
 
   watch: {
@@ -466,7 +466,7 @@ export default {
     sign(skip){
       try{
         console.log(skip)
-        if(!skip && (!this.headers || this.signatures.length==0)){
+        if(!skip && this.signatures.length==0){
           this.addHeaders().then( ()=>{this.sign(true)} )
           return
         }
