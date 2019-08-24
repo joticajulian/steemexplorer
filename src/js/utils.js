@@ -31,6 +31,24 @@ export default {
     return (t / 1000 / 60 / 60 / 24 / 30 / 12).toFixed(0) + " years"+ago;
   },
 
+  textTime: function(t) {
+    if (t <= 1000) return "1 second";
+    if (t < 60 * 1000) return (t / 1000).toFixed(0) + " seconds";
+    if (t < 2 * 60 * 1000) return "1 minute";
+    if (t < 60 * 60 * 1000) return (t / 1000 / 60).toFixed(0) + " minutes";
+    if (t < 2 * 60 * 60 * 1000) return "1 hour";
+    if (t < 24 * 60 * 60 * 1000)
+      return (t / 1000 / 60 / 60).toFixed(0) + " hours";
+    if (t < 2 * 24 * 60 * 60 * 1000) return "1 day";
+    if (t < 30 * 24 * 60 * 60 * 1000)
+      return (t / 1000 / 60 / 60 / 24).toFixed(0) + " days";
+    if (t < 2 * 30 * 24 * 60 * 60 * 1000) return "1 month";
+    if (t < 12 * 30 * 24 * 60 * 60 * 1000)
+      return (t / 1000 / 60 / 60 / 24 / 30).toFixed(0) + " months";
+    if (t < 2 * 12 * 30 * 24 * 60 * 60 * 1000) return "1 year";
+    return (t / 1000 / 60 / 60 / 24 / 30 / 12).toFixed(0) + " years";
+  },
+
   extractUrlProfileImage: function(metadata) {
     if (
       typeof metadata.profile !== "undefined" &&

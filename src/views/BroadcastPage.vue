@@ -69,6 +69,7 @@
           </div>
           <div v-else>
             <label class="col-form-label col-12 text-right" :class="{'text-danger':hasExpired}">{{leftTime}}</label>
+            <label class="col-form-label col-12 text-right">{{leftTime2}}</label>
           </div>
           <h3 class="mb-2">{{trx.op0.name}}</h3>
           <div class="mb-3">{{trx.op0.description}}</div>
@@ -154,6 +155,7 @@ export default {
       headersAux: null,
       expireTime: 60*60*1000,
       leftTime: '',
+      leftTime2: '',
       hasExpired: false,
       trx: {
         op0: {}
@@ -176,10 +178,13 @@ export default {
         textDanger: ''
       },
       expiration_options: [
-        {value:  1*60*1000, text:'1 minute'},
-        {value: 10*60*1000, text:'10 minutes'},
-        {value: 30*60*1000, text:'30 minutes'},
-        {value: 60*60*1000, text:'1 hour'},
+        {value:       1*60*1000, text:'1 minute'},
+        {value:      10*60*1000, text:'10 minutes'},
+        {value:      30*60*1000, text:'30 minutes'},
+        {value:      60*60*1000, text:'1 hour'},
+        {value:    8*60*60*1000, text:'8 hours'},
+        {value:   24*60*60*1000, text:'1 day'},
+        {value: 3*24*60*60*1000, text:'3 days'},
       ],
     }
   },
@@ -202,10 +207,17 @@ export default {
       if(!this.headers) return
       var diff = new Date(this.headers.expiration+'Z') - Date.now()
       if(diff > 0){
-        this.leftTime = 'Expires in ' + Utils.textTimeAgo(diff, '')
         this.hasExpired = false
+        this.leftTime = `Expires in ${Utils.textTime(diff)}`
+        if(diff <= 60*60*1000){
+          this.leftTime2 = ''
+        }else{
+          var timeToBroadcast = new Date(new Date(this.headers.expiration+'Z').getTime() - 60*60*1000).toISOString().slice(0,-5)
+          this.leftTime2 = `It can only be broadcasted with one hour to expire, that is, after ${timeToBroadcast} UTC`
+        }
       }else{
         this.leftTime = 'Transaction expired'
+        this.leftTime2 = ''
         this.hasExpired = true
       }
     },1000)
