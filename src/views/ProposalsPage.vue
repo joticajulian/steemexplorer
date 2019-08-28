@@ -11,7 +11,7 @@
                 <div class="image-profile mr-2" :style="{ backgroundImage: 'url(' + p.image + ')' }"></div>
                 <span>{{p.creator}} <span v-if="p.creator !== p.receiver">(receiver @{{p.receiver}})</span></span>
                 <div><router-link :to="p.url">{{p.subject}}</router-link></div>
-                <div><small>id #{{p.id}}</small></div>
+                <div><small>id #{{p.id}}</small><span class="badge ml-2" :class="{'badge-primary':p.active,'badge-warning':!p.active}">{{p.status}}</span> </div>
               </div>
               <div class="col-4">From {{p.start_date}} to {{p.end_date}} ({{p.total_time}})</div>
               <div class="col-2">{{p.daily_pay}} daily</div>
@@ -90,6 +90,8 @@ export default {
         p.vote = false
         p.newVote = false
         p.total_time = Utils.textTime(new Date(p.end_date) - new Date(p.start_date))
+        p.active = this.isActive(p)
+        p.status = p.active ? 'active' : 'inactive'
         this.proposals.push(p)
       }
       this.sortBy('votes')
@@ -152,6 +154,7 @@ export default {
         proposal.votes_sp = (parseInt(proposal.total_votes)/1e12 * this.chain.steem_per_mvests).toFixed(3) + ' ' + Config.SP
         this.$set(this.proposals, i, proposal)
       }
+      this.sortBy('votes')
     },
 
     witness_vote_weight(account) {
