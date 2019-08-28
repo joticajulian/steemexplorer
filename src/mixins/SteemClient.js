@@ -1,4 +1,4 @@
-import { Client } from 'eftg-dsteem'
+import { Client } from 'dsteem'
 import Config from '@/config.js'
 import Alerts from '@/mixins/Alerts.js'
 
@@ -72,8 +72,8 @@ export default {
       this.$store.state.max_fail_rounds = max_fail_rounds
     },
 
-    RPCnode_fail(event) {
-      console.log('Fail RPC node')
+    RPCnode_fail(event, error) {
+      console.log(`Fail RPC node: ${error.message}`)
       event.status = 'fail'
       event.fails++      
       if(event.fails >= this.$store.state.max_fails) {
@@ -141,7 +141,7 @@ export default {
           }
 
           try {
-            event = this.RPCnode_fail(event) //this function could throw an error to break the while loop
+            event = this.RPCnode_fail(event, error) //this function could throw an error to break the while loop
           } catch(err) {
             if(lambda && lambda.onError) lambda.onError(err)
             throw err
