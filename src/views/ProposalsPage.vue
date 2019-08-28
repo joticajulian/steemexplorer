@@ -93,7 +93,8 @@ export default {
         this.proposals.push(p)
       }
       this.sortBy('votes')
-      if(this.$store.state.auth.logged) await this.loadVotesFromAccount()
+      this.loadVotesNoActive()
+      if(this.$store.state.auth.logged) this.loadVotesFromAccount()
     },
 
     sortBy(type){
@@ -104,6 +105,60 @@ export default {
         default:
           throw new Error(`The type '${type}' for sort does not exists`)
       }
+    },
+
+    isActive(proposal){
+      var now = Date.now()
+      return now <= new Date(proposal.end_date+'Z') && now >= new Date(proposal.start_date+'Z')
+    },
+
+    /**
+     * ISSUE: https://github.com/steemit/steem/issues/3488
+     * This call is not necessary after this issue is solved
+     */ 
+    async loadVotesNoActive(){
+      for(var i in this.proposals){
+        var proposal = this.proposals[i]
+        if(this.isActive(proposal)) continue
+        proposal.total_votes = 0
+        var from = ''
+        var break_while = false
+        var voters = []
+        while(!break_while){
+          var votes = await this.steem_database_call('list_proposal_votes',[[proposal.id,from],100,'by_proposal_voter'])
+          if(votes.length > 0) console.log(`Votes: length: ${votes.length}. from '${votes[0].voter}' to '${votes[votes.length-1].voter}'`)
+
+          if(votes.length == 1){
+            break_while = true
+            if(votes[0].proposal.id == proposal.id) voters.push(votes[0].voter)
+          }else{
+            for(var j=0; j<votes.length-1; j++){ //don't take the last one. It is for the next round
+              if(votes[j].proposal.id !== proposal.id){
+                break_while = true
+                break
+              }
+              voters.push(votes[j].voter) 
+            }
+          }
+          from = votes[votes.length-1].voter
+        }
+        console.log(`voters of id ${proposal.id}`)
+        console.log(voters)
+        var accounts = await this.steem_database_call('get_accounts',[voters])
+        for(var j in accounts){
+          proposal.total_votes += parseInt(this.witness_vote_weight(accounts[j]))
+        }
+        console.log(`total votes ${proposal.total_votes}`)
+        proposal.votes_sp = (parseInt(proposal.total_votes)/1e12 * this.chain.steem_per_mvests).toFixed(3) + ' ' + Config.SP
+        this.$set(this.proposals, i, proposal)
+      }
+    },
+
+    witness_vote_weight(account) {
+      var total = Math.floor(parseFloat(account.vesting_shares)*1e6)
+      for(var i in account.proxied_vsf_votes)
+        total += parseInt(account.proxied_vsf_votes[i])
+      return total
     },
 
     async loadVotesFromAccount(){
