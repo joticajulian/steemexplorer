@@ -65,6 +65,16 @@ export default new Router({
       component: () => import('./views/BroadcastPage.vue')
     },
     {
+      path: "/proposals",
+      name: "Proposals",
+      component: () => import('./views/ProposalsPage.vue')
+    },
+    {
+      path: "/proposals/:id",
+      name: "Proposals",
+      component: () => import('./views/ProposalPage.vue')
+    },
+    {
       path: "/explorer",
       name: "Explorer",
       component: HomeExplorer

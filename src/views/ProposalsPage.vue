@@ -1,0 +1,268 @@
+<template>
+  <div>
+    <HeaderEFTG ref="headerEFTG" v-on:login="onLogin" v-on:logout="onLogout"></HeaderEFTG>
+    <div class="container">
+      <h2>Proposals</h2>
+      <div class="card mb-2">
+        <ul class="list-group list-group-flush">
+          <li v-for="(p,index) in proposals" :key="index" class="list-group-item" @click="selectProposal(index)">
+            <div class="row">
+              <div class="col-3">
+                <div class="image-profile mr-2" :style="{ backgroundImage: 'url(' + p.image + ')' }"></div>
+                <span>{{p.creator}} <span v-if="p.creator !== p.receiver">(receiver @{{p.receiver}})</span></span>
+                <div><router-link :to="p.url">{{p.subject}}</router-link></div>
+                <div><small>id #{{p.id}}</small></div>
+              </div>
+              <div class="col-4">From {{p.start_date}} to {{p.end_date}} ({{p.total_time}})</div>
+              <div class="col-2">{{p.daily_pay}} daily</div>
+              <div class="col-2">{{p.votes_sp}}</div>
+              <div class="col-1">
+                <button class="btn" @click="toggleVote(index)" :class="{'btn-primary':p.newVote, 'btn-secondary':!p.newVote}">
+                  <font-awesome-icon icon="check"/>
+                </button>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div v-if="this.$store.state.auth.logged" class="row mt-4">
+        <div class="form-group col-12">
+          <button @click="save" class="btn btn-primary btn-large mr-2" :disabled="saving"><div v-if="saving" class="mini loader"></div>Save</button>
+          <button @click="reset" class="btn btn-secondary btn-large">Reset</button>
+        </div>            
+      </div>
+      <div v-if="alert.info" class="alert alert-info" role="alert">{{alert.infoText}}</div>
+      <div v-if="alert.success" class="alert alert-success" role="alert" v-html="alert.successText"></div>
+      <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alert.dangerText}}</div>
+    </div>    
+  </div>
+</template>
+
+<script>
+import HeaderEFTG from '@/components/HeaderEFTG'
+import SteemClient from '@/mixins/SteemClient.js'
+import Alerts from '@/mixins/Alerts.js'
+import Utils from '@/js/utils.js'
+
+import Config from '@/config.js'
+import ChainProperties from '@/mixins/ChainProperties.js'
+
+
+export default {
+  name: 'ProposalsPage',
+  
+  data() {
+    return {
+      proposals: [],
+      saving: false
+    }
+  },
+
+  components: {
+    HeaderEFTG
+  },
+
+  mixins: [
+    ChainProperties,
+    SteemClient,
+    Alerts
+  ],
+
+  created() {
+    this.getChainProperties().then( ()=>{
+      this.getProposals()
+    })
+  },
+
+  watch: {
+  },
+
+  methods: {
+    async getProposals(){
+      console.log('get')
+      this.proposals = []
+      var proposals = await this.steem_database_call('list_proposals',[['',0],100,'by_creator'])
+      for(var i in proposals){
+        var p = proposals[i]
+        p.url = Config.EXPLORER + '@' + p.creator + '/' + p.permlink
+        p.image = 'https://steemitimages.com/u/'+p.creator+'/avatar/small'
+        p.votes_sp = (parseInt(p.total_votes)/1e12 * this.chain.steem_per_mvests).toFixed(3) + ' ' + Config.SP
+        p.vote = false
+        p.newVote = false
+        p.total_time = Utils.textTime(new Date(p.end_date) - new Date(p.start_date))
+        this.proposals.push(p)
+      }
+      this.sortBy('votes')
+      if(this.$store.state.auth.logged) await this.loadVotesFromAccount()
+    },
+
+    sortBy(type){
+      switch(type){
+        case 'votes':
+          this.proposals.sort( (a,b)=>{ return parseInt(b.total_votes) - parseInt(a.total_votes) })
+          return
+        default:
+          throw new Error(`The type '${type}' for sort does not exists`)
+      }
+    },
+
+    async loadVotesFromAccount(){
+      var user = this.$store.state.auth.user
+      this.clearVotes()
+      var account_votes = await this.steem_database_call('list_proposal_votes',[[user,0],100,'by_voter_proposal'])
+      var proposalsNotTop = []
+      for(var i in account_votes){
+        var vote = account_votes[i]
+        if(vote.voter !== user) break
+        var index = this.proposals.findIndex( (p)=>{ return p.id === vote.proposal.id })
+        if(index >= 0){
+          var proposal = this.proposals[index]
+          proposal.vote = true
+          proposal.newVote = true
+          this.$set(this.proposals, index, proposal)
+        }else{
+          proposalsNotTop.push(vote)
+        }
+      }
+      if(proposalsNotTop.length > 0) {
+        console.log('TODO: these proposals are already voted but they are not in the TOP list:')
+        console.log(proposalsNotTop)
+      }
+    },
+
+    selectProposal(index){
+      var proposal = this.proposals[index]
+    },
+
+    toggleVote(index){
+      var p = this.proposals[index]
+      p.newVote = !p.newVote
+      this.$set(this.proposals, index, p)
+    },
+
+    save(){
+      var user = this.$store.state.auth.user
+      var activeKey = this.$store.state.auth.keys.active
+      var ownerKey  = this.$store.state.auth.keys.owner
+      var privKey = null
+
+      if( activeKey != null ) {
+        privKey = activeKey
+      }else if(ownerKey != null ) {
+        privKey = ownerKey 
+      }else {
+        this.showDanger('Please login with master, owner, or active key')
+        return 
+      }
+
+      var proposals = this.proposals.slice()
+
+      var approve_id_proposals = []
+      var unapprove_id_proposals = []
+      for(var i in proposals) {
+        var p = proposals[i]
+
+        if(p.newVote != p.vote) {
+          if(p.newVote === true) approve_id_proposals.push(p.id)
+          else unapprove_id_proposals.push(p.id)
+        }
+      }
+
+      if(approve_id_proposals.length == 0 && unapprove_id_proposals.length == 0) {
+        this.showDanger('Nothing to change')
+        return
+      }
+
+      var ops = []
+
+      if(approve_id_proposals.length > 0){
+        approve_id_proposals.sort()
+        ops.push([
+          'update_proposal_votes',
+           {
+             voter: user,
+             proposal_ids: approve_id_proposals,
+             approve: true,
+             extensions: []
+           }
+        ])
+      }
+
+      if(unapprove_id_proposals.length > 0){
+        unapprove_id_proposals.sort()
+        ops.push([
+          'update_proposal_votes',
+           {
+             voter: user,
+             proposal_ids: unapprove_id_proposals,
+             approve: false,
+             extensions: []
+           }
+        ])
+      }
+
+      this.saving = true
+      this.hideSuccess()
+      this.hideDanger()
+      this.hideInfo()
+
+      let self = this
+
+      this.steem_broadcast_sendOperations(ops,privKey)
+      .then(function(result){
+        self.saving = false
+        self.showSuccess(`<a href="${Config.EXPLORER2}b/${result.block_num}/${result.id}" class="alert-link" target="_blank">Votes saved!</a>`)
+        self.loadVotesFromAccount()
+      })
+      .catch(function(error){
+        self.saving = false
+        self.showDanger(error.message)
+        throw error
+      })
+    },
+
+    reset(){
+      for(var i in this.proposals) {
+        var p = this.proposals[i]
+        p.newVote = JSON.parse(JSON.stringify(p.vote))
+        this.$set(this.proposals, i, p)
+      }
+      this.hideSuccess()
+      this.hideDanger()
+      this.hideInfo()
+    },
+
+    clearVotes() {
+      for(var i in this.proposals) {
+        var p = this.proposals[i]
+        p.vote = false
+        this.$set(this.proposals, i, p)
+      }      
+    },
+
+    onLogin() {
+      this.loadVotesFromAccount()
+      this.hideSuccess()
+      this.hideDanger()
+      this.hideInfo() 
+    },
+    
+    onLogout() {
+      this.clearVotes()
+      this.hideSuccess()
+      this.hideDanger()
+      this.hideInfo()
+    },
+  }
+}
+</script>
+
+<style scoped>
+
+.hash {
+  font-family: monospace;
+  //font-size: 1.3rem;
+  overflow-wrap: break-word;
+}
+
+</style>
