@@ -37,7 +37,7 @@ const STEEM = 'STEEM';
 const SP = 'SP';
 const VESTS = 'VESTS';
 
-const HARDFORK = 20
+const HARDFORK = 21
 
 const EXPLORER = '/explorer/'
 const EXPLORER2 = '/steemexplorer/#/explorer/'

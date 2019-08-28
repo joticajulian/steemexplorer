@@ -118,6 +118,7 @@ export default {
       this.postGenerals = pst;
                 
       this.payout.old_post = (new Date()) - (new Date(result.cashout_time+'Z')) > 0;
+      this.payout.net_rshares = result.net_rshares
       if(this.payout.old_post){
         this.payout.total = (parseFloat(result.total_payout_value) + parseFloat(result.curator_payout_value)).toFixed(3) +' '+ Config.SBD;
         this.payout.author = result.total_payout_value;
