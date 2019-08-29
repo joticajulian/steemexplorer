@@ -113,8 +113,8 @@ export default {
         this.proposals.push(p)
       }
       this.sortBy(this.sort_order)
-      this.loadVotesNoActive()
       if(this.$store.state.auth.logged) this.loadVotesFromAccount()
+      this.loadVotesNoActive()
     },
 
     sortBy(type){
@@ -285,31 +285,41 @@ export default {
       }
 
       var ops = []
+      approve_id_proposals.sort( (a,b)=>{return a-b})
+      unapprove_id_proposals.sort( (a,b)=>{return a-b})
 
-      if(approve_id_proposals.length > 0){
-        approve_id_proposals.sort()
-        ops.push([
-          'update_proposal_votes',
-           {
-             voter: user,
-             proposal_ids: approve_id_proposals,
-             approve: true,
-             extensions: []
-           }
-        ])
+      var j=0
+      for(var i=0; i<approve_id_proposals.length; i++){
+        if(j%Config.STEEM_PROPOSAL_MAX_IDS_NUMBER == 0){
+          ops.push([
+            'update_proposal_votes',
+            {
+              voter: user,
+              proposal_ids: [],
+              approve: true,
+              extensions: []
+            }
+          ])
+        }
+        ops[ops.length-1][1].proposal_ids.push( approve_id_proposals[i] )
+        j++
       }
 
-      if(unapprove_id_proposals.length > 0){
-        unapprove_id_proposals.sort()
-        ops.push([
-          'update_proposal_votes',
-           {
-             voter: user,
-             proposal_ids: unapprove_id_proposals,
-             approve: false,
-             extensions: []
-           }
-        ])
+      var j=0
+      for(var i=0; i<unapprove_id_proposals.length; i++){
+        if(j%Config.STEEM_PROPOSAL_MAX_IDS_NUMBER == 0){
+          ops.push([
+            'update_proposal_votes',
+            {
+              voter: user,
+              proposal_ids: [],
+              approve: false,
+              extensions: []
+            }
+          ])
+        }
+        ops[ops.length-1][1].proposal_ids.push( unapprove_id_proposals[i] )
+        j++
       }
 
       this.saving = true
@@ -328,6 +338,8 @@ export default {
       .catch(function(error){
         self.saving = false
         self.showDanger(error.message)
+        console.log('operations')
+        console.log(ops)
         throw error
       })
     },
