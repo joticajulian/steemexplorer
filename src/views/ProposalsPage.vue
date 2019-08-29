@@ -3,6 +3,22 @@
     <HeaderEFTG ref="headerEFTG" v-on:login="onLogin" v-on:logout="onLogout"></HeaderEFTG>
     <div class="container">
       <h2>Proposals</h2>
+      <div class="row mb-3">
+        <div class="col-12 text-right">
+          <select v-model="sort_order">
+            <option value="votes">Sort by votes</option>
+            <option value="start_date">Sort by start date</option>
+            <option value="end_date">Sort by end date</option>
+            <option value="total_days">Sort by total days</option>
+            <option value="id">Sort by id</option>
+            <option value="status">Sort by status</option>
+            <option value="creator">Sort by creator</option>
+            <option value="receiver">Sort by receiver</option>
+            <option value="daily_pay">Sort by daily pay</option>
+            <option value="total_pay">Sort by total pay</option>
+          </select>
+        </div>
+      </div>
       <div class="card mb-2">
         <ul class="list-group list-group-flush">
           <li v-for="(p,index) in proposals" :key="index" class="list-group-item" @click="selectProposal(index)">
@@ -54,6 +70,7 @@ export default {
   data() {
     return {
       proposals: [],
+      sort_order: 'votes',
       saving: false
     }
   },
@@ -75,6 +92,7 @@ export default {
   },
 
   watch: {
+    sort_order: function(new_order){ this.sortBy(new_order) },
   },
 
   methods: {
@@ -94,7 +112,7 @@ export default {
         p.status = p.active ? 'active' : 'inactive'
         this.proposals.push(p)
       }
-      this.sortBy('votes')
+      this.sortBy(this.sort_order)
       this.loadVotesNoActive()
       if(this.$store.state.auth.logged) this.loadVotesFromAccount()
     },
@@ -103,6 +121,41 @@ export default {
       switch(type){
         case 'votes':
           this.proposals.sort( (a,b)=>{ return parseInt(b.total_votes) - parseInt(a.total_votes) })
+          return
+        case 'start_date':
+          this.proposals.sort( (a,b)=>{ return new Date(a.start_date) - new Date(b.start_date) })
+          return
+        case 'end_date':
+          this.proposals.sort( (a,b)=>{ return new Date(a.end_date) - new Date(b.end_date) })
+          return
+        case 'total_days':
+          this.proposals.sort( (a,b)=>{ return (new Date(b.end_date) - new Date(b.start_date))
+                                              -(new Date(a.end_date) - new Date(a.start_date)) })
+          return
+        case 'creator':
+          this.proposals.sort( (a,b)=>{ return a.creator.localeCompare(b.creator) })
+          return
+        case 'receiver':
+          this.proposals.sort( (a,b)=>{ return a.receiver.localeCompare(b.receiver) })
+          return
+        case 'daily_pay':
+          this.proposals.sort( (a,b)=>{ return parseFloat(b.daily_pay) - parseFloat(a.daily_pay) })
+          return
+        case 'total_pay':
+          this.proposals.sort( (a,b)=>{ return (new Date(b.end_date) - new Date(b.start_date)) * parseFloat(b.daily_pay)
+                                              -(new Date(a.end_date) - new Date(a.start_date)) * parseFloat(a.daily_pay) })
+          return
+        case 'status':
+          this.proposals.sort( (a,b)=>{
+            var activeA = this.isActive(a)
+            var activeB = this.isActive(b)
+            if( activeA == activeB ) return parseInt(b.total_votes) - parseInt(a.total_votes) //sort by votes
+            if( activeA && !activeB ) return -1
+            if( !activeA && activeB ) return 1
+          })
+          return
+        case 'id':
+          this.proposals.sort( (a,b)=>{ return parseInt(a.id) - parseInt(b.id) })
           return
         default:
           throw new Error(`The type '${type}' for sort does not exists`)
@@ -154,7 +207,7 @@ export default {
         proposal.votes_sp = (parseInt(proposal.total_votes)/1e12 * this.chain.steem_per_mvests).toFixed(3) + ' ' + Config.SP
         this.$set(this.proposals, i, proposal)
       }
-      this.sortBy('votes')
+      this.sortBy(this.sort_order)
     },
 
     witness_vote_weight(account) {
