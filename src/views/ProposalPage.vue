@@ -155,6 +155,7 @@ export default {
         proposal.status_extended = `(becomes active in ${Utils.textTime(new Date(proposal.start_date+'Z') - Date.now())})`
       }
       this.proposal = proposal
+      console.log(`total votes ${proposal.total_votes}`)
 
       if(this.$store.state.auth.logged) this.loadVotesFromAccount()
       this.loadVotes()
