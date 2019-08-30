@@ -71,7 +71,7 @@ export default new Router({
     },
     {
       path: "/proposals/:id",
-      name: "Proposals",
+      name: "Proposal",
       component: () => import('./views/ProposalPage.vue')
     },
     {

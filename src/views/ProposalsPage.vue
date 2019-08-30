@@ -59,6 +59,7 @@ import HeaderEFTG from '@/components/HeaderEFTG'
 import SteemClient from '@/mixins/SteemClient.js'
 import Alerts from '@/mixins/Alerts.js'
 import Utils from '@/js/utils.js'
+import router from '@/router.js'
 
 import Config from '@/config.js'
 import ChainProperties from '@/mixins/ChainProperties.js'
@@ -245,6 +246,7 @@ export default {
 
     selectProposal(index){
       var proposal = this.proposals[index]
+      router.push({ name: 'Proposal', params:{id:proposal.id} })
     },
 
     toggleVote(index){
