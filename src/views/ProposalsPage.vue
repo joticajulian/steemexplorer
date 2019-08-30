@@ -102,12 +102,14 @@ export default {
       var proposals = await this.steem_database_call('list_proposals',[['',0],100,'by_creator'])
       for(var i in proposals){
         var p = proposals[i]
+        var delta_t = new Date(p.end_date) - new Date(p.start_date)
         p.url = Config.EXPLORER + '@' + p.creator + '/' + p.permlink
         p.image = 'https://steemitimages.com/u/'+p.creator+'/avatar/small'
         p.votes_sp = (parseInt(p.total_votes)/1e12 * this.chain.steem_per_mvests).toFixed(3) + ' ' + Config.SP
         p.vote = false
         p.newVote = false
-        p.total_time = Utils.textTime(new Date(p.end_date) - new Date(p.start_date))
+        p.total_time = Utils.textTime(delta_t)
+        p.total_pay = (parseFloat(p.daily_pay) * delta_t / (1000*60*60*24)).toFixed(3) + ' ' + Config.SBD
         p.active = this.isActive(p)
         p.status = p.active ? 'active' : 'inactive'
         this.proposals.push(p)
