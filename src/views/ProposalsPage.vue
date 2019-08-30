@@ -3,6 +3,9 @@
     <HeaderEFTG ref="headerEFTG" v-on:login="onLogin" v-on:logout="onLogout"></HeaderEFTG>
     <div class="container">
       <h2>Proposals</h2>
+      <div v-if="steemdao.name">Total fund: {{steemdao.sbd_balance}}</div>
+      <div v-if="steemdao.name">Daily budget: {{steemdao.daily_budget}}</div>
+      <div v-if="steemdao.name">Budget for the next hour: {{steemdao.hourly_budget}}</div>
       <div class="row mb-3">
         <div class="col-12 text-right">
           <select v-model="sort_order">
@@ -72,6 +75,7 @@ export default {
     return {
       proposals: [],
       sort_order: 'votes',
+      steemdao: {},
       saving: false
     }
   },
@@ -97,9 +101,22 @@ export default {
   },
 
   methods: {
+    async getSteemDao(){
+      try{
+        var accounts = await this.steem_database_call('get_accounts',[['steem.dao']])
+        this.steemdao = accounts[0]
+        this.steemdao.daily_budget = (parseFloat(this.steemdao.sbd_balance)/100).toFixed(3) + ' ' + Config.SBD
+        this.steemdao.hourly_budget = (parseFloat(this.steemdao.sbd_balance)/(24*100)).toFixed(3) + ' ' + Config.SBD
+      }catch(error){
+        this.showDanger('Problems loading steem.dao')
+        throw error
+      }
+    },
+
     async getProposals(){
       console.log('get')
       this.proposals = []
+      await this.getSteemDao()
       var proposals = await this.steem_database_call('list_proposals',[['',0],100,'by_creator'])
       for(var i in proposals){
         var p = proposals[i]
