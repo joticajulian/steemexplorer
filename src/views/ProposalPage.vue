@@ -45,7 +45,7 @@
       </div>
       <div class="row mb-2">
         <div class="col-2">Status</div>
-        <div class="col-10">{{proposal.status}}</div>
+        <div class="col-10">{{proposal.status}} {{proposal.status_extended}}</div>
       </div>
       <div class="row mb-2">
         <div class="col-2">Votes</div>
@@ -147,6 +147,13 @@ export default {
       proposal.total_pay = (parseFloat(proposal.daily_pay) * delta_t / (1000*60*60*24)).toFixed(3) + ' ' + Config.SBD
       proposal.active = this.isActive(proposal)
       proposal.status = proposal.active ? 'active' : 'inactive'
+      if(proposal.active){
+        proposal.status = 'active'
+        proposal.status_extended = ''
+      }else{
+        proposal.status = 'inactive'
+        proposal.status_extended = `(becomes active in ${Utils.textTime(new Date(proposal.start_date+'Z') - Date.now())})`
+      }
       this.proposal = proposal
 
       if(this.$store.state.auth.logged) this.loadVotesFromAccount()
