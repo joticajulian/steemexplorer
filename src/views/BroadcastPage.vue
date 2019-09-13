@@ -65,7 +65,7 @@
             </ul>
           </div>
         </div>
-        <div class="col">
+        <div class="col-md-9">
           <div v-if="signatures.length==0">
             <div class="form-group row mt-3">
               <label class="col-md-9 col-sm-6 col-form-label text-right">Expiration</label>
@@ -81,7 +81,7 @@
             <label class="col-form-label col-12 text-right">{{leftTime2}}</label>
           </div>
           <h3 class="mb-2">{{trx.op0.name}}</h3>
-          <div class="mb-3">{{trx.op0.description}}</div>
+          <div class="mb-3 text-break">{{trx.op0.description}}</div>
           <div v-if="trx.op0.optional.length>0" class="row mb-2">
             <div class="col text-right">
               <button class="btn btn-secondary" @click="showModalOptionalFields" :disabled="signatures.length>0">Optional fields</button>
