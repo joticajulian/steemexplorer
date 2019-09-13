@@ -1507,7 +1507,6 @@ for(var i in operations){
       default:
         throw new Error(`No typeUI defined for the type '${param.type}'`)
     }
-    if(param.optional) op.has_optional = true
     if(DEBUG){
       var type = listTypes.find( (t)=>{return t === param.type} )
       if(!type) listTypes.push(param.type)
