@@ -201,7 +201,8 @@ export default {
         var voters = []
         while(!break_while){
           var votes = await this.steem_database_call('list_proposal_votes',[[proposal.id,from],100,'by_proposal_voter'])
-          if(votes.length > 0) console.log(`Votes: length: ${votes.length}. from '${votes[0].voter}' to '${votes[votes.length-1].voter}'`)
+          if(votes.length == 0) break
+          console.log(`Votes: length: ${votes.length}. from '${votes[0].voter}' to '${votes[votes.length-1].voter}'`)
 
           if(votes.length == 1){
             break_while = true
