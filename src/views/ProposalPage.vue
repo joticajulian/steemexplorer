@@ -74,7 +74,8 @@
           <li v-for="(vote,index) in votes" :key="index" class="list-group-item">
             <div class="row">
               <div class="col-3">@{{vote.voter}}</div>
-              <div class="col-9">{{vote.votes_sp}}</div>
+              <div class="col-2">{{vote.votes_no_proxy_sp}}</div>
+              <div class="col-7">{{vote.votes_proxy_sp}}</div>
             </div>
           </li>
         </ul>
@@ -98,7 +99,7 @@ export default {
 
   data() {
     return {
-      proposal: {},
+      proposal: {url:''},
       votes: [],
       sort_order: 'votes',
       display_button: 'Vote',
@@ -209,11 +210,17 @@ export default {
       for(var j in accounts){
         var vote = {
           voter: accounts[j].name,
-          votes: parseInt(this.witness_vote_weight(accounts[j])),
+          votes: this.witness_vote_weight(accounts[j]),
+          no_proxy_votes: this.no_proxy_vote_weight(accounts[j]),
+          proxy_votes: this.proxy_vote_weight(accounts[j]),
         }
-        vote.votes_sp = (vote.votes/1e12 * this.chain.steem_per_mvests).toFixed(3) + ' ' + Config.SP
+        vote.votes_no_proxy_sp = (vote.no_proxy_votes/1e12 * this.chain.steem_per_mvests).toFixed(3) + ' ' + Config.SP
+        if(vote.proxy_votes > 0)
+          vote.votes_proxy_sp = '+ ' + (vote.proxy_votes/1e12 * this.chain.steem_per_mvests).toFixed(3) + ' ' + Config.SP + ' proxy'
+        else
+          vote.votes_proxy_sp = ''
         this.votes.push(vote)
-        proposal.total_votes += vote.votes
+        proposal.total_votes += (vote.no_proxy_votes + vote.proxy_votes)
       }
       console.log(`total votes ${proposal.total_votes}`)
       proposal.votes_sp = (parseInt(proposal.total_votes)/1e12 * this.chain.steem_per_mvests).toFixed(3) + ' ' + Config.SP
@@ -222,7 +229,15 @@ export default {
     },
 
     witness_vote_weight(account) {
-      var total = Math.floor(parseFloat(account.vesting_shares)*1e6)
+      return this.no_proxy_vote_weight(account) + this.proxy_vote_weight(account)
+    },
+
+    no_proxy_vote_weight(account){
+      return Math.floor(parseFloat(account.vesting_shares)*1e6)
+    },
+
+    proxy_vote_weight(account) {
+      var total = 0
       for(var i in account.proxied_vsf_votes)
         total += parseInt(account.proxied_vsf_votes[i])
       return total
