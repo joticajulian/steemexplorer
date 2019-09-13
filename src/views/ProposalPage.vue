@@ -141,7 +141,7 @@ export default {
       proposal.url = Config.EXPLORER + '@' + proposal.creator + '/' + proposal.permlink
       proposal.image = 'https://steemitimages.com/u/'+proposal.creator+'/avatar/small'
       proposal.image_receiver = 'https://steemitimages.com/u/'+proposal.receiver+'/avatar/small'
-      proposal.votes_sp = (parseInt(proposal.total_votes)/1e12 * this.chain.steem_per_mvests).toFixed(3) + ' ' + Config.SP
+      proposal.votes_sp = this.witnessVotes2sp(proposal.total_votes)
       proposal.vote = false
       proposal.newVote = false
       proposal.total_time = Utils.textTime(delta_t)
@@ -214,16 +214,16 @@ export default {
           no_proxy_votes: this.no_proxy_vote_weight(accounts[j]),
           proxy_votes: this.proxy_vote_weight(accounts[j]),
         }
-        vote.votes_no_proxy_sp = (vote.no_proxy_votes/1e12 * this.chain.steem_per_mvests).toFixed(3) + ' ' + Config.SP
+        vote.votes_no_proxy_sp = this.witnessVotes2sp(vote.no_proxy_votes)
         if(vote.proxy_votes > 0)
-          vote.votes_proxy_sp = '+ ' + (vote.proxy_votes/1e12 * this.chain.steem_per_mvests).toFixed(3) + ' ' + Config.SP + ' proxy'
+          vote.votes_proxy_sp = '+ ' + this.witnessVotes2sp(vote.proxy_votes) + ' proxy'
         else
           vote.votes_proxy_sp = ''
         this.votes.push(vote)
         proposal.total_votes += (vote.no_proxy_votes + vote.proxy_votes)
       }
       console.log(`total votes ${proposal.total_votes}`)
-      proposal.votes_sp = (parseInt(proposal.total_votes)/1e12 * this.chain.steem_per_mvests).toFixed(3) + ' ' + Config.SP
+      proposal.votes_sp = this.witnessVotes2sp(proposal.total_votes)
       this.proposal = proposal
       this.sortBy(this.sort_order)
     },

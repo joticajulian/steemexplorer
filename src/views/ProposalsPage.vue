@@ -123,7 +123,7 @@ export default {
         var delta_t = new Date(p.end_date) - new Date(p.start_date)
         p.url = Config.EXPLORER + '@' + p.creator + '/' + p.permlink
         p.image = 'https://steemitimages.com/u/'+p.creator+'/avatar/small'
-        p.votes_sp = (parseInt(p.total_votes)/1e12 * this.chain.steem_per_mvests).toFixed(3) + ' ' + Config.SP
+        p.votes_sp = this.witnessVotes2sp(p.total_votes)
         p.vote = false
         p.newVote = false
         p.total_time = Utils.textTime(delta_t)
@@ -225,7 +225,7 @@ export default {
           proposal.total_votes += parseInt(this.witness_vote_weight(accounts[j]))
         }
         console.log(`total votes ${proposal.total_votes}`)
-        proposal.votes_sp = (parseInt(proposal.total_votes)/1e12 * this.chain.steem_per_mvests).toFixed(3) + ' ' + Config.SP
+        proposal.votes_sp = this.witnessVotes2sp(proposal.total_votes)
         this.$set(this.proposals, i, proposal)
       }
       this.sortBy(this.sort_order)
