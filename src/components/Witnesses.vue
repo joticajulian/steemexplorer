@@ -9,7 +9,6 @@
           <tr class="table-primary">
             <th scope="col">#</th>
             <th scope="col">Witness</th>
-            <th scope="col">Steem Power</th>
             <th scope="col">Enabled</th>
             <th scope="col">Version</th>
             <th scope="col">Approval</th>
@@ -30,10 +29,9 @@
               ></div
               ><router-link :to="EXPLORER+'@'+wit.owner">{{ wit.owner }}</router-link>
             </td>
-            <td>{{ wit.steem_power }}</td>
             <td><div class="circle" :class="{enabled:wit.enabled, disabled:!wit.enabled}"></div></td>
             <td>{{ wit.running_version }}</td>
-            <td>{{ wit.votes_mv }}</td>
+            <td>{{ wit.votes_sp }}</td>
             <td>{{ wit.last_confirmed_block_num }}</td>
             <td>{{ wit.total_missed }}</td>
             <td>
@@ -119,7 +117,7 @@ export default {
         var wit = witnessesByVote[i]
         wit.vote = {approve: false, shares: '0.000000 VESTS'}
         wit.newVote = {approve: false, shares: '0.000000 VESTS'}
-        wit.votes_mv = (wit.votes/1000000).toFixed(3)+' V'
+        wit.votes_sp = this.witnessVotes2sp(wit.votes)
         wit.position = parseInt(i)+1
         
         if(wit.signing_key === Config.STEEM_ADDRESS_PREFIX + '1111111111111111111111111111111114T1Anm')

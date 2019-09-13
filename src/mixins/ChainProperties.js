@@ -79,6 +79,15 @@ export default {
 
     vests2sp(vests){
       return (this.chain.steem_per_mvests * parseFloat(vests) / 1000000).toFixed(3) + ' ' + Config.SP;
-    }
+    },
+
+    witnessVotes2sp(votes){
+      votes = parseInt(votes)
+      var sp = parseInt(votes)/1e12 * this.chain.steem_per_mvests
+      if(sp < 1e3) return `${sp.toFixed(2)} ${Config.SP}`
+      if(sp < 1e6) return `${(sp/1e3).toFixed(2)}k ${Config.SP}`
+      if(sp < 1e9) return `${(sp/1e6).toFixed(2)} million ${Config.SP}`
+      if(sp < 1e12) return `${(sp/1e9).toFixed(2)} billion ${Config.SP}`
+    },
   }
 }
