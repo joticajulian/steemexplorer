@@ -36,7 +36,7 @@
               <div class="col-2">{{p.daily_pay}} daily</div>
               <div class="col-2">{{p.votes_sp}}</div>
               <div class="col-1">
-                <button class="btn" @click="toggleVote(index)" :class="{'btn-primary':p.newVote, 'btn-secondary':!p.newVote}">
+                <button class="btn" v-on:click.stop="toggleVote(index)" :class="{'btn-primary':p.newVote, 'btn-secondary':!p.newVote}">
                   <font-awesome-icon icon="check"/>
                 </button>
               </div>
