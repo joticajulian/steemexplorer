@@ -27,6 +27,7 @@
           </div>
           <router-link :to="EXPLORER+'@'+post.root_author+'/'+post.root_permlink">Root Post</router-link>
         </div>
+        <a class="mt-2" :href="'https://steemit.com/@'+post.author+'/'+post.permlink">Open with steemit.com</a>
         <div class="body break-word">{{post.body}}</div>
         <h2>JSON metadata</h2>
         <card-data :data="this.post.json_metadata"></card-data>
