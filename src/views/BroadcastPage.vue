@@ -36,6 +36,15 @@
     </b-modal>
 
 
+    <b-modal ref="modalOptionalFields" hide-footer title="Optional fields">
+      <div v-for="(pname,index) in trx.op0.optional" :key="index" class="row mb-3">
+        <input class="form-control col-1 offset-1" type="checkbox" v-model="trx.op0.params[pname].use_it"/>
+        <label class="col-form-label col-10">{{pname}}</label>
+      </div>
+      <button class="btn btn-primary mt-3 mb-3" @click="hideModalOptionalFields">close</button>
+    </b-modal>
+
+
     <HeaderEFTG ref="headerEFTG"></HeaderEFTG>
     <div class="container">
       <div class="row mb-3">
@@ -73,19 +82,26 @@
           </div>
           <h3 class="mb-2">{{trx.op0.name}}</h3>
           <div class="mb-3">{{trx.op0.description}}</div>
-          <div v-for="(param,pname,pindex) in trx.op0.params" :key="pindex" class="form-group row">
-            <label class="col-md-2 col-form-label">{{param.name}}</label>
-            <div v-if="param.typeUI==='textarea'" class="col">
-              <textarea class="form-control"
-                v-model="param.value" :rows="param.rows" :disabled="signatures.length>0"/>
+          <div v-if="trx.op0.optional.length>0" class="row mb-2">
+            <div class="col text-right">
+              <button class="btn btn-secondary" @click="showModalOptionalFields" :disabled="signatures.length>0">Optional fields</button>
             </div>
-            <div v-else-if="param.typeUI==='text'" class="col">            
-              <input class="form-control" type="text"
-                v-model="param.value" :placeholder="param.placeholder" :disabled="signatures.length>0"/>
-            </div>
-            <div v-else-if="param.typeUI==='checkbox'" class="col">
-              <input class="form-control" type="checkbox"
-                v-model="param.value" :placeholder="param.placeholder" :disabled="signatures.length>0"/>
+          </div>
+          <div v-for="(param,pname,pindex) in trx.op0.params" :key="pindex">
+            <div v-if="param.use_it" class="form-group row">
+              <label class="col-md-2 col-form-label">{{param.name}}</label>
+              <div v-if="param.typeUI==='textarea'" class="col">
+                <textarea class="form-control"
+                  v-model="param.value" :rows="param.rows" :disabled="signatures.length>0"/>
+              </div>
+              <div v-else-if="param.typeUI==='text'" class="col">
+                <input class="form-control" type="text"
+                  v-model="param.value" :placeholder="param.placeholder" :disabled="signatures.length>0"/>
+              </div>
+              <div v-else-if="param.typeUI==='checkbox'" class="col">
+                <input class="form-control" type="checkbox"
+                  v-model="param.value" :placeholder="param.placeholder" :disabled="signatures.length>0"/>
+              </div>
             </div>
           </div>
           <div class="mt-5 mb-2">
@@ -252,6 +268,14 @@ export default {
       this.$refs.modalExport.show()
     },
 
+    showModalOptionalFields(){
+      this.$refs.modalOptionalFields.show()
+    },
+
+    hideModalOptionalFields(){
+      this.$refs.modalOptionalFields.hide()
+    },
+
     removeSignature(){
       this.signatures.splice( this.sigSelected , 1 )
       this.sigSelected = 0
@@ -350,7 +374,8 @@ export default {
         var operation = [ this.trx.op0.operation, {} ]
         for(var key in this.trx.op0.params){
           var param = this.trx.op0.params[key]
-          operation[1][key] = this.paramParse(param.value, param.type)
+          if(param.use_it)
+            operation[1][key] = this.paramParse(param.value, param.type)
         }
   
         // special case for witness_set_properties
@@ -573,7 +598,12 @@ export default {
         this.trx.op0 = this.operations[op_name]
         for(var key in this.trx.op0.params){
           var param = this.trx.op0.params[key]
-          param.value = this.paramParseInv( trx.operations[0][1][key] , param.type )
+          if(typeof trx.operations[0][1][key] !== 'undefined'){
+            param.use_it = true
+            param.value = this.paramParseInv( trx.operations[0][1][key] , param.type )
+          }else{
+            param.use_it = false
+          }
         }
 
         this.signatures = []

@@ -586,7 +586,8 @@ const account_update = {
     posting,
     memo_key,
     json_metadata
-  }
+  },
+  optional: ['owner','active','posting']
 }
 
 /**
@@ -606,7 +607,8 @@ const account_update2 = {
     memo_key,
     json_metadata,
     posting_json_metadata,
-  }
+  },
+  optional: ['owner','active','posting']
 }
 
 /**
@@ -1477,10 +1479,12 @@ for(var i in operations){
   var op = operations[i]
   op.name = prettyName(i)
   op.operation = i
+  if(!op.optional) op.optional = []
   for(var j in op.params){
     var param = op.params[j]
     param.name = prettyName(j)
     param.value = ''
+    param.use_it = true
     switch(param.type){
       case 'asset':
       case 'account':
@@ -1503,6 +1507,7 @@ for(var i in operations){
       default:
         throw new Error(`No typeUI defined for the type '${param.type}'`)
     }
+    if(param.optional) op.has_optional = true
     if(DEBUG){
       var type = listTypes.find( (t)=>{return t === param.type} )
       if(!type) listTypes.push(param.type)
