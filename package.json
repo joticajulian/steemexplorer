@@ -19,7 +19,7 @@
     "bootstrap": "^4.3.1",
     "bootstrap-vue": "^2.0.0-rc.13",
     "crypto": "^1.0.1",
-    "eftg-dsteem": "2.0.4",
+    "dsteem": "^0.11.3",
     "file-saver": "^2.0.2",
     "leaflet.icon.glyph": "^0.2.0",
     "lodash.debounce": "4.0.8",
