@@ -232,6 +232,7 @@ export default {
     },
 
     witness_vote_weight(account) {
+      if(account.proxy !== '') return 0
       var total = Math.floor(parseFloat(account.vesting_shares)*1e6)
       for(var i in account.proxied_vsf_votes)
         total += parseInt(account.proxied_vsf_votes[i])
