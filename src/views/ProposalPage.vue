@@ -74,8 +74,8 @@
           <li v-for="(vote,index) in votes" :key="index" class="list-group-item">
             <div class="row">
               <div class="col-3">@{{vote.voter}}</div>
-              <div class="col-2">{{vote.votes_no_proxy_sp}}</div>
-              <div class="col-7">{{vote.votes_proxy_sp}}</div>
+              <div class="col-2">{{vote.votes_sp}}</div>
+              <div class="col-7">{{vote.votes_description}}</div>
             </div>
           </li>
         </ul>
@@ -208,19 +208,28 @@ export default {
       this.votes = []
       var accounts = await this.steem_database_call('get_accounts',[voters])
       for(var j in accounts){
+        var account = accounts[j]
         var vote = {
-          voter: accounts[j].name,
-          votes: this.witness_vote_weight(accounts[j]),
-          no_proxy_votes: this.no_proxy_vote_weight(accounts[j]),
-          proxy_votes: this.proxy_vote_weight(accounts[j]),
+          voter: account.name,
+          votes: this.witness_vote_weight(account),
+          no_proxy_votes: this.no_proxy_vote_weight(account),
+          proxy_votes: this.proxy_vote_weight(account),
         }
-        vote.votes_no_proxy_sp = this.witnessVotes2sp(vote.no_proxy_votes)
-        if(vote.proxy_votes > 0)
-          vote.votes_proxy_sp = '+ ' + this.witnessVotes2sp(vote.proxy_votes) + ' proxy'
-        else
-          vote.votes_proxy_sp = ''
+        if(account.proxy === ''){ //no proxy set
+          vote.votes_sp = this.witnessVotes2sp(vote.votes)
+          if(vote.proxy_votes>0)
+            vote.votes_description = `(${this.witnessVotes2sp(vote.no_proxy_votes)} + ${this.witnessVotes2sp(vote.proxy_votes)} proxy)`
+          else
+            vote.votes_description = ''
+        }else{
+          vote.votes_sp = this.witnessVotes2sp(0)
+          vote.votes_description = `(${this.witnessVotes2sp(vote.no_proxy_votes)}`
+          if(vote.proxy_votes>0)
+            vote.votes_description += ` + ${this.witnessVotes2sp(vote.proxy_votes)} proxy,`
+          vote.votes_description += ` proxied to @${account.proxy})`
+        }
         this.votes.push(vote)
-        proposal.total_votes += (vote.no_proxy_votes + vote.proxy_votes)
+        proposal.total_votes += vote.votes
       }
       console.log(`total votes ${proposal.total_votes}`)
       proposal.votes_sp = this.witnessVotes2sp(proposal.total_votes)
@@ -229,16 +238,15 @@ export default {
     },
 
     witness_vote_weight(account) {
+      if(account.proxy !== '') return 0
       return this.no_proxy_vote_weight(account) + this.proxy_vote_weight(account)
     },
 
     no_proxy_vote_weight(account){
-      if(account.proxy !== '') return 0
       return Math.floor(parseFloat(account.vesting_shares)*1e6)
     },
 
     proxy_vote_weight(account) {
-      if(account.proxy !== '') return 0
       var total = 0
       for(var i in account.proxied_vsf_votes)
         total += parseInt(account.proxied_vsf_votes[i])
