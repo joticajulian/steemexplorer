@@ -352,6 +352,10 @@ export default {
     },
 
     toggleVote(index){
+      if(this.refAccount){
+        if(!this.$store.state.auth.logged) return
+        if(this.refAccount.name !== this.$store.state.auth.user) return
+      }
       var p = this.proposals[index]
       p.newVote = !p.newVote
       this.$set(this.proposals, index, p)
