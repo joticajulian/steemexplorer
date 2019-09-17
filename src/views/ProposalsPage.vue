@@ -43,7 +43,15 @@
       </div>
       <div class="card mb-2">
         <ul class="list-group list-group-flush">
-          <li v-for="(p,index) in proposals" :key="index" class="list-group-item" @click="selectProposal(index)">
+          <li v-for="(p,index) in proposals" :key="index"
+            class="list-group-item"
+            :class="{
+              'total-funding':   p.funding_percent==1,
+              'partial-funding': p.funding_percent >0 && p.funding_percent < 1,
+              'no-funding':      p.funding_percent <=0
+            }"
+            @click="selectProposal(index)"
+          >
             <div class="row">
               <div class="col-md-3">
                 <div class="image-profile mr-2" :style="{ backgroundImage: 'url(' + p.image + ')' }"></div>
@@ -156,12 +164,33 @@ export default {
         p.total_time = Utils.textTime(delta_t)
         p.total_pay = (parseFloat(p.daily_pay) * delta_t / (1000*60*60*24)).toFixed(3) + ' ' + Config.SBD
         p.active = this.isActive(p)
-        p.status = p.active ? 'active' : 'inactive'
+        p.status = p.active ? 'started' : 'upcoming'
         this.proposals.push(p)
       }
+      this.sortPayments()
       this.sortBy(this.sort_order)
       if(this.$store.state.auth.logged) this.loadVotesFromAccount()
       this.loadVotesNoActive()
+    },
+
+    sortPayments(){
+      this.sortBy('votes')
+      var budget = parseFloat(this.steemdao.sbd_balance)/100
+      for(var i in this.proposals){
+        var p = this.proposals[i]
+        if(p.status === 'upcoming'){
+          p.funding_percent = -1
+          continue
+        }
+        var daily_payment = parseFloat(p.daily_pay)
+        if(daily_payment <= budget){
+          p.funding_percent = 1
+          budget -= daily_payment
+        }else{
+          p.funding_percent = budget/daily_payment
+          budget = 0
+        }
+      }
     },
 
     sortBy(type){
@@ -255,6 +284,7 @@ export default {
         proposal.votes_sp = this.witnessVotes2sp(proposal.total_votes)
         this.$set(this.proposals, i, proposal)
       }
+      this.sortPayments()
       this.sortBy(this.sort_order)
     },
 
@@ -508,6 +538,18 @@ export default {
   background-position: center center;
   border-radius: 50%;
   vertical-align: middle;
+}
+
+.total-funding {
+  background-color: #e8ffef;
+}
+
+.partial-funding {
+  background-color: #e3e2f7;
+}
+
+.no-funding {
+  background-color: #fff8e8;
 }
 
 </style>
