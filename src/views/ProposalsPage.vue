@@ -2,10 +2,29 @@
   <div>
     <HeaderEFTG ref="headerEFTG" v-on:login="onLogin" v-on:logout="onLogout"></HeaderEFTG>
     <div class="container">
-      <h2>Proposals</h2>
-      <div v-if="steemdao.name">Total fund: {{steemdao.sbd_balance}}</div>
-      <div v-if="steemdao.name">Daily budget: {{steemdao.daily_budget}}</div>
-      <div v-if="steemdao.name">Budget for the next hour: {{steemdao.hourly_budget}}</div>
+      <div class="row">
+        <div class="col-md-6">
+          <h2>Proposals</h2>
+          <div v-if="steemdao.name">Total fund: {{steemdao.sbd_balance}}</div>
+          <div v-if="steemdao.name">Daily budget: {{steemdao.daily_budget}}</div>
+          <div v-if="steemdao.name">Budget for the next hour: {{steemdao.hourly_budget}}</div>
+        </div>
+        <div v-if="refAccount" class="col-md-6 text-right">
+          <div class="big-image-profile" v-bind:style="{ backgroundImage: 'url(' + refAccount.image + ')' }"></div>
+          <h3>@{{refAccount.name}}</h3>
+          <div>{{refAccount.votes_sp}}</div>
+          <div>{{refAccount.votes_description}}</div>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col-md-2 mr-2 mt-1">
+          <input type="text" placeholder="Account" v-model="checkVotesAccount" @keyup.enter="checkVotes" class="form-control mr-2":class="{'is-invalid': error.check_votes_account}"/>
+          <div v-if="error.check_votes_account" class="invalid-feedback">{{ errorText.check_votes_account }}</div>
+        </div>
+        <div class="col-md-2 mt-1">
+          <button class="btn btn-primary" @click="checkVotes">Check votes</button>
+        </div>
+      </div>
       <div class="row mb-3">
         <div class="col-12 text-right">
           <select v-model="sort_order">
@@ -26,16 +45,16 @@
         <ul class="list-group list-group-flush">
           <li v-for="(p,index) in proposals" :key="index" class="list-group-item" @click="selectProposal(index)">
             <div class="row">
-              <div class="col-3">
+              <div class="col-md-3">
                 <div class="image-profile mr-2" :style="{ backgroundImage: 'url(' + p.image + ')' }"></div>
                 <span>{{p.creator}} <span v-if="p.creator !== p.receiver">(receiver @{{p.receiver}})</span></span>
                 <div><router-link :to="p.url">{{p.subject}}</router-link></div>
                 <div><small>id #{{p.id}}</small><span class="badge ml-2" :class="{'badge-primary':p.active,'badge-warning':!p.active}">{{p.status}}</span> </div>
               </div>
-              <div class="col-4">From {{p.start_date}} to {{p.end_date}} ({{p.total_time}})</div>
-              <div class="col-2">{{p.daily_pay}} daily</div>
-              <div class="col-2">{{p.votes_sp}}</div>
-              <div class="col-1">
+              <div class="col-md-4">From {{p.start_date}} to {{p.end_date}} ({{p.total_time}})</div>
+              <div class="col-md-2">{{p.daily_pay}} daily</div>
+              <div class="col-md-2">{{p.votes_sp}}</div>
+              <div class="col-md-1 text-right">
                 <button class="btn" v-on:click.stop="toggleVote(index)" :class="{'btn-primary':p.newVote, 'btn-secondary':!p.newVote}">
                   <font-awesome-icon icon="check"/>
                 </button>
@@ -76,7 +95,15 @@ export default {
       proposals: [],
       sort_order: 'votes',
       steemdao: {},
-      saving: false
+      saving: false,
+      checkVotesAccount: '',
+      refAccount: null,
+      error: {
+        check_votes_account: false
+      },
+      errorText: {
+        check_votes_account: ''
+      },
     }
   },
 
@@ -233,20 +260,74 @@ export default {
 
     witness_vote_weight(account) {
       if(account.proxy !== '') return 0
-      var total = Math.floor(parseFloat(account.vesting_shares)*1e6)
+      return this.no_proxy_vote_weight(account) + this.proxy_vote_weight(account)
+    },
+
+    no_proxy_vote_weight(account){
+      return Math.floor(parseFloat(account.vesting_shares)*1e6)
+    },
+
+    proxy_vote_weight(account) {
+      var total = 0
       for(var i in account.proxied_vsf_votes)
         total += parseInt(account.proxied_vsf_votes[i])
       return total
     },
 
-    async loadVotesFromAccount(){
-      var user = this.$store.state.auth.user
+    calculate_vote(account) {
+      var vote = {
+        voter: account.name,
+        votes: this.witness_vote_weight(account),
+        no_proxy_votes: this.no_proxy_vote_weight(account),
+        proxy_votes: this.proxy_vote_weight(account),
+      }
+      if(account.proxy === ''){ //no proxy set
+        vote.votes_sp = this.witnessVotes2sp(vote.votes)
+        if(vote.proxy_votes>0)
+          vote.votes_description = `(${this.witnessVotes2sp(vote.no_proxy_votes)} + ${this.witnessVotes2sp(vote.proxy_votes)} proxy)`
+        else
+          vote.votes_description = ''
+      }else{
+        vote.votes_sp = this.witnessVotes2sp(0)
+        vote.votes_description = `(${this.witnessVotes2sp(vote.no_proxy_votes)}`
+        if(vote.proxy_votes>0)
+          vote.votes_description += ` + ${this.witnessVotes2sp(vote.proxy_votes)} proxy,`
+        vote.votes_description += ` proxied to @${account.proxy})`
+      }
+      return vote
+    },
+
+    async checkVotes() {
+      this.user_votes = false
+      this.error.check_votes_account = false
+      try{
+        await this.loadVotesFromAccount(this.checkVotesAccount)
+      }catch(error){
+        this.error.check_votes_account = true
+        this.errorText.check_votes_account = error.message
+        throw error
+      }
+    },
+
+    async loadVotesFromAccount(accountName){
+      if(!accountName){
+        accountName = this.$store.state.auth.user
+        this.user_votes = true
+      }
       this.clearVotes()
-      var account_votes = await this.steem_database_call('list_proposal_votes',[[user,0],100,'by_voter_proposal'])
+      var accounts = await this.steem_database_call('get_accounts',[[accountName]])
+      if(!accounts || accounts.length==0) throw new Error(`@${accountName} does not exist`)
+      this.refAccount = accounts[0]
+      this.refAccount.image = 'https://steemitimages.com/u/'+accountName+'/avatar/small'
+      var vote = this.calculate_vote(this.refAccount)
+      this.refAccount.votes_sp = vote.votes_sp
+      this.refAccount.votes_description = vote.votes_description
+
+      var account_votes = await this.steem_database_call('list_proposal_votes',[[accountName,0],100,'by_voter_proposal'])
       var proposalsNotTop = []
       for(var i in account_votes){
         var vote = account_votes[i]
-        if(vote.voter !== user) break
+        if(vote.voter !== accountName) break
         var index = this.proposals.findIndex( (p)=>{ return p.id === vote.proposal.id })
         if(index >= 0){
           var proposal = this.proposals[index]
@@ -256,11 +337,13 @@ export default {
         }else{
           proposalsNotTop.push(vote)
         }
+        //console.log(this.proposals)
       }
       if(proposalsNotTop.length > 0) {
         console.log('TODO: these proposals are already voted but they are not in the TOP list:')
         console.log(proposalsNotTop)
       }
+      console.log('end')
     },
 
     selectProposal(index){
@@ -382,6 +465,7 @@ export default {
       for(var i in this.proposals) {
         var p = this.proposals[i]
         p.vote = false
+        p.newVote = false
         this.$set(this.proposals, i, p)
       }      
     },
@@ -409,6 +493,17 @@ export default {
   font-family: monospace;
   //font-size: 1.3rem;
   overflow-wrap: break-word;
+}
+
+.big-image-profile {
+  display: inline-block;
+  height: 3.5rem;
+  width: 3.5rem;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center center;
+  border-radius: 50%;
+  vertical-align: middle;
 }
 
 </style>
