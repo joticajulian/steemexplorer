@@ -209,25 +209,7 @@ export default {
       var accounts = await this.steem_database_call('get_accounts',[voters])
       for(var j in accounts){
         var account = accounts[j]
-        var vote = {
-          voter: account.name,
-          votes: this.witness_vote_weight(account),
-          no_proxy_votes: this.no_proxy_vote_weight(account),
-          proxy_votes: this.proxy_vote_weight(account),
-        }
-        if(account.proxy === ''){ //no proxy set
-          vote.votes_sp = this.witnessVotes2sp(vote.votes)
-          if(vote.proxy_votes>0)
-            vote.votes_description = `(${this.witnessVotes2sp(vote.no_proxy_votes)} + ${this.witnessVotes2sp(vote.proxy_votes)} proxy)`
-          else
-            vote.votes_description = ''
-        }else{
-          vote.votes_sp = this.witnessVotes2sp(0)
-          vote.votes_description = `(${this.witnessVotes2sp(vote.no_proxy_votes)}`
-          if(vote.proxy_votes>0)
-            vote.votes_description += ` + ${this.witnessVotes2sp(vote.proxy_votes)} proxy,`
-          vote.votes_description += ` proxied to @${account.proxy})`
-        }
+        var vote = this.calculate_vote(account)
         this.votes.push(vote)
         proposal.total_votes += vote.votes
       }
@@ -251,6 +233,29 @@ export default {
       for(var i in account.proxied_vsf_votes)
         total += parseInt(account.proxied_vsf_votes[i])
       return total
+    },
+
+    calculate_vote(account) {
+      var vote = {
+        voter: account.name,
+        votes: this.witness_vote_weight(account),
+        no_proxy_votes: this.no_proxy_vote_weight(account),
+        proxy_votes: this.proxy_vote_weight(account),
+      }
+      if(account.proxy === ''){ //no proxy set
+        vote.votes_sp = this.witnessVotes2sp(vote.votes)
+        if(vote.proxy_votes>0)
+          vote.votes_description = `(${this.witnessVotes2sp(vote.no_proxy_votes)} + ${this.witnessVotes2sp(vote.proxy_votes)} proxy)`
+        else
+          vote.votes_description = ''
+      }else{
+        vote.votes_sp = this.witnessVotes2sp(0)
+        vote.votes_description = `(${this.witnessVotes2sp(vote.no_proxy_votes)}`
+        if(vote.proxy_votes>0)
+          vote.votes_description += ` + ${this.witnessVotes2sp(vote.proxy_votes)} proxy,`
+        vote.votes_description += ` proxied to @${account.proxy})`
+      }
+      return vote
     },
 
     async loadVotesFromAccount(){
