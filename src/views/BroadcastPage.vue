@@ -37,8 +37,8 @@
 
 
     <b-modal ref="modalOptionalFields" hide-footer title="Optional fields">
-      <div v-for="(pname,index) in trx.op0.optional" :key="index" class="row mb-3">
-        <input class="form-control col-1 offset-1" type="checkbox" v-model="trx.op0.params[pname].use_it"/>
+      <div v-for="(pname,index) in operationModalOptionalFields.optional" :key="index" class="row mb-3">
+        <input class="form-control col-1 offset-1" type="checkbox" v-model="operationModalOptionalFields.params[pname].use_it"/>
         <label class="col-form-label col-10">{{pname}}</label>
       </div>
       <button class="btn btn-primary mt-3 mb-3" @click="hideModalOptionalFields">close</button>
@@ -55,39 +55,30 @@
           </div>
         </div>
       </div>
-      <div class="row">
-        <div class="col-md-3">
-          <div class="card mb-2">
-            <ul class="list-group list-group-flush">
-              <li v-for="(operation,name,index) in operations" :key="index" class="list-group-item" @click="selectOperation(name)">
-                {{operation.name}}
-              </li>
-            </ul>
+      <div v-if="signatures.length==0">
+        <div class="form-group row mt-3">
+          <label class="col-md-9 col-sm-6 col-form-label text-right">Expiration</label>
+          <div class="col-md-3 col-sm-6">
+            <select class="form-control" v-model="expireTime">
+              <option v-for="(opt,key) in expiration_options" :value="opt.value">{{opt.text}}</option>
+            </select>
           </div>
         </div>
-        <div class="col-md-9">
-          <div v-if="signatures.length==0">
-            <div class="form-group row mt-3">
-              <label class="col-md-9 col-sm-6 col-form-label text-right">Expiration</label>
-              <div class="col-md-3 col-sm-6">
-                <select class="form-control" v-model="expireTime">
-                  <option v-for="(opt,key) in expiration_options" :value="opt.value">{{opt.text}}</option>
-                </select>
-              </div>
-            </div>
-          </div>
-          <div v-else>
-            <label class="col-form-label col-12 text-right" :class="{'text-danger':hasExpired}">{{leftTime}}</label>
-            <label class="col-form-label col-12 text-right">{{leftTime2}}</label>
-          </div>
-          <h3 class="mb-2">{{trx.op0.name}}</h3>
-          <div class="mb-3 text-break">{{trx.op0.description}}</div>
-          <div v-if="trx.op0.optional.length>0" class="row mb-2">
+      </div>
+      <div v-else>
+        <label class="col-form-label col-12 text-right" :class="{'text-danger':hasExpired}">{{leftTime}}</label>
+        <label class="col-form-label col-12 text-right">{{leftTime2}}</label>
+      </div>
+      <div v-for="(operation, opIndex) in trx" :key="opIndex" class="card border-dark mb-5">
+        <div class="card-header">{{operation.name}}</div>
+        <div class="card-body">
+          <div class="mb-3 text-break">{{operation.description}}</div>
+          <div v-if="operation.optional.length>0" class="row mb-2">
             <div class="col text-right">
-              <button class="btn btn-secondary" @click="showModalOptionalFields" :disabled="signatures.length>0">Optional fields</button>
+              <button class="btn btn-secondary" @click="showModalOptionalFields(opIndex)" :disabled="signatures.length>0">Optional fields</button>
             </div>
           </div>
-          <div v-for="(param,pname,pindex) in trx.op0.params" :key="pindex">
+          <div v-for="(param,pname,pindex) in operation.params" :key="pindex">
             <div v-if="param.use_it" class="form-group row">
               <label class="col-md-2 col-form-label">{{param.name}}</label>
               <div v-if="param.typeUI==='textarea'" class="col">
@@ -104,44 +95,54 @@
               </div>
             </div>
           </div>
-          <div class="mt-5 mb-2">
-            <h4 class="d-inline mr-2">Signatures</h4>
-            <button class="btn btn-secondary" @click="reloadSignatures"><font-awesome-icon icon="sync"/></button>
-          </div>
-          <div class="row">
-            <div class="col-12">
-              <div class="card mb-2">
-                <ul class="list-group list-group-flush">
-                  <li v-for="(sig,index) in signatures" :key="index" class="list-group-item" @click="selectSignature(index)">
-                    <div class="image-profile mr-2" :style="{ backgroundImage: 'url(' + sig.image + ')' }"></div><span>{{sig.display}}</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div class="form-group row mt-3">
-            <label class="col-md-2 col-form-label">Signature</label>
-            <input class="col-md-9 form-control" type="text" v-model="signature" placeholder="Signature"/>
-            <div class="col-md-1">
-              <button class="btn btn-primary" @click="addSignature(signature)">Add</button>
-            </div>
-          </div>
-          <div class="form-group row">
-            <label class="col-md-2 col-form-label">Private Key</label>
-            <input class="col-md-9 form-control" type="password" v-model="privkey" placeholder="Private key"/>
-            <div class="col-md-1">
-              <button class="btn btn-primary" @click="sign(false)">Sign</button>
-            </div>
-          </div>
-          <div class="form-group mt-3 mb-4">
-            <button class="btn btn-primary btn-large mr-2" @click="broadcast" :disabled="sending"><div v-if="sending" class="mini loader"/>broadcast</button>
-            <button class="btn btn-secondary" @click="do_export">export</button>
-          </div>
-          <div v-if="alert.info" class="alert alert-info" role="alert">{{alert.infoText}}</div>
-          <div v-if="alert.success" class="alert alert-success" role="alert" v-html="alert.successText"></div>
-          <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alert.dangerText}}</div>
         </div>
       </div>
+      <div class="row mt-5">
+        <div class="col-md-8">
+          <select v-model="operation_selected" class="form-control">
+            <option v-for="(operation, name, index) in operations" :key="index" :value="name">{{operation.name}}</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <button class="btn btn-primary" @click="addOperation(operation_selected)">Add operation</button>
+        </div>
+      </div>
+      <div class="mt-5 mb-2">
+        <h4 class="d-inline mr-2">Signatures</h4>
+        <button class="btn btn-secondary" @click="reloadSignatures"><font-awesome-icon icon="sync"/></button>
+      </div>
+      <div class="row">
+        <div class="col-12">
+          <div class="card mb-2">
+            <ul class="list-group list-group-flush">
+              <li v-for="(sig,index) in signatures" :key="index" class="list-group-item" @click="selectSignature(index)">
+                <div class="image-profile mr-2" :style="{ backgroundImage: 'url(' + sig.image + ')' }"></div><span>{{sig.display}}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="form-group row mt-3">
+        <label class="col-md-2 col-form-label">Signature</label>
+        <input class="col-md-9 form-control" type="text" v-model="signature" placeholder="Signature"/>
+        <div class="col-md-1">
+          <button class="btn btn-primary" @click="addSignature(signature)">Add</button>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-md-2 col-form-label">Private Key</label>
+        <input class="col-md-9 form-control" type="password" v-model="privkey" placeholder="Private key"/>
+        <div class="col-md-1">
+          <button class="btn btn-primary" @click="sign(false)">Sign</button>
+        </div>
+      </div>
+      <div class="form-group mt-3 mb-4">
+        <button class="btn btn-primary btn-large mr-2" @click="broadcast" :disabled="sending"><div v-if="sending" class="mini loader"/>broadcast</button>
+        <button class="btn btn-secondary" @click="do_export">export</button>
+      </div>
+      <div v-if="alert.info" class="alert alert-info" role="alert">{{alert.infoText}}</div>
+      <div v-if="alert.success" class="alert alert-success" role="alert" v-html="alert.successText"></div>
+      <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alert.dangerText}}</div>
     </div>    
   </div>
 </template>
@@ -165,6 +166,7 @@ export default {
     return {
       operations: Operations,
       opSelected: 'comment',
+      operation_selected: '',
       signature: '',
       privkey: '',
       headers: null,
@@ -173,9 +175,7 @@ export default {
       leftTime: '',
       leftTime2: '',
       hasExpired: false,
-      trx: {
-        op0: {}
-      },
+      trx: [],
       signatures: [],
       sigSelected: 0,
       
@@ -202,6 +202,7 @@ export default {
         {value:   24*60*60*1000, text:'1 day'},
         {value: 3*24*60*60*1000, text:'3 days'},
       ],
+      operationModalOptionalFields: {}
     }
   },
 
@@ -218,7 +219,6 @@ export default {
   created() {
     this.getChainProperties()
     this.operations = Operations
-    this.selectOperation('comment')
     setInterval( ()=>{
       if(!this.headers) return
       var diff = new Date(this.headers.expiration+'Z') - Date.now()
@@ -247,7 +247,7 @@ export default {
 
   methods: {
     selectOperation(name){
-      this.trx.op0 = this.operations[name]
+      this.trx[0] = JSON.parse(JSON.stringify(this.operations[name]))
       this.signatures = []
     },
 
@@ -268,12 +268,18 @@ export default {
       this.$refs.modalExport.show()
     },
 
-    showModalOptionalFields(){
+    showModalOptionalFields(index){
+      this.operationModalOptionalFields = this.trx[index]
       this.$refs.modalOptionalFields.show()
     },
 
     hideModalOptionalFields(){
       this.$refs.modalOptionalFields.hide()
+    },
+
+    addOperation(op_selected){
+      var newOperation = JSON.parse(JSON.stringify( this.operations[ op_selected ] ))
+      this.$set(this.trx, this.trx.length, newOperation)
     },
 
     removeSignature(){
@@ -368,26 +374,31 @@ export default {
     },
 
     buildTransaction(){
-      if( this.trx.op0.operation.includes('steem_engine_') ){
-        var operation = this.buildOperationSteemEngine()
-      }else{
-        var operation = [ this.trx.op0.operation, {} ]
-        for(var key in this.trx.op0.params){
-          var param = this.trx.op0.params[key]
-          if(param.use_it)
-            operation[1][key] = this.paramParse(param.value, param.type)
+      var operations = []
+      for(var i in this.trx){
+        var op = this.trx[i]
+        if( op.operation.includes('steem_engine_') ){
+          var operation = this.buildOperationSteemEngine(op)
+        }else{
+          var operation = [ op.operation, {} ]
+          for(var key in op.params){
+            var param = op.params[key]
+            if(param.use_it)
+              operation[1][key] = this.paramParse(param.value, param.type)
+          }
+
+          // special case for witness_set_properties
+          if( op.operation === 'witness_set_properties' )
+            operation = utils.buildWitnessUpdateOp( operation[1].owner , operation[1].props )
         }
-  
-        // special case for witness_set_properties
-        if( this.trx.op0.operation === 'witness_set_properties' )
-          operation = utils.buildWitnessUpdateOp( operation[1].owner , operation[1].props )
+        operations.push(operation)
       }
 
       var trx = {
         ref_block_num: this.headers ? this.headers.ref_block_num : 0,
         ref_block_prefix: this.headers ? this.headers.ref_block_prefix : 0,
         expiration: this.headers ? this.headers.expiration : new Date(Date.now() + parseInt(this.expireTime)).toISOString().slice(0, -5),
-        operations: [operation],
+        operations: operations,
         extensions: [],
         signatures: []
       }
@@ -395,22 +406,22 @@ export default {
       return trx
     },
 
-    buildOperationSteemEngine(){
+    buildOperationSteemEngine(op){
       var contractPayload = {}
-      for(var key in this.trx.op0.params){
+      for(var key in op.params){
         if(key === '_account') continue
-        var param = this.trx.op0.params[key]
+        var param = op.params[key]
         contractPayload[key] = this.paramParse(param.value, param.type)
       }
       var json = {
-        contractName: this.trx.op0.contract,
-        contractAction: this.trx.op0.action,
+        contractName: op.contract,
+        contractAction: op.action,
         contractPayload
       }
       var operation = [
         'custom_json',
         {
-          required_auths: [this.trx.op0.params._account.value],
+          required_auths: [op.params._account.value],
           required_posting_auths: [],
           id: 'ssc-mainnet1',
           json: JSON.stringify(json)
@@ -585,8 +596,6 @@ export default {
         this.alertImport.danger = false
         var trx = JSON.parse(this.trx_import)
         this.getSignatureKeys(trx)
-        if(trx.operations.length > 1)
-          throw new Error('Transactions with more than one operation are not supported yet')
 
         this.headers = {
           ref_block_num: trx.ref_block_num,
@@ -594,15 +603,19 @@ export default {
           expiration: trx.expiration,
         }
 
-        var op_name = trx.operations[0][0]
-        this.trx.op0 = this.operations[op_name]
-        for(var key in this.trx.op0.params){
-          var param = this.trx.op0.params[key]
-          if(typeof trx.operations[0][1][key] !== 'undefined'){
-            param.use_it = true
-            param.value = this.paramParseInv( trx.operations[0][1][key] , param.type )
-          }else{
-            param.use_it = false
+        this.trx = []
+        for(var i in trx.operations){
+          var op_name = trx.operations[i][0]
+          this.addOperation(op_name)
+          var operation = this.trx[this.trx.length-1]
+          for(var key in operation.params){
+            var param = operation.params[key]
+            if(typeof trx.operations[i][1][key] !== 'undefined'){
+              param.use_it = true
+              param.value = this.paramParseInv( trx.operations[i][1][key] , param.type )
+            }else{
+              param.use_it = false
+            }
           }
         }
 
