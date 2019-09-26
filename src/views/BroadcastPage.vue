@@ -151,6 +151,7 @@
 import HeaderEFTG from '@/components/HeaderEFTG'
 import SteemClient from '@/mixins/SteemClient.js'
 import { Client, PrivateKey, cryptoUtils, Signature, utils } from 'dsteem'
+import steemjs from 'steem'
 import Alerts from '@/mixins/Alerts.js'
 import Utils from '@/js/utils.js'
 
@@ -518,7 +519,9 @@ export default {
         }catch(error){
           throw new Error('Error reading the private key')
         }
-        var sgnTrx = client.broadcast.sign(trx, privkey)
+        // var sgnTrx = client.broadcast.sign(trx, privkey)
+        trx.ref_block_num = trx.ref_block_num % 65535
+        var sgnTrx = steemjs.auth.signTransaction(trx, [this.privkey])
         this.addSignature( sgnTrx.signatures[0] )
       }catch(error){
         this.showDanger(error.message)
