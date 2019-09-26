@@ -550,6 +550,7 @@ export default {
     },
 
     async addHeaders(where = 'principal'){
+      if(this.signatures.length > 0) return
       if(navigator.onLine){
         var dgp = await this.steem_database_call('get_dynamic_global_properties')
 
