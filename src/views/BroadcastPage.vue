@@ -520,7 +520,6 @@ export default {
           throw new Error('Error reading the private key')
         }
         // var sgnTrx = client.broadcast.sign(trx, privkey)
-        trx.ref_block_num = trx.ref_block_num % 65535
         var sgnTrx = steemjs.auth.signTransaction(trx, [this.privkey])
         this.addSignature( sgnTrx.signatures[0] )
       }catch(error){
@@ -557,7 +556,7 @@ export default {
       if(navigator.onLine){
         var dgp = await this.steem_database_call('get_dynamic_global_properties')
 
-        var ref_block_num = dgp.head_block_number;
+        var ref_block_num = dgp.head_block_number & 0xFFFF;
         var ref_block_prefix = Buffer.from(dgp.head_block_id, 'hex').readUInt32LE(4);
         var expiration = new Date(new Date(dgp.time + 'Z').getTime() + parseInt(this.expireTime)).toISOString().slice(0, -5)
       }else{
