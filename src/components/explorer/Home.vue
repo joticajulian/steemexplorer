@@ -50,12 +50,18 @@
       <div v-if="this.exists.globals && this.exists.reward">  
         <div class="card">
           <div class="title">Reward fund</div><br
-          >{{this.chain.reward_balance}}<br
+          >{{this.chain.reward_balance}} {{this.STEEM_SYMBOL}}<br
           >({{this.chain.reward_percent.toFixed(2)}}% of virtual sup.)<br
           >for next 15 days<br
           ><hr
           >{{this.chain.reward_balance_day}} per day<br
           >vote of {{this.chain.vote_value_1000_sp.toFixed(3)}} per 1000 {{this.SP_SYMBOL}}
+          <br><hr>
+          recent claims {{this.chain.recent_claims}}<br>
+          <a href="https://steemit.com/@jga/complete-guide-to-understand-rewards-in-hf21-part-1">gap</a>: {{this.chain.gap.toFixed(3)}} {{this.STEEM_SYMBOL}} ({{this.chain.gap_sbd.toFixed(3)}} {{this.SBD_SYMBOL}})
+          <hr>Post payout simulation {{example_post.payout.toFixed(3)}} {{this.SBD_SYMBOL}}
+          <br>claims per rshare {{example_post.claims_per_rshare.toFixed(4)}}
+          <br><input type="range" min="0" max="500" v-model="example_post.slider" class="slider" id="slider-example-post">
         </div>
       </div>
       <div v-else>
@@ -140,6 +146,10 @@ export default {
       first_time: true,
       last_block_num: 0,
       wait_more_time: false,
+      example_post: {
+        claims_per_rshare: 0,
+        payout: 0
+      },
       EXPLORER: Config.EXPLORER,
     }
   },
@@ -183,6 +193,8 @@ export default {
           this.getWitnessSchedule()
         })
       }, 12000);
+
+      this.handleInputSlider()
     })
   },
   
@@ -332,6 +344,22 @@ export default {
         console.log(error)
       })
     },
+
+    handleInputSlider() {
+      let self = this
+      this.$nextTick( ()=>{
+        var slider = document.getElementById('slider-example-post')
+        slider.oninput = function() {
+          self.example_post.exponent = self.example_post.slider * (3 - (-3))/500 -3 // (10^3sbd - 10^-3sbd)/slider_resolution + 10^-3sbd
+          self.example_post.payout = Math.pow(10, self.example_post.exponent)
+
+          var payout_steem = self.example_post.payout / self.chain.feed_price
+          var claims = payout_steem * self.chain.recent_claims / self.chain.reward_balance
+          var rshares = (claims-4e12)/2 + Math.sqrt( claims*claims + 6*claims*4e12 + 4e12*4e12 )/2
+          self.example_post.claims_per_rshare = claims/rshares
+        }
+      })
+    },
   }
 }
 </script>
@@ -438,6 +466,39 @@ export default {
 
 .red{
   color: red;
+}
+
+.slider {
+  -webkit-appearance: button;
+  width: 200px;
+  height: 6px;
+  border-radius: 5px;
+  background: #C3C3C3;
+  outline: none;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #3c6fc7;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #4CAF50;
+  cursor: pointer;
 }
 
 </style>

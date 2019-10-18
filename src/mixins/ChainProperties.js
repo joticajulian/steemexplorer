@@ -14,6 +14,8 @@ export default {
         sbd_per_rshare: 0,
         steem_per_rshare: 0,
         haircut_price: -1,
+        gap: 0,
+        gap_sbd: 0,
       },
 
       STEEM_SYMBOL: Config.STEEM,
@@ -72,6 +74,9 @@ export default {
       var result = await this.steem_database_call('get_current_median_history_price')
       this.chain.feed_price = parseFloat(result.base)/parseFloat(result.quote)
       this.$store.state.chain.feed_price = this.chain.feed_price
+
+      this.chain.gap = this.chain.reward_balance / this.chain.recent_claims * 2 * 2e12
+      this.chain.gap_sbd = this.chain.gap * this.chain.feed_price
 
       this.updateRS();
       this.changeFeedPrice(this.chain.feed_price)
