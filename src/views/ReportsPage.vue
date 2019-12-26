@@ -15,8 +15,11 @@
           </div>
         </div>
         <div class="col-md-10">
-          <BarChart :chartData="bardata" :options="options"></BarChart>
+          <BarChart :chartData="chartPostSBD" :options="options"></BarChart>
           <div>Median payout: {{posts.median_payout}} SBD</div>
+          <BarChart :chartData="chartPostFreq" :options="options"></BarChart>
+          <BarChart :chartData="chartCommentSBD" :options="options"></BarChart>
+          <BarChart :chartData="chartCommentFreq" :options="options"></BarChart>
         </div>
       </div>
     </div>    
@@ -40,7 +43,10 @@ export default {
       there_are_more_days: false,
       days: [],
       db: null,
-      bardata: { labels: [], datasets: [] },
+      chartPostSBD: { labels: [], datasets: [] },
+      chartPostFreq: { labels: [], datasets: [] },
+      chartCommentSBD: { labels: [], datasets: [] },
+      chartCommentFreq: { labels: [], datasets: [] },
       options: {
         responsive: true,
         maintainAspectRatio: false
@@ -116,34 +122,79 @@ export default {
         var mrs = 2*s * (2*div - 1)/(1 - div)  // median rshares
         var mcl = mrs * (mrs + 2*s) / (mrs + 4*s) // median claims
         this.posts.median_payout = (mcl * gprops.reward_balance / gprops.recent_claims * gprops.feed_price).toFixed(3)
+        gprops.mrs = mrs
 
-        data.post.y2 = []
-        data.post.bgc = []
-        var median_bar_done = false
-        for(var i in data.post.x){
-          var rs = data.post.x[i]
-          var claims = rs * (rs + 2*s) / (rs + 4*s)
-          var steem = gprops.reward_balance / gprops.recent_claims * claims
-          var sbd = steem * gprops.feed_price
-          data.post.x[i] = '$ ' + sbd.toFixed(3)
-          data.post.y[i] = Math.round(data.post.y[i] * sbd * 100)/100
-          if(!median_bar_done && rs > mrs){
-            data.post.bgc[i] = '#0546b5'
-            median_bar_done = true
-          }else{
-            data.post.bgc[i] = '#3c8dbc'
-          }
-        }
-        this.bardata = {
-          labels: data.post.x,
-          datasets:[{
-            label: 'SBD Paid - Posts',
-            backgroundColor: data.post.bgc,
-            data:data.post.y
-          }]
-        }
+        this.chartPostSBD = this.generateChart(data.post,
+          { gprops:gprops,
+            dist:'sbd', 
+            backgroundColor:'#3c8dbc',
+            backgroundColorMedian:'#0546b5',
+            title:'Paid SBD - Posts'
+          })
+        this.chartPostFreq = this.generateChart(data.post,
+          { gprops:gprops,
+            dist:'freq',
+            backgroundColor:'#3c8dbc',
+            backgroundColorMedian:'#0546b5',
+            title: 'Number of posts'
+          })
+        this.chartCommentSBD = this.generateChart(data.comment,
+          { gprops:gprops,
+            dist:'sbd',
+            backgroundColor:'#3c8dbc',
+            backgroundColorMedian:'#0546b5',
+            title: 'Paid SBD - Comments'
+          })
+        this.chartCommentFreq = this.generateChart(data.comment,
+          { gprops:gprops,
+            dist:'freq',
+            backgroundColor:'#3c8dbc',
+            backgroundColorMedian:'#0546b5',
+            title: 'Number of comments'
+          })
       }catch(error){
         console.log("Error getting document:", error)
+      }
+    },
+    generateChart(data,opts) {
+      var gprops = opts.gprops
+      var s = 2e12
+      var x = []
+      var y = []
+      var bgc = []
+      var median_bar_done = false
+      for(var i in data.x){
+        var rs = data.x[i]
+        var claims = rs * (rs + 2*s) / (rs + 4*s)
+        var steem = gprops.reward_balance / gprops.recent_claims * claims
+        var sbd = steem * gprops.feed_price
+        x[i] = '$ ' + sbd.toFixed(3)
+        switch(opts.dist){
+          case 'sbd':
+            y[i] = Math.round(data.y[i] * sbd * 100)/100
+            break
+          case 'freq':
+            y[i] = data.y[i]
+            break
+          default:
+            throw new Error('Error in generatechart')
+        }
+
+        if(!median_bar_done && rs > gprops.mrs){
+          bgc[i] = opts.backgroundColorMedian
+          median_bar_done = true
+        }else{
+          bgc[i] = opts.backgroundColor
+        }
+      }
+
+      return {
+        labels: x,
+        datasets:[{
+          label: opts.title,
+          backgroundColor: bgc,
+          data: y
+        }]
       }
     },
     loadMoreDays(){},
