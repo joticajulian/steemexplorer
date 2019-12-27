@@ -15,11 +15,20 @@
           </div>
         </div>
         <div class="col-md-10">
+          <div>Budget for rewards: {{dayprops.budget}} STEEM</div>
+          <div>Total rewards for posts: {{dayprops.reward_posts}} STEEM ({{dayprops.perc_reward_posts}}%)</div>
+          <div>Total rewards for comments: {{dayprops.reward_comments}} STEEM ({{dayprops.perc_reward_comments}}%)</div>
+          <div>Median payout: {{dayprops.median_payout}} SBD</div>
+          <div class="row">
+            <div class="col-md-6">
           <BarChart :chartData="chartPostSBD" :options="options"></BarChart>
-          <div>Median payout: {{posts.median_payout}} SBD</div>
           <BarChart :chartData="chartPostFreq" :options="options"></BarChart>
+          </div>
+<div class="col-md-6">
           <BarChart :chartData="chartCommentSBD" :options="options"></BarChart>
           <BarChart :chartData="chartCommentFreq" :options="options"></BarChart>
+          </div>
+      </div>
         </div>
       </div>
     </div>    
@@ -51,10 +60,13 @@ export default {
         responsive: true,
         maintainAspectRatio: false
       },
-      posts: {
-        total_rshares: 0,
-        total_claims: 0,
-        rshares_per_claim: 0
+      dayprops: {
+        budget: 0,
+        reward_posts: 0,
+        reward_comments: 0,
+        perc_reward_posts: 0,
+        perc_reward_comments: 0,
+        median_payout: 0
       },
     }
   },
@@ -121,8 +133,14 @@ export default {
         var div = data.post.total_claims / data.post.total_rshares
         var mrs = 2*s * (2*div - 1)/(1 - div)  // median rshares
         var mcl = mrs * (mrs + 2*s) / (mrs + 4*s) // median claims
-        this.posts.median_payout = (mcl * gprops.reward_balance / gprops.recent_claims * gprops.feed_price).toFixed(3)
+        this.dayprops.median_payout = (mcl * gprops.reward_balance / gprops.recent_claims * gprops.feed_price).toFixed(3)
         gprops.mrs = mrs
+
+        this.dayprops.budget = Math.round(gprops.reward_balance / 15 * 1000)/1000
+        this.dayprops.reward_posts = Math.round(data.post.total_claims * gprops.reward_balance / gprops.recent_claims * 1000)/1000
+        this.dayprops.reward_comments = Math.round(data.comment.total_claims * gprops.reward_balance / gprops.recent_claims * 1000)/1000
+        this.dayprops.perc_reward_posts = Math.round(this.dayprops.reward_posts / this.dayprops.budget * 100 * 100)/100
+        this.dayprops.perc_reward_comments = Math.round(this.dayprops.reward_comments / this.dayprops.budget * 100 * 100)/100
 
         this.chartPostSBD = this.generateChart(data.post,
           { gprops:gprops,
