@@ -1,5 +1,36 @@
 <template>
   <div>
+    <b-modal ref="modalTop50" hide-footer title="Top50">
+      <div class="text-right">
+        <select v-model="sel_top50">
+          <option value="post">Top50 posts</option>
+          <option value="comment">Top50 comments</option>
+          <option value="post_down">Top50 downvoted posts</option>
+          <option value="comment_down">Top50 downvoted comments</option>
+        </select>
+      </div>
+      <div class="row">
+        <div class="col-md-4">Post</div>
+        <div class="col-md-8">
+          <div class="row">
+            <div class="col-4">Upvotes</div>
+            <div class="col-4">Downvotes</div>
+            <div class="col-4">Final Payout</div>
+          </div>
+        </div>
+      </div>
+      <div class="row" v-for="(item, index) in top50" :key="index">
+        <div class="col-md-4"><router-link :to="item.url">{{item.title}}</router-link></div>
+        <div class="col-md-8">
+          <div class="row">
+            <div class="col-4">{{item.upvotes}} STEEM</div>
+            <div class="col-4">{{item.downvotes}} STEEM</div>
+            <div class="col-4">{{item.finalPayout}} STEEM</div>
+          </div>
+        </div>
+      </div>
+    </b-modal>
+
     <HeaderEFTG ref="headerEFTG" v-on:login="onLogin" v-on:logout="onLogout"></HeaderEFTG>
     <div class="container">
       <h2>Reports</h2>
@@ -19,7 +50,10 @@
           <div>Total rewards for posts: {{dayprops.reward_posts}} STEEM ({{dayprops.perc_reward_posts}}%)</div>
           <div>Total rewards for comments: {{dayprops.reward_comments}} STEEM ({{dayprops.perc_reward_comments}}%)</div>
           <div>Median payout: {{dayprops.median_payout}} STEEM ({{dayprops.median_payout_sbd}} SBD)</div>
-          <div class="text-right">
+          <div class="text-right mt-3">
+            <button class="btn btn-primary" @click="showTop50">Top50</button>
+          </div>
+          <div class="text-right mt-3">
             <select v-model="sel_distribution">
               <option value="frequency">Frequency distribution</option>
               <option value="cumulative">Cumulative distribution</option>
@@ -59,6 +93,8 @@ export default {
       days: [],
       db: null,
       sel_distribution: 'frequency',
+      sel_top50: 'post',
+      top50: [],
       chartPostSBD: { labels: [], datasets: [] },
       chartPostFreq: { labels: [], datasets: [] },
       chartPostAccum: { labels: [], datasets: [] },
@@ -121,6 +157,9 @@ export default {
   watch: {
     sel_distribution: function(){
       this.drawCharts()
+    },
+    sel_top50: function(){
+      this.selTop50()
     }
   },
   
@@ -300,6 +339,55 @@ export default {
         }
       }
     },
+
+    showTop50() {
+      this.$refs.modalTop50.show()
+      this.selTop50()
+    },
+
+    selTop50() {
+      this.top50 = []
+      var gprops = this.curDay.gprops
+      switch(this.sel_top50){
+        case 'post':
+          this.top50 = this.curDay.data.post.top_rshares
+          break
+        case 'comment':
+          this.top50 = this.curDay.data.comment.top_rshares
+          break
+        case 'post_down':
+          this.top50 = this.curDay.data.post.top_down_rshares
+          break
+        case 'comment_down':
+          this.top50 = this.curDay.data.comment.top_down_rshares
+          break
+        default:
+          throw new Error('Bad value in switch select top50')
+      }
+      var s = 2e12
+      for(var i in this.top50){
+        var item = this.top50[i]
+        item.url = Config.EXPLORER + '@' + item.author + '/' + item.permlink
+        item.title = '@' + item.author + '/' + item.permlink.replace('-',' ')
+
+        var rs = item.up_rshares
+        var claims = rs * (rs + 2*s) / (rs + 4*s)
+        var steem = gprops.reward_balance / gprops.recent_claims * claims
+        item.upvotes = steem.toFixed(3)
+
+        rs = rs + item.down_rshares
+        claims = rs * (rs + 2*s) / (rs + 4*s)
+        steem = gprops.reward_balance / gprops.recent_claims * claims
+        item.downvotes = (steem - parseFloat(item.upvotes)).toFixed(3)
+
+        rs = item.net_rshares
+        claims = rs * (rs + 2*s) / (rs + 4*s)
+        steem = gprops.reward_balance / gprops.recent_claims * claims
+        item.finalPayout = steem.toFixed(3)
+        this.$set(this.top50, i, item)
+      }
+    },
+
     loadMoreDays(){},
     onLogin(){},
     onLogout(){}
