@@ -9,24 +9,18 @@
           <option value="comment_down">Top50 downvoted comments</option>
         </select>
       </div>
-      <div class="row">
-        <div class="col-md-4">Post</div>
+      <div class="row mt-3" v-for="(item, index) in top50" :key="index">
+        <div class="col-md-1 align-middle">#{{index}}</div>
         <div class="col-md-8">
-          <div class="row">
-            <div class="col-4">Upvotes</div>
-            <div class="col-4">Downvotes</div>
-            <div class="col-4">Final Payout</div>
+          <div>
+            <router-link :to="item.url" class="text-break">{{item.title}}</router-link>
           </div>
+          <small class="text-secondary">@{{item.author}} - #{{item.category}}</small>
         </div>
-      </div>
-      <div class="row" v-for="(item, index) in top50" :key="index">
-        <div class="col-md-4"><router-link :to="item.url">{{item.title}}</router-link></div>
-        <div class="col-md-8">
-          <div class="row">
-            <div class="col-4">{{item.upvotes}} STEEM</div>
-            <div class="col-4">{{item.downvotes}} STEEM</div>
-            <div class="col-4">{{item.finalPayout}} STEEM</div>
-          </div>
+        <div class="col-md-3">
+          <div class="text-right text-success"><small>+ ${{item.upvotes}}</small></div>
+          <div class="text-right text-danger"><small>- ${{item.downvotes}}</small></div>
+          <div class="text-right">{{item.finalPayout}}</div>
         </div>
       </div>
     </b-modal>
@@ -97,10 +91,8 @@ export default {
       top50: [],
       chartPostSBD: { labels: [], datasets: [] },
       chartPostFreq: { labels: [], datasets: [] },
-      chartPostAccum: { labels: [], datasets: [] },
       chartCommentSBD: { labels: [], datasets: [] },
       chartCommentFreq: { labels: [], datasets: [] },
-      chartCommentAccum: { labels: [], datasets: [] },
       options: {
         responsive: true,
         maintainAspectRatio: false
@@ -149,9 +141,6 @@ export default {
     }
     this.db = firebase.firestore()
     this.selectDay( this.days[0] )
-    /*this.getChainProperties().then( ()=>{
-      this.selectDay( this.days[0] )
-    })*/
   },
 
   watch: {
@@ -220,8 +209,8 @@ export default {
           backgroundColor:'#3c8dbc',
           backgroundColorMedian:'#0546b5',
           title: cumulative ? 'Cumulative distribution of post rewards' : 'Distribution of post rewards',
-          ytitle: cumulative ? 'Percentage' : 'Total rewards [STEEM]',
-          xtitle: 'Post value [STEEM]'
+          ytitle: cumulative ? 'Percentage' : 'Total rewards [SBD]',
+          xtitle: 'Post value [SBD]'
         })
       this.chartPostFreq = this.generateChart(data.post,
         { gprops:gprops,
@@ -231,7 +220,7 @@ export default {
           backgroundColorMedian:'#0546b5',
           title: cumulative ? 'Cumulative distribution of number of posts' : 'Number of posts',
           ytitle: cumulative ? 'Percentage' : 'Number of posts',
-          xtitle: 'Post value [STEEM]'
+          xtitle: 'Post value [SBD]'
         })
       this.chartCommentSBD = this.generateChart(data.comment,
         { gprops:gprops,
@@ -240,8 +229,8 @@ export default {
           backgroundColor:'#3c8dbc',
           backgroundColorMedian:'#0546b5',
           title: cumulative ? 'Cumulative distribution of comment rewards' : 'Distribution of comment rewards',
-          ytitle: cumulative ? 'Percentage' : 'Total rewards [STEEM]',
-          xtitle: 'Post value [STEEM]'
+          ytitle: cumulative ? 'Percentage' : 'Total rewards [SBD]',
+          xtitle: 'Post value [SBD]'
         })
       this.chartCommentFreq = this.generateChart(data.comment,
         { gprops:gprops,
@@ -251,7 +240,7 @@ export default {
           backgroundColorMedian:'#0546b5',
           title: cumulative ? 'Cumulative distribution of number of comments' : 'Number of comments',
           ytitle: cumulative ? 'Percentage' : 'Number of comments',
-          xtitle: 'Post value [STEEM]'
+          xtitle: 'Post value [SBD]'
         })
     },
 
@@ -266,8 +255,8 @@ export default {
         var rs = data.x[i]
         var claims = rs * (rs + 2*s) / (rs + 4*s)
         var steem = gprops.reward_balance / gprops.recent_claims * claims
-        // var sbd = steem * gprops.feed_price
-        x[i] = steem.toFixed(3)
+        var sbd = steem * gprops.feed_price
+        x[i] = '$' + sbd.toFixed(3)
         switch(opts.dist){
           case 'sbd':
             y[i] = Math.round(data.y[i] * steem * 100)/100
@@ -324,6 +313,8 @@ export default {
                 callback: function(value){
                   if(opts.cumulative)
                     return value + '%'
+                  else if(opts.dist === 'sbd')
+                    return '$' + value
                   else
                     return value
                 }
@@ -368,22 +359,25 @@ export default {
       for(var i in this.top50){
         var item = this.top50[i]
         item.url = Config.EXPLORER + '@' + item.author + '/' + item.permlink
-        item.title = '@' + item.author + '/' + item.permlink.replace('-',' ')
+        item.title = item.permlink.replace(/-/gm,' ')
 
         var rs = item.up_rshares
         var claims = rs * (rs + 2*s) / (rs + 4*s)
         var steem = gprops.reward_balance / gprops.recent_claims * claims
-        item.upvotes = steem.toFixed(3)
+        var sbd = steem * gprops.feed_price
+        item.upvotes = sbd.toFixed(3)
 
         rs = rs + item.down_rshares
-        claims = rs * (rs + 2*s) / (rs + 4*s)
+        claims = rs * (Math.abs(rs) + 2*s) / (Math.abs(rs) + 4*s)
         steem = gprops.reward_balance / gprops.recent_claims * claims
-        item.downvotes = (steem - parseFloat(item.upvotes)).toFixed(3)
+        sbd = steem * gprops.feed_price
+        item.downvotes = (sbd - parseFloat(item.upvotes)).toFixed(3)
 
         rs = item.net_rshares
         claims = rs * (rs + 2*s) / (rs + 4*s)
         steem = gprops.reward_balance / gprops.recent_claims * claims
-        item.finalPayout = steem.toFixed(3)
+        sbd = steem * gprops.feed_price
+        item.finalPayout = sbd.toFixed(3)
         this.$set(this.top50, i, item)
       }
     },
