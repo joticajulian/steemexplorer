@@ -50,6 +50,10 @@
               <div class="col">{{dayprops.median_payout}} STEEM <small>({{dayprops.median_payout_sbd}} SBD)</small></div>
             </div>
             <div class="row">
+              <div class="col-md-2 col-xs-6">SP Participation</div>
+              <div class="col">{{dayprops.sp_participation}}%</div>
+            </div>
+            <div class="row">
               <div class="col-md-2 col-xs-6">Downvote use</div>
               <div class="col">{{dayprops.downvote_use}}%</div>
             </div>
@@ -132,6 +136,7 @@ export default {
         median_payout: 0,
         median_payout_sbd: 0,
         downvote_use: 0,
+        sp_participation: 0,
       },
       show_paid_comments: true
     }
@@ -198,6 +203,7 @@ export default {
         gprops.feed_price = parseFloat(gprops.feed.base) / parseFloat(gprops.feed.quote)
         gprops.reward_balance = parseFloat(gprops.reward_balance)
         gprops.recent_claims = parseInt(gprops.recent_claims)
+        gprops.total_vesting_shares = parseFloat(gprops.total_vesting_shares)
 
         var div = data.post.total_claims / data.post.total_rshares
         var mrs = 2*s * (2*div - 1)/(1 - div)  // median rshares
@@ -214,6 +220,7 @@ export default {
         this.dayprops.reward_comments = Math.round(data.comment.total_claims * gprops.reward_balance / gprops.recent_claims * 1000)/1000
         this.dayprops.perc_reward_posts = Math.round(this.dayprops.reward_posts / this.dayprops.budget * 100 * 100)/100
         this.dayprops.perc_reward_comments = Math.round(this.dayprops.reward_comments / this.dayprops.budget * 100 * 100)/100
+        this.dayprops.sp_participation = Math.round( 15 * total_up / gprops.total_vesting_shares / 3e6 *100 *100)/100
         this.dayprops.downvote_use = Math.round( -total_down / total_up * 100 * 100)/100
 
         this.curDay = {
