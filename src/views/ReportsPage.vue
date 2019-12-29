@@ -31,7 +31,7 @@
       <div class="row">
         <div class="col-md-2">
           <ul class="list-group list-group-flush">
-            <li v-for="(day, index) in days" :key="index" class="list-group-item" @click="selectDay(day)">
+            <li v-for="(day, index) in days" :key="index" class="list-group-item text-center" @click="selectDay(day)">
               <span>{{day}}</span>
             </li>
           </ul>
@@ -40,10 +40,28 @@
           </div>
         </div>
         <div class="col-md-10">
-          <div>Budget for rewards: {{dayprops.budget}} STEEM</div>
-          <div>Total rewards for posts: {{dayprops.reward_posts}} STEEM ({{dayprops.perc_reward_posts}}%)</div>
-          <div>Total rewards for comments: {{dayprops.reward_comments}} STEEM ({{dayprops.perc_reward_comments}}%)</div>
-          <div>Median payout: {{dayprops.median_payout}} STEEM ({{dayprops.median_payout_sbd}} SBD)</div>
+          <h2 class="text-center bg-primary text-light pt-2 pb-2">{{curDay.day}}</h2>
+          <div class="bg-secondary p-3">
+            <h3>Budget: {{dayprops.budget}} STEEM</h3>
+            <h4>Paid posts: {{dayprops.reward_posts}} STEEM ({{dayprops.perc_reward_posts}}%)</h4>
+            <h4 v-if="show_paid_comments">Paid comments: {{dayprops.reward_comments}} STEEM ({{dayprops.perc_reward_comments}}%)</h4>
+            <div class="row">
+              <div class="col-md-2 col-xs-6">Median payout</div>
+              <div class="col">{{dayprops.median_payout}} STEEM <small>({{dayprops.median_payout_sbd}} SBD)</small></div>
+            </div>
+            <div class="row">
+              <div class="col-md-2 col-xs-6">Downvote use</div>
+              <div class="col">{{dayprops.downvote_use}}%</div>
+            </div>
+            <div class="row">
+              <div class="col-md-2 col-xs-6">Total posts</div>
+              <div class="col">{{curDay.data.post.total_comments}}</div>
+            </div>
+            <div class="row">
+              <div class="col-md-2 col-xs-6">Total comments</div>
+              <div class="col">{{curDay.data.comment.total_comments}}</div>
+            </div>
+          </div>
           <div class="text-right mt-3">
             <button class="btn btn-primary" @click="showTop50">Top50</button>
           </div>
@@ -56,11 +74,11 @@
           <div class="row">
             <div class="col-md-6">
               <BarChart :chartData="chartPostSBD.chartData" :options="chartPostSBD.options"></BarChart>
-              <BarChart :chartData="chartPostFreq.chartData" :options="chartPostFreq.options"></BarChart>
+              <BarChart :chartData="chartPostFreq.chartData" :options="chartPostFreq.options" class="mt-5"></BarChart>
             </div>
             <div class="col-md-6">
               <BarChart :chartData="chartCommentSBD.chartData" :options="chartCommentSBD.options"></BarChart>
-              <BarChart :chartData="chartCommentFreq.chartData" :options="chartCommentFreq.options"></BarChart>
+              <BarChart :chartData="chartCommentFreq.chartData" :options="chartCommentFreq.options" class="mt-5"></BarChart>
             </div>
           </div>
         </div>
@@ -98,8 +116,12 @@ export default {
         maintainAspectRatio: false
       },
       curDay: {
-        data: null,
+        data: {
+          post: {total_comments: 0},
+          comment: {total_comments: 0},
+        },
         gprops: null,
+        day: null
       },
       dayprops: {
         budget: 0,
@@ -108,8 +130,10 @@ export default {
         perc_reward_posts: 0,
         perc_reward_comments: 0,
         median_payout: 0,
-        median_payout_sbd: 0
+        median_payout_sbd: 0,
+        downvote_use: 0,
       },
+      show_paid_comments: true
     }
   },
 
@@ -182,17 +206,27 @@ export default {
         this.dayprops.median_payout_sbd = (mcl * gprops.reward_balance / gprops.recent_claims * gprops.feed_price).toFixed(3)
         gprops.mrs = mrs
 
+        var total_up = data.post.total_up_rshares + data.comment.total_up_rshares
+        var total_down = data.post.total_down_rshares + data.comment.total_down_rshares
+
         this.dayprops.budget = Math.round(gprops.reward_balance / 15 * 1000)/1000
         this.dayprops.reward_posts = Math.round(data.post.total_claims * gprops.reward_balance / gprops.recent_claims * 1000)/1000
         this.dayprops.reward_comments = Math.round(data.comment.total_claims * gprops.reward_balance / gprops.recent_claims * 1000)/1000
         this.dayprops.perc_reward_posts = Math.round(this.dayprops.reward_posts / this.dayprops.budget * 100 * 100)/100
         this.dayprops.perc_reward_comments = Math.round(this.dayprops.reward_comments / this.dayprops.budget * 100 * 100)/100
+        this.dayprops.downvote_use = Math.round( -total_down / total_up * 100 * 100)/100
 
         this.curDay = {
           data,
           gprops,
+          day
         }
         this.drawCharts()
+
+        if(new Date(day) >= new Date('2019-12-27'))
+          this.show_paid_comments = true
+        else
+          this.show_paid_comments = false
       }catch(error){
         console.log("Error getting document:", error)
       }
@@ -382,7 +416,17 @@ export default {
       }
     },
 
-    loadMoreDays(){},
+    loadMoreDays(){
+      for(var i=0;i<5;i++){
+        var last_day = this.days[ this.days.length - 1]
+        if(last_day === '2019-11-16'){
+          this.there_are_more_days = false
+          break
+        }
+        var previous_day = new Date(new Date(last_day) - 1000*60*60*24).toISOString().slice(0,-14)
+        this.days.push(previous_day)
+      }
+    },
     onLogin(){},
     onLogout(){}
   }
