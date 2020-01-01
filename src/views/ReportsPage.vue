@@ -300,7 +300,7 @@ export default {
         x[i] = '$' + sbd.toFixed(3)
         switch(opts.dist){
           case 'sbd':
-            y[i] = Math.round(data.y[i] * steem * 100)/100
+            y[i] = Math.round(data.y[i] * sbd * 100)/100
             break
           case 'freq':
             y[i] = data.y[i]
