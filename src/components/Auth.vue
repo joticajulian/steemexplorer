@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { Client, PrivateKey } from 'eftg-dsteem'
+import { Client, PrivateKey } from 'dsteem'
 import Config from "@/config.js";
 import Utils from "@/js/utils.js";
 import SteemClient from '@/mixins/SteemClient.js'

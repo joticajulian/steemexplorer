@@ -63,7 +63,7 @@
 
 <script>
 import debounce from 'lodash.debounce'
-import { Client } from 'eftg-dsteem'
+import { Client } from 'dsteem'
 import SteemClient from '@/mixins/SteemClient.js'
 
 import Config from '@/config.js'

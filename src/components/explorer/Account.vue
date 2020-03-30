@@ -81,7 +81,7 @@
 </template>
 
 <script>
-import { Client } from 'eftg-dsteem'
+import { Client } from 'dsteem'
 import SteemClient from '@/mixins/SteemClient.js'
 
 import Utils from '@/js/utils.js'

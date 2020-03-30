@@ -117,7 +117,7 @@
 </template>
 
 <script>
-import { Client, PrivateKey } from 'eftg-dsteem'
+import { Client, PrivateKey } from 'dsteem'
 import SteemClient from '@/mixins/SteemClient.js'
 
 import Config from '@/config.js'

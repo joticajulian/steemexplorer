@@ -1,4 +1,4 @@
-import { Client } from 'eftg-dsteem'
+import { Client } from 'dsteem'
 import Config from '@/config.js'
 import SteemClient from '@/mixins/SteemClient.js'
 

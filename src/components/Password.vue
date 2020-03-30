@@ -83,7 +83,7 @@ import debounce from "lodash.debounce";
 
 import Config from "@/config.js";
 import Utils from "@/js/utils.js";
-import { Client, PrivateKey } from 'eftg-dsteem'
+import { Client, PrivateKey } from 'dsteem'
 import SteemClient from '@/mixins/SteemClient.js'
 //import dsteemExtra from "@/js/dsteem-extra.js";
 
