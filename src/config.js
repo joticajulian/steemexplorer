@@ -1,7 +1,7 @@
 const config = {
   'production': {
     RPC_NODES : [
-      'https://api.steemit.com',
+      'https://api.hive.blog',
     ],
     EFTG_HARDFORK_0_1 : false
   },
@@ -14,7 +14,7 @@ const config = {
   'development': {
     RPC_NODES : [
       //'https://testnet.steemitdev.com',
-      'https://api.steemit.com',
+      'https://api.hive.blog',
     ],
     EFTG_HARDFORK_0_1 : true
   },
@@ -32,15 +32,15 @@ const finalConfig = config[environment];
 const PAGE_AFTER_LOGIN = '/'
 const PAGE_AFTER_LOGOUT = '/'
 
-const SBD = 'SBD';
-const STEEM = 'STEEM';
-const SP = 'SP';
+const SBD = 'HBD';
+const STEEM = 'HIVE';
+const SP = 'HP';
 const VESTS = 'VESTS';
 
 const HARDFORK = 21
 
 const EXPLORER = '/explorer/'
-const EXPLORER2 = '/steemexplorer/#/explorer/'
+const EXPLORER2 = '/hiveexplorer/#/explorer/'
 const DSTEEM_TIMEOUT = 5000 //ms
 
 const STEEM_ADDRESS_PREFIX = 'STM';
