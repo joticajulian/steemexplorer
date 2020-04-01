@@ -2,7 +2,7 @@
   <div class="home">
     <HeaderEFTG ref="headerEFTG"></HeaderEFTG>     
     <div class="container">
-    <h1>Steem Explorer</h1>
+    <h1>Hive Explorer</h1>
     <div class="row">
     <div class="col-md-3">
       <div v-if="this.exists.globals">
