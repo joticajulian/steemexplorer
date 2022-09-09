@@ -1,5 +1,5 @@
-# Steem Explorer
-Steem explorer is a client-side block explorer for steem-like blockchains. It uses Steem-JS API to query users, posts, and transactions directly to the seed nodes.
+# Serey Explorer
+Serey explorer is a client-side block explorer for steem-like blockchains. It uses Steem-JS API to query users, posts, and transactions directly to the seed nodes.
 
 Announcement:
 [https://steemit.com/utopian-io/@jga/steem-explorer-based-on-steem-js-1539631316061](https://steemit.com/utopian-io/@jga/steem-explorer-based-on-steem-js-1539631316061)
