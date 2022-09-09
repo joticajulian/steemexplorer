@@ -18,7 +18,7 @@
       </div>
       <div class="row mt-3">
         <div class="col-md-2 mr-2 mt-1">
-          <input type="text" placeholder="Account" v-model="checkVotesAccount" @keyup.enter="checkVotes" class="form-control mr-2":class="{'is-invalid': error.check_votes_account}"/>
+          <input type="text" placeholder="Account" v-model="checkVotesAccount" @keyup.enter="checkVotes" class="form-control mr-2" :class="{'is-invalid': error.check_votes_account}"/>
           <div v-if="error.check_votes_account" class="invalid-feedback">{{ errorText.check_votes_account }}</div>
         </div>
         <div class="col-md-2 mt-1">

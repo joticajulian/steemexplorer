@@ -106,6 +106,7 @@ export default {
     async loadWitnessesByVote() {
       //var witnessesByVote = await this.client.database.call('get_witnesses_by_vote',['',100])
       var witnessesByVote = await this.steem_database_call('get_witnesses_by_vote',['',100])
+      console.log('witnesss by vote', witnessesByVote[0]);
       var names =[]
 
       for(var i in witnessesByVote) names.push(witnessesByVote[i].owner)

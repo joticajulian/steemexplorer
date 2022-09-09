@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const account = {
   type:'account',
   placeholder:''
@@ -174,6 +175,7 @@ const id = { //used in custom_json and custom_binary
   placeholder:''
 }
 
+// eslint-disable-next-line no-unused-vars
 const input = {
   type:'string',
   placeholder:''

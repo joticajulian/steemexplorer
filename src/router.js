@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from '@/components/Home'
+// import Home from '@/components/Home'
 import MapPage from '@/components/MapPage'
 import Password from '@/components/Password'
 import Witnesses from '@/components/Witnesses'

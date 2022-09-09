@@ -1,7 +1,7 @@
 const config = {
   'production': {
     RPC_NODES : [
-      'https://api.steemit.com',
+      'https://api.serey.io/',
     ],
     EFTG_HARDFORK_0_1 : false
   },
@@ -13,8 +13,9 @@ const config = {
   },
   'development': {
     RPC_NODES : [
-      //'https://testnet.steemitdev.com',
-      'https://api.steemit.com',
+      // 'https://testnet.steemitdev.com',
+      // 'https://api.steemit.com',
+      'https://api.serey.io/',
     ],
     EFTG_HARDFORK_0_1 : true
   },
@@ -33,7 +34,7 @@ const PAGE_AFTER_LOGIN = '/'
 const PAGE_AFTER_LOGOUT = '/'
 
 const SBD = 'SBD';
-const STEEM = 'STEEM';
+const STEEM = 'Serey';
 const SP = 'SP';
 const VESTS = 'VESTS';
 
@@ -59,7 +60,7 @@ const STEEM_CHAIN_ID = '00000000000000000000000000000000000000000000000000000000
 const STEEM_PROPOSAL_MAX_IDS_NUMBER = 5
 
 const MAP = {
-  TOP_WITNESSES: 30,
+  TOP_WITNESSES: 40,
   INI_POS : [40, 0], //latitude, longitude
   INI_ZOOM : 1 ,
 }

@@ -2,7 +2,7 @@
   <div class="home">
     <HeaderEFTG ref="headerEFTG"></HeaderEFTG>     
     <div class="container">
-    <h1>Steem Explorer</h1>
+    <h1>Serey Explorer</h1>
     <div class="row">
     <div class="col-md-3">
       <div v-if="this.exists.globals">
@@ -13,10 +13,11 @@
           ><hr>virtual {{this.chain.virtual_supply}}
         </div>
         <div class="card">
-          <div class="title">Steem Price</div><br
+          <div class="title">Serey Price</div><br
           >Witnesses price: ${{this.chain.witnesses_price.toFixed(4)}}<br
           >Haircut: ${{this.chain.haircut_price.toFixed(4)}}<br
-          ><hr>Feed price: ${{this.chain.feed_price.toFixed(4)}}
+          ><hr>
+          Feed price: ${{this.chain.feed_price.toFixed(4)}}
         </div>
         <div class="card">
           <div class="title">Inflation</div><br

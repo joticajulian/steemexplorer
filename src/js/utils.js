@@ -113,6 +113,7 @@ export default {
     result.page = path[0];
     if (path.length > 1)
       result.params = JSON.parse(
+        // eslint-disable-next-line no-useless-escape
         '{"' + path[1].replace(/\&/gi, '","').replace(/\=/gi, '":"') + '"}'
       );
     console.log("getQuery");
@@ -207,7 +208,7 @@ export default {
 
   copyTextToClipboard: function(text) {
     if (!navigator.clipboard) {
-      fallbackCopyTextToClipboard(text);
+      // fallbackCopyTextToClipboard(text);
       return;
     }
     navigator.clipboard.writeText(text).then(function() {

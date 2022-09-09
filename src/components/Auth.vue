@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { Client, PrivateKey } from 'eftg-dsteem'
+import { PrivateKey } from 'eftg-dsteem'
 import Config from "@/config.js";
 import Utils from "@/js/utils.js";
 import SteemClient from '@/mixins/SteemClient.js'
@@ -125,7 +125,9 @@ export default {
         keyRole.public = keyRole.private
           .createPublic(Config.STEEM_ADDRESS_PREFIX)
           .toString();
-      }catch(error){}
+      }catch(error){
+        console.log(error)
+      }
       var roles = ["owner", "active", "posting"];
       //var roles = ["posting"];
       //let self = this;
@@ -134,6 +136,7 @@ export default {
       try{
         json_metadata = JSON.parse(account.json_metadata);
       }catch(error){
+        console.log(error)
       }
       var keyFound = false;
       var typeOfPassword = "";

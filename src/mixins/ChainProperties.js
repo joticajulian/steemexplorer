@@ -1,4 +1,4 @@
-import { Client } from 'eftg-dsteem'
+// import { Client } from 'eftg-dsteem'
 import Config from '@/config.js'
 import SteemClient from '@/mixins/SteemClient.js'
 
@@ -37,6 +37,7 @@ export default {
   },
 
   methods: {
+    // eslint-disable-next-line no-unused-vars
     changeFeedPrice(price){      
     },
     
@@ -63,23 +64,23 @@ export default {
       this.$store.state.chain.recent_claims  = this.chain.recent_claims
       this.updateRS();
 
-      var result = await this.steem_database_call('get_dynamic_global_properties');
-      for(var i in result) this.chain[i] = result[i]
-      this.chain.steem_per_mvests = parseFloat(result.total_vesting_fund_steem)*1000000/parseFloat(result.total_vesting_shares)
-      this.chain.haircut_price = 9*parseFloat(result.current_sbd_supply) / parseFloat(result.current_supply)
+      var result1 = await this.steem_database_call('get_dynamic_global_properties');
+      for(var i in result1) this.chain[i] = result1[i]
+      this.chain.steem_per_mvests = parseFloat(result1.total_vesting_fund_steem)*1000000/parseFloat(result1.total_vesting_shares)
+      this.chain.haircut_price = 9*parseFloat(result1.current_sbd_supply) / parseFloat(result1.current_supply)
 
       this.$store.state.chain.steem_per_mvests = this.chain.steem_per_mvests
       this.$store.state.chain.haircut_price = this.chain.haircut_price
 
-      var result = await this.steem_database_call('get_current_median_history_price')
-      this.chain.feed_price = parseFloat(result.base)/parseFloat(result.quote)
-      this.$store.state.chain.feed_price = this.chain.feed_price
+      // var result2 = await this.steem_database_call('get_current_median_history_price')
+      // this.chain.feed_price = parseFloat(result.base)/parseFloat(result2.quote)
+      // this.$store.state.chain.feed_price = this.chain.feed_price
 
       this.chain.gap = this.chain.reward_balance / this.chain.recent_claims * 2 * 2e12
       this.chain.gap_sbd = this.chain.gap * this.chain.feed_price
 
       this.updateRS();
-      this.changeFeedPrice(this.chain.feed_price)
+      // this.changeFeedPrice(this.chain.feed_price)
     },
 
     vests2sp(vests){

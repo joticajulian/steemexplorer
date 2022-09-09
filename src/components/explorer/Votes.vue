@@ -72,6 +72,7 @@ export default {
 
     votesConvergentLinear() {
       var sortByTime_ascending =  (a,b)=>{return new Date(a.time) - new Date(b.time)}
+      // eslint-disable-next-line no-unused-vars
       var sortByTime_descending = (a,b)=>{return new Date(a.time) - new Date(b.time)}
 
       var votes_aux = this.data.sort( sortByTime_ascending )
