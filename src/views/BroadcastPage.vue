@@ -152,6 +152,7 @@ import HeaderEFTG from '@/components/HeaderEFTG'
 import SteemClient from '@/mixins/SteemClient.js'
 import { Client, PrivateKey, cryptoUtils, Signature, utils } from 'dsteem'
 import steemjs from 'steem'
+import * as sereyjs from '@sereynetwork/sereyjs';
 import Alerts from '@/mixins/Alerts.js'
 import Utils from '@/js/utils.js'
 

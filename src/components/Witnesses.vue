@@ -71,6 +71,20 @@ import Utils from '@/js/utils.js'
 import ChainProperties from '@/mixins/ChainProperties.js'
 import HeaderEFTG from '@/components/HeaderEFTG'
 
+import * as sereyjs from '@sereynetwork/sereyjs';
+sereyjs.api.setOptions({ url: 'wss://api.serey.io' }); // assuming websocket is working at ws.golos.io
+sereyjs.config.set('address_prefix','SRY');
+
+let opts = {}
+opts.addressPrefix = 'SRY';
+opts.timeout = Config.DSTEEM_TIMEOUT
+opts.chainId = '5205c25d3e87cb3e8e527e6fbbf324b7b2b9fe7a7192c604ce5b174d08987324';
+// if(Config.STEEM_CHAIN_ID) opts.chainId = Config.STEEM_CHAIN_ID
+import { Client as Client2 } from 'dsteem'
+const sereyClient = new Client2('https://api.serey.io', opts);
+
+  // return new Client(address, opts)
+
 export default {
   name: "Witnesses",
   
@@ -194,7 +208,7 @@ export default {
       var wit = this.witnesses[index]
       wit.newVote.approve = !wit.newVote.approve
       wit.newVote.shares = '0.000000 VESTS'
-      
+
       this.$set(this.witnesses, index, wit)
     },
     
@@ -202,15 +216,19 @@ export default {
       var user = this.$store.state.auth.user
       var activeKey = this.$store.state.auth.keys.active
       var ownerKey  = this.$store.state.auth.keys.owner
+      var pass = this.$store.state.auth.pass;
 
-      if( activeKey != null ) {
-        var privKey = activeKey
-      }else if(ownerKey != null ) {
-        var privKey = ownerKey 
-      }else {
+      // var privKey = null;
+      // if( activeKey != null ) {
+      //   privKey = activeKey
+      // }else if(ownerKey != null ) {
+      //   privKey = ownerKey 
+      // }else {
+      if(!pass) {
         this.showDanger('Please login with master, owner, or active key')
-        return        
       }
+        // return        
+      // }
       
       var witnesses = this.witnesses.slice()
       witnesses.sort(function(a, b){return parseFloat(a.newVote.shares) - parseFloat(b.newVote.shares)})
@@ -220,14 +238,26 @@ export default {
         var wit = witnesses[i]
 
         if(wit.newVote.approve != wit.vote.approve) {
-          var operation = [
-            'account_witness_vote',
-            {
-              account: user,
-              witness: wit.owner,
-              approve: wit.newVote.approve
-            }
-          ]
+          console.log(wit);
+          // var operation = [
+          //   'account_witness_vote',
+          //   {
+          //     account: user,
+          //     witness: wit.owner,
+          //     approve: wit.newVote.approve
+          //   }
+          // ]
+          var operation = {
+            account: user,
+            witness: wit.owner,
+            approve: wit.newVote.approve
+          }
+          // sereyjs.broadcast.send({extensions: [], operations: [operation]}, [privKey], (err,result) => {
+          //   console.log('err', err, result);
+          // });
+          // console.log(user);
+          // console.log(privKey);
+          // console.log(activeKey);
           ops.push(operation)
         }
       }
@@ -243,20 +273,55 @@ export default {
       this.hideInfo()
 
       let self = this
-      //this.client.broadcast.sendOperations(ops,privKey)
-      this.steem_broadcast_sendOperations(ops,privKey)
-      .then(function(result){
-        self.saving = false
-        var block = result.block_num
-        var trx_id = result.id
-        self.showSuccess(`<a href="${Config.EXPLORER2}b/${block}/${trx_id}" class="alert-link" target="_blank">Votes saved!</a>`)
-        self.loadVotesFromAccount()
-      })
-      .catch(function(error){
-        self.saving = false
-        self.showDanger(error.message)
-        console.log(error)
-      })
+
+      
+      for(var op of ops) {
+        sereyjs.broadcast.accountWitnessVote(pass, op.account, op.witness, op.approve, (err, result) => {
+          console.log('Result', err, result);
+        });
+      }
+
+      self.saving = false
+      this.saving = false;
+        // var block = result.block_num
+        // var trx_id = result.id
+      // self.showSuccess('Witness Votes updated');
+      window.alert('Witness Votes update success. Please refresh page !')
+        // self.showSuccess(`<a href="${Config.EXPLORER2}b/${block}/${trx_id}" class="alert-link" target="_blank">Votes saved!</a>`)
+      self.loadVotesFromAccount()
+
+      // ops.forEach(op => {
+      //   sereyjs.broadcast.accountWitnessVote(pass, op.account, op.witness, op.approve, (err, result) => {
+      //     console.log('Result', err, result);
+      //   });
+      // })
+
+      // // this.client.broadcast.sendOperations(ops,privKey)
+      // // this.steem_broadcast_sendOperations(ops,privKey)
+      // console.log(sereyjs.broadcast.sendOperations);
+      // console.log(sereyjs.broadcast);
+      // // sereyjs.broadcast.sendOperations(ops, privKey)
+
+      // // sereyjs.send(ops, [privKey], function(result, error) {
+      // //   console.log('result', result, error);
+      // // })
+
+      // sereyjs.send(ops, privKey)
+      // // sereyClient.broadcast.sendOperations(ops, privKey)
+      // // sereyjs.broadcast.sendOperations(ops, privKey)
+      // // // sereyjs.broadcast.accountWitnessVote(wif, account, witness, approve)
+      // .then(function(result){
+      //   self.saving = false
+      //   var block = result.block_num
+      //   var trx_id = result.id
+      //   self.showSuccess(`<a href="${Config.EXPLORER2}b/${block}/${trx_id}" class="alert-link" target="_blank">Votes saved!</a>`)
+      //   self.loadVotesFromAccount()
+      // })
+      // .catch(function(error){
+      //   self.saving = false
+      //   self.showDanger(error.message)
+      //   console.log(error)
+      // })
     },
     
     reset() {

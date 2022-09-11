@@ -118,8 +118,10 @@
 </template>
 
 <script>
-import { Client, PrivateKey } from 'eftg-dsteem'
+// import { Client, PrivateKey } from 'eftg-dsteem'
 import SteemClient from '@/mixins/SteemClient.js'
+
+const sereyjs = require('@sereynetwork/sereyjs');
 
 import Config from '@/config.js'
 import Utils from '@/js/utils.js'
@@ -184,7 +186,8 @@ export default {
       console.log('no more loader')
 
       this.getWitnessSchedule()
-      this.getWitnessesPrice()
+      // disabled as serey dont have prices
+      // this.getWitnessesPrice()
 
       this.ints.blocks = setInterval(this.fetchBlocks, 3000);
       this.ints.chainprops = setInterval(()=>{
@@ -206,15 +209,21 @@ export default {
   },
   
   methods: {
-  
-    async getWitnessSchedule() {
-      console.log('get witness schedule')
-      var witness_schedule = await this.steem_database_call('get_witness_schedule')
 
+    async getWitnessSchedule() {
+      sereyjs.api.setOptions({ url: 'wss://api.serey.io' }); // assuming websocket is working at ws.golos.io
+      sereyjs.config.set('address_prefix','SRY');
+
+      const witness_schedule = await sereyjs.api.getWitnessScheduleAsync();
+
+      // var witness_schedule = await this.steem_database_call('get_witness_schedule')
+
+      // if(this.first_time) this.last_block_num = tsnumber;
       if(this.first_time) this.last_block_num = this.chain.head_block_number;
       this.first_time = false;
       console.log('last block num: '+this.last_block_num)
-      console.log(this.schedule) 
+      console.log(this.schedule[0]) 
+      console.log(this.schedule.length);
 
       this.exists.schedule = true;
 
@@ -228,10 +237,10 @@ export default {
       var id = round.indexOf(current_witness);
       if(id == -1) return;
       for(var i=id+1;i<round.length;i++){
-        this.$set(this.schedule, i-id-1, round[i]);
+        this.$set(this.schedule, i - id - 1, round[i]);
       }
-      for(var i=0;i<id;i++){
-        this.$set(this.schedule, round.length-id-1+i, round[i]);
+      for(var j = 0; j < id;j++){
+        this.$set(this.schedule, round.length - id - 1 + j, round[j]);
       }
       this.$set(this.schedule, round.length-1, round[id]);
     },

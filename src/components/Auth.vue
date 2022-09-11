@@ -32,6 +32,7 @@
 
 <script>
 import { PrivateKey } from 'eftg-dsteem'
+// import { PrivateKey } from '@sereynetwork/sereyjs';
 import Config from "@/config.js";
 import Utils from "@/js/utils.js";
 import SteemClient from '@/mixins/SteemClient.js'
@@ -113,7 +114,8 @@ export default {
           role
         );
         keysFromWIF[role].public = keysFromWIF[role].private
-          .createPublic(Config.STEEM_ADDRESS_PREFIX)
+          // .createPublic(Config.STEEM_ADDRESS_PREFIX)
+          .createPublic('SRY')
           .toString();
       }
       
@@ -122,8 +124,10 @@ export default {
       
       try{
         keyRole.private = PrivateKey.fromString(_password);
+        console.log('keyrole from private', keyRole.private);
         keyRole.public = keyRole.private
-          .createPublic(Config.STEEM_ADDRESS_PREFIX)
+          .createPublic('SRY')
+          // .createPublic(Config.STEEM_ADDRESS_PREFIX)
           .toString();
       }catch(error){
         console.log(error)
@@ -142,6 +146,7 @@ export default {
       var typeOfPassword = "";
       var auth = {
         user: "",
+        pass: "",
         logged: false,
         imgUrl: "",
         keys: {
@@ -177,6 +182,7 @@ export default {
       }
       auth.logged = true;
       auth.user = _username;
+      auth.pass = _password;
       auth.imgUrl = Utils.extractUrlProfileImage(json_metadata);
       console.log("Correct " + typeOfPassword + " key");
       console.log("Welcome @" + _username);
