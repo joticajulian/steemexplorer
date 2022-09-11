@@ -6,7 +6,7 @@
     <b-navbar toggleable="lg" type="dark" variant="primary">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <router-link :to="linkLogo" class="nav-item nav-link"><div id="logo"><img src="../assets/steem-logo.png" /></div></router-link>
+          <router-link :to="linkLogo" class="nav-item nav-link"><div id="logo"><img src="../assets/logo.png" /></div></router-link>
         </li>
       </ul>
       <b-navbar v-if="$store.state.auth.logged" class="ml-auto d-lg-none" style="margin:0;">
@@ -34,21 +34,21 @@
           <li class="nav-item">
             <router-link to="/explorer" class="nav-item nav-link"><div class="extra-padding">Explorer</div></router-link>
           </li>
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <router-link to="/map" class="nav-item nav-link"><div class="extra-padding">Map</div></router-link>
-          </li>
+          </li> -->
           <li class="nav-item">
             <router-link to="/witnesses" class="nav-item nav-link"><div class="extra-padding">Witnesses</div></router-link>
           </li>
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <router-link to="/broadcast" class="nav-item nav-link"><div class="extra-padding">Broadcast</div></router-link>
-          </li>
-          <li class="nav-item">
+          </li> -->
+          <!-- <li class="nav-item">
             <router-link to="/reports" class="nav-item nav-link"><div class="extra-padding">Reports</div></router-link>
-          </li>
-          <li class="nav-item">
+          </li> -->
+          <!-- <li class="nav-item">
             <router-link to="/proposals" class="nav-item nav-link"><div class="extra-padding">Proposals</div></router-link>
-          </li>
+          </li> -->
         </ul>
         <ul class="navbar-nav ml-auto">
           <li class="nav-item d-lg-block d-none">

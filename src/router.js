@@ -39,11 +39,11 @@ export default new Router({
       name: "Home",
       component: HomeExplorer
     },
-    {
-      path: "/map",
-      name: "MapPage",
-      component: MapPage
-    },
+    // {
+    //   path: "/map",
+    //   name: "MapPage",
+    //   component: MapPage
+    // },
     {
       path: "/password",
       name: "Password",
@@ -64,11 +64,11 @@ export default new Router({
       name: "Broadcast",
       component: () => import('./views/BroadcastPage.vue')
     },
-    {
-      path: "/proposals",
-      name: "Proposals",
-      component: () => import('./views/ProposalsPage.vue')
-    },
+    // {
+    //   path: "/proposals",
+    //   name: "Proposals",
+    //   component: () => import('./views/ProposalsPage.vue')
+    // },
     {
       path: "/proposals/:id",
       name: "Proposal",

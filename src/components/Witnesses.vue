@@ -10,10 +10,12 @@
             <th scope="col">#</th>
             <th scope="col">Witness</th>
             <th scope="col">Enabled</th>
-            <th scope="col">Version</th>
+            <th scope="col">Account Creation Fee</th>
+            <!-- <th scope="col">Version</th> -->
             <th scope="col">Approval</th>
             <th scope="col">Last Block</th>
             <th scope="col">Miss</th>
+            <th scope="col">Since</th>
             <th scope="col">Vote</th>
           </tr>
         </thead>
@@ -25,15 +27,17 @@
           >
             <td>{{ wit.position }}</td>
             <td
-              ><div v-bind:style="{ backgroundImage: 'url(' + wit.imgUrl + ')' }" class="image-profile mr-2"                  
-              ></div
-              ><router-link :to="EXPLORER+'@'+wit.owner">{{ wit.owner }}</router-link>
+              ><div v-bind:style="{ backgroundImage: 'url(' + wit.imgUrl.replace('\'','').replace('\'','') + ')' }" class="image-profile mr-2"                  
+              ></div>
+              <router-link :to="EXPLORER+'@'+wit.owner">{{ wit.owner }}</router-link>
             </td>
             <td><div class="circle" :class="{enabled:wit.enabled, disabled:!wit.enabled}"></div></td>
-            <td>{{ wit.running_version }}</td>
+            <!-- <td>{{ wit.running_version }}</td> -->
+            <td>{{ wit.props.account_creation_fee }}</td>
             <td>{{ wit.votes_sp }}</td>
             <td>{{ wit.last_confirmed_block_num }}</td>
             <td>{{ wit.total_missed }}</td>
+            <td>{{ new Date(wit.created).toLocaleDateString('en-us') }}</td>
             <td>
               <button class="btn" @click="toggleVote(index)" 
                 :class="{'btn-primary':wit.newVote.approve, 'btn-secondary':!wit.newVote.approve}"
@@ -65,6 +69,9 @@
 import debounce from 'lodash.debounce'
 import { Client } from 'eftg-dsteem'
 import SteemClient from '@/mixins/SteemClient.js'
+
+import { TimeAgo } from "vue2-timeago";
+import "vue2-timeago/dist/vue2-timeago.css";
 
 import Config from '@/config.js'
 import Utils from '@/js/utils.js'
@@ -103,7 +110,8 @@ export default {
   },
   
   components: {
-    HeaderEFTG    
+    HeaderEFTG,
+    TimeAgo
   },
   mixins: [
     ChainProperties,
@@ -130,6 +138,8 @@ export default {
       this.witnesses = []
       for(var i in witnessesByVote) {
         var wit = witnessesByVote[i]
+        console.log(wit);
+        console.log(wit.imgUrl);
         wit.vote = {approve: false, shares: '0.000000 VESTS'}
         wit.newVote = {approve: false, shares: '0.000000 VESTS'}
         wit.votes_sp = this.witnessVotes2sp(wit.votes)
@@ -379,11 +389,32 @@ export default {
      vertical-align: middle;
 }
 
+.table {
+  border: 1px solid #ddd;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
 .vests {
   font-family: monospace;
   font-size: 1rem;
   margin: auto;
   text-align: right;
+}
+
+.timeago {
+  margin-top: 50px;
+  border: 2px solid #47b784;
+  padding: 10px;
+}
+.timeago span {
+  font-size: 15px;
+}
+
+.ago {
+  width: auto;
 }
 
 </style>

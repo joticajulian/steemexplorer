@@ -9,10 +9,14 @@
 <script>
 import FooterEFTG from "@/components/FooterEFTG";
 
+// import { TimeAgo } from "vue2-timeago";
+// import "vue2-timeago/dist/vue2-timeago.css";
+
 export default {
   name: "App",
   components: {
-    FooterEFTG
+    FooterEFTG,
+    // TimeAgo
   }
 };
 </script>
@@ -119,6 +123,10 @@ body {
   background-color: #3c6fc7 !important;
   border-color: #3c6fc7 !important;
   color: white !important;
+}
+
+.table-primary tr:nth-child(even) {
+    background-color: grayscale;
 }
 
 @media (min-width: 1200px) {

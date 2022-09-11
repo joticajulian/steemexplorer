@@ -32,7 +32,7 @@
           ><hr
           >{{this.chain.steem_per_mvests.toFixed(3)}} {{this.STEEM_SYMBOL}} per m{{this.VESTS_SYMBOL}}          
         </div>      
-        <div class="card"> 
+        <!-- <div class="card"> 
           <div class="title">{{this.SBD_SYMBOL}}</div><br
           >{{this.chain.current_sbd_supply}}<br
           >(<span :class="{
@@ -43,7 +43,7 @@
             > of virtual sup.)<br
           >Print rate: {{this.chain.sbd_print_rate/100}}%<br
           >Interest rate: {{this.chain.sbd_interest_rate/100}}%
-        </div>
+        </div> -->
       </div>
       <div v-else>
         <div class="loader"></div>
@@ -59,10 +59,10 @@
           >vote of {{this.chain.vote_value_1000_sp.toFixed(3)}} per 1000 {{this.SP_SYMBOL}}
           <br><hr>
           recent claims {{this.chain.recent_claims}}<br>
-          <a href="https://steemit.com/@jga/complete-guide-to-understand-rewards-in-hf21-part-1">gap</a>: {{this.chain.gap.toFixed(3)}} {{this.STEEM_SYMBOL}} ({{this.chain.gap_sbd.toFixed(3)}} {{this.SBD_SYMBOL}})
-          <hr>Post payout simulation {{example_post.payout.toFixed(3)}} {{this.SBD_SYMBOL}}
+          <!-- <a href="https://steemit.com/@jga/complete-guide-to-understand-rewards-in-hf21-part-1">gap</a>: {{this.chain.gap.toFixed(3)}} {{this.STEEM_SYMBOL}} ({{this.chain.gap_sbd.toFixed(3)}} {{this.SBD_SYMBOL}}) -->
+          <!-- <hr>Post payout simulation {{example_post.payout.toFixed(3)}} {{this.SBD_SYMBOL}}
           <br>claims per rshare {{example_post.claims_per_rshare.toFixed(4)}}
-          <br><input type="range" min="0" max="500" v-model="example_post.slider" class="slider" id="slider-example-post">
+          <br><input type="range" min="0" max="500" v-model="example_post.slider" class="slider" id="slider-example-post"> -->
         </div>
       </div>
       <div v-else>
