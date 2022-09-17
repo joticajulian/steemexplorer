@@ -3,6 +3,9 @@
     <HeaderEFTG portal="OAM Portal" :showAuth="true" ref="headerEFTG" v-on:login="onLogin" v-on:logout="onLogout"></HeaderEFTG>
     <div class="container">
       <h2>Witnesses</h2>
+      <!-- <div v-if="this.$store.state.auth.logged">
+        <h3>You have voted for a total of {{witnesses.length}} witnesses.</h3>
+      </div> -->
       <div v-if="witnesses.length > 0">
       <table class="table">
         <thead>
@@ -40,9 +43,15 @@
             <td>{{ new Date(wit.created).toLocaleDateString('en-us') }}</td>
             <td>
               <button class="btn" @click="toggleVote(index)" 
-                :class="{'btn-primary':wit.newVote.approve, 'btn-secondary':!wit.newVote.approve}"
+                :class="{'btn-danger':wit.newVote.approve, 'btn-success':!wit.newVote.approve}"
               >
-                <font-awesome-icon icon="check"/>
+                <!-- <font-awesome-icon icon="{'times':wit.newVote.approve, 'tick':!wit.newVote.approve}"/> -->
+                <template v-if="wit.newVote.approve">
+                  <font-awesome-icon icon="times" />
+                </template>
+                <template v-else>
+                  <font-awesome-icon icon="check" />
+                </template>
               </button>
             </td>
           </tr>
@@ -52,7 +61,7 @@
       <div v-else>
         <div class="loader"></div>
       </div>
-      <div v-if="this.$store.state.auth.logged" class="row mt-4">
+      <!-- <div v-if="this.$store.state.auth.logged" class="row mt-4">
         <div class="form-group col-12">
           <button @click="save" class="btn btn-primary btn-large mr-2" :disabled="saving"><div v-if="saving" class="mini loader"></div>Save</button>
           <button @click="reset" class="btn btn-secondary btn-large">Reset</button>
@@ -60,7 +69,7 @@
       </div>
       <div v-if="alert.info" class="alert alert-info" role="alert">{{alert.infoText}}</div>
       <div v-if="alert.success" class="alert alert-success" role="alert" v-html="alert.successText"></div>
-      <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alert.dangerText}}</div>
+      <div v-if="alert.danger"  class="alert alert-danger" role="alert">{{alert.dangerText}}</div> -->
     </div>    
   </div>
 </template>
@@ -216,10 +225,28 @@ export default {
     
     toggleVote(index) {
       var wit = this.witnesses[index]
+
+      console.log(wit.newVote.approve);
+
+      const voteAction = wit.newVote.approve === true ? 'removed vote from' : 'given vote to';
+
       wit.newVote.approve = !wit.newVote.approve
       wit.newVote.shares = '0.000000 VESTS'
 
-      this.$set(this.witnesses, index, wit)
+      var pass = this.$store.state.auth.pass;
+      var account = this.$store.state.auth.user;
+      this.witnesses = [];
+      // this.clearVotes();
+      sereyjs.broadcast.accountWitnessVote(pass, account, wit.owner, wit.newVote.approve, (err, result) => {
+          console.log('Result', err, result);
+          if(result) {
+            window.alert('you successfully ' + voteAction + ' ' + wit.owner);
+            this.loadWitnessesByVote()
+          } else if(err) {
+            this.loadWitnessesByVote()
+            window.alert('There was error while voting');
+          }
+      });
     },
     
     save() {

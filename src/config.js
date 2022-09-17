@@ -34,7 +34,7 @@ const finalConfig = config[environment];
 const PAGE_AFTER_LOGIN = '/'
 const PAGE_AFTER_LOGOUT = '/'
 
-const SBD = 'SBD';
+const SBD = 'Serey';
 const STEEM = 'Serey';
 const SP = 'SP';
 const VESTS = 'VESTS';

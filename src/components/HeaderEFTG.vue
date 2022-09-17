@@ -50,6 +50,23 @@
             <router-link to="/proposals" class="nav-item nav-link"><div class="extra-padding">Proposals</div></router-link>
           </li> -->
         </ul>
+        <b-navbar-nav class="ml-auto">
+          <b-nav-form>
+            <b-form-input
+              size="sm"
+              class="mr-sm-2"
+              v-model="search"
+              placeholder="Account, transaction, or block"
+            ></b-form-input>
+            <b-button
+              size="sm"
+              class="my-2 my-sm-0"
+              @click="searchInput()"
+              type="submit"
+              >Search</b-button
+            >
+          </b-nav-form>
+        </b-navbar-nav>
         <ul class="navbar-nav ml-auto">
           <li class="nav-item d-lg-block d-none">
             <div v-if="$store.state.auth.logged">
@@ -143,6 +160,19 @@ export default {
         }
       };
       this.$emit('logout')
+    },
+    searchInput() {
+      if (this.search === "") {
+        return;
+      }
+      if (this.search.length === 40) {
+        this.$router.push(`/explorer/tx/${this.search}`);
+      } else if (/^\d+$/.test(this.search)) {
+        this.$router.push(`/explorer/b/${this.search}`);
+      } else {
+        // http://localhost:8080/?#/explorer/@initminer
+        this.$router.push(`/explorer/@${this.search}`);
+      }
     }
   },
   components: {

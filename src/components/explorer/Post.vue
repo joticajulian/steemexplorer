@@ -16,7 +16,8 @@
         <card-data :data="this.postGenerals"></card-data>  
       </div
       ><div class="col-md-9">
-        <h2><router-link :to="EXPLORER+'@'+post.author">@{{post.author}}</router-link> ({{this.getReputation(post.author_reputation)}})</h2>
+        <h2><router-link :to="EXPLORER+'@'+post.author">@{{post.author}}</router-link> </h2>
+          <!-- ({{this.getReputation(post.author_reputation)}})</h2> -->
         <div v-if="post.depth==0">
           <h1>{{post.title}}</h1>
         </div>
@@ -27,9 +28,11 @@
           </div>
           <router-link :to="EXPLORER+'@'+post.root_author+'/'+post.root_permlink">Root Post</router-link>
         </div>
-        <a class="mt-2" :href="'https://steemit.com/@'+post.author+'/'+post.permlink">Open with steemit.com</a>
+        <a class="mt-2" :href="'https://serey.io/authors/'+post.author+'/'+post.permlink">Open with Serey.io</a>
         <div class="body break-word">{{post.body}}</div>
-        <h2>JSON metadata</h2>
+        <!-- <div class="body break-word" v:html="post.body"></div> -->
+
+        <!-- <h2>JSON metadata</h2> -->
         <card-data :data="this.post.json_metadata"></card-data>
         <h2>{{this.post.active_votes.length}} Votes</h2>
         <votes :data="this.post.active_votes" :payout="payout"></votes>
@@ -61,6 +64,11 @@ import CardData from '@/components/explorer/CardData'
 import Votes from '@/components/explorer/Votes'
 import Beneficiaries from '@/components/explorer/Beneficiaries'
 import ChainProperties from '@/mixins/ChainProperties.js'
+// import axios from 'axios';
+
+import * as sereyjs from '@sereynetwork/sereyjs';
+sereyjs.api.setOptions({ url: 'wss://api.serey.io' }); // assuming websocket is working at ws.golos.io
+sereyjs.config.set('address_prefix','SRY');
 
 export default {
   name: 'post',
@@ -103,11 +111,29 @@ export default {
       var permlink = this.$route.params.permlink;
       console.log('Fetching data for '+author+'/'+permlink);
       var self = this;
-      //var result = await this.client.database.call('get_content',[author,permlink])
+
+
+      // sereyjs.api.getContent(author, permlink, function(err, result) {
+      //   console.log(err, result);
+      // });
+
+      // var result = await this.client.database.call('get_content',[author,permlink])
       var result = await this.steem_database_call('get_content',[author,permlink])
-      
-      result.json_metadata = JSON.parse(result.json_metadata);
+
+      // result.json_metadata = JSON.parse(result.json_metadata);
+      // result.json_metadata = result.json_metadata || {}
+      console.log(typeof(result.json_metadata))
+      console.log(typeof(result.body))
+      // console.log(result.json_metadata)
+      // const res2 = JSON.parse(result.json_metadata);
+      // console.log(res2);
+      // const res3 = JSON.parse(result.body);
+      // console.log(res3);
       this.post = result;
+
+      console.log('this post', this.post);
+
+
         
       var no_keys = ['body','json_metadata','beneficiaries','active_votes','replies','body_length','reblogged_by'];
         

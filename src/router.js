@@ -1,9 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-// import Home from '@/components/Home'
-import MapPage from '@/components/MapPage'
 import Password from '@/components/Password'
 import Witnesses from '@/components/Witnesses'
+import Wallet from '@/components/Wallet'
 import Page404 from '@/components/Page404'
 
 // Explorer
@@ -12,6 +11,7 @@ import AccountExplorer from '@/components/explorer/Account'
 import PostExplorer from '@/components/explorer/Post'
 import BlockExplorer from '@/components/explorer/Block'
 import TransactionExplorer from '@/components/explorer/Transaction'
+import TxExplorer from '@/components/explorer/Tx'
 
 Vue.use(Router)
 
@@ -53,6 +53,11 @@ export default new Router({
       path: "/witnesses",
       name: "Witnesses",
       component: Witnesses
+    },
+    {
+      path: "/wallet",
+      name: "Wallet",
+      component: Wallet
     },
     {
       path: "/rewardcalc",
@@ -100,6 +105,10 @@ export default new Router({
       path: '/explorer/b/:id/:tx',
       name: 'Transaction',
       component: TransactionExplorer
+    }, {
+      path: '/explorer/tx/:tx',
+      name: 'TX explorer',
+      component: TxExplorer
     },{
       path: '*',
       name: 'Page404',
